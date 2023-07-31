@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.0.6 <4.0.0'
+  sdk: '>=3.0.5 <4.0.0'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -30,6 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_svg: ^0.22.0
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -52,6 +53,18 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  fonts:
+    - family: Pretendard
+      fonts:
+        - asset: assets/Pretendard/Pretenedard-Black.otf
+        - asset: assets/Pretendard/Pretenedard-Bold.otf
+        - asset: assets/Pretendard/Pretenedard-ExtraBold.otf
+        - asset: assets/Pretendard/Pretenedard-ExtraLight.otf
+        - asset: assets/Pretendard/Pretenedard-Light.otf
+        - asset: assets/Pretendard/Pretenedard-Medium.otf
+        - asset: assets/Pretendard/Pretenedard-Regular.otf
+        - asset: assets/Pretendard/Pretenedard-SemiBold.otf
+        - asset: assets/Pretendard/Pretenedard-Thin.otf
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
@@ -59,9 +72,14 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  assets:
+    - assets/logo.svg
+    - assets/pattern.svg
+    - assets/profile.svg
+    - assets/stroop.svg
+    - assets/line.svg
+    - assets/voca_rp.svg
+    - assets/img_desc.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
