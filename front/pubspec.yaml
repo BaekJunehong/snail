@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.0.5 <4.0.0'
+  sdk: '>=3.0.6 <4.0.0'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -52,19 +52,20 @@ dev_dependencies:
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
+
 flutter:
   fonts:
     - family: Pretendard
       fonts:
-        - asset: assets/Pretendard/Pretenedard-Black.otf
-        - asset: assets/Pretendard/Pretenedard-Bold.otf
-        - asset: assets/Pretendard/Pretenedard-ExtraBold.otf
-        - asset: assets/Pretendard/Pretenedard-ExtraLight.otf
-        - asset: assets/Pretendard/Pretenedard-Light.otf
-        - asset: assets/Pretendard/Pretenedard-Medium.otf
-        - asset: assets/Pretendard/Pretenedard-Regular.otf
-        - asset: assets/Pretendard/Pretenedard-SemiBold.otf
-        - asset: assets/Pretendard/Pretenedard-Thin.otf
+        - asset: assets\Pretendard\Pretendard-Black.otf
+        - asset: assets\Pretendard\Pretendard-Bold.otf
+        - asset: assets\Pretendard\Pretendard-ExtraBold.otf
+        - asset: assets\Pretendard\Pretendard-ExtraLight.otf
+        - asset: assets\Pretendard\Pretendard-Light.otf
+        - asset: assets\Pretendard\Pretendard-Medium.otf
+        - asset: assets\Pretendard\Pretendard-Regular.otf
+        - asset: assets\Pretendard\Pretendard-SemiBold.otf
+        - asset: assets\Pretendard\Pretendard-Thin.otf
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
