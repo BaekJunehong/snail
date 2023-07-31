@@ -53,6 +53,18 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  fonts:
+    - family: Pretendard
+      fonts:
+        - asset: assets/Pretendard/Pretenedard-Black.otf
+        - asset: assets/Pretendard/Pretenedard-Bold.otf
+        - asset: assets/Pretendard/Pretenedard-ExtraBold.otf
+        - asset: assets/Pretendard/Pretenedard-ExtraLight.otf
+        - asset: assets/Pretendard/Pretenedard-Light.otf
+        - asset: assets/Pretendard/Pretenedard-Medium.otf
+        - asset: assets/Pretendard/Pretenedard-Regular.otf
+        - asset: assets/Pretendard/Pretenedard-SemiBold.otf
+        - asset: assets/Pretendard/Pretenedard-Thin.otf
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
