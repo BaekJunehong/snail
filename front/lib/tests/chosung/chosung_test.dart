@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'dart:async';
 
 void main() {
-  runApp(MyApp());
+  runApp(chosungTest());
 }
 
-class MyApp extends StatelessWidget {
+class chosungTest extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -20,12 +21,45 @@ class CenterPanel extends StatefulWidget {
 }
 
 class _CenterPanelState extends State<CenterPanel> {
-  String userInput = "";
-  List<String> randomChosung = ['ㄱ', 'ㅅ', 'ㅇ'];
+  String user_input = "";
+  List<String> chosungs = ['ㄱ', 'ㅅ', 'ㅇ'];
 
-  String generateRandomChosung() {
+  String _generateNextChosung() {
     Random random = Random();
-    return randomChosung[random.nextInt(randomChosung.length)];
+    return chosungs[random.nextInt(chosungs.length)];
+  }
+
+  int test_set_time = 60; // 테스트 세트별 시간
+  int test_total_time = 180; // 테스트 총 시간
+
+  Timer? timer; // 타이머
+  int seconds = 0; // 경과 초
+  int time = 0; // 시행 횟수
+
+  @override
+  void initState() {
+    super.initState();
+    // 1초마다 타이머 콜백
+    timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        seconds++; // 경과 시간(초) 갱신
+        if (seconds % test_set_time == 0) {
+          // n초 마다 초성 바꾸기
+          time += 1;
+          if (time == chosungs.length) {
+            time = 0;
+          }
+          seconds -= test_set_time;
+        }
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    // 화면이 제거될 때 타이머 해제
+    timer?.cancel();
   }
 
   @override
@@ -35,7 +69,7 @@ class _CenterPanelState extends State<CenterPanel> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // 초성이 나오는 판넬
+            // 초성이 나오는 박스
             Container(
               width: 300,
               height: 300,
@@ -45,7 +79,7 @@ class _CenterPanelState extends State<CenterPanel> {
                 borderRadius: BorderRadius.circular(50),
               ),
               child: Center(
-                child: Text(generateRandomChosung(),
+                child: Text(chosungs[time],
                     style: TextStyle(fontSize: 150),
                     textAlign: TextAlign.center),
               ),
@@ -53,19 +87,21 @@ class _CenterPanelState extends State<CenterPanel> {
 
             SizedBox(height: 50),
 
-            // 사용자 입력 값이 보이는 박스
+            // 사용자 입력 값 박스
             Container(
               width: 500,
               height: 100,
               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               decoration: BoxDecoration(
-                color: Colors.blue[200],
+                color: Colors.grey[300],
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Text(
-                userInput, // 사용자 입력 값
-                style: TextStyle(fontSize: 30),
-                textAlign: TextAlign.center,
+              child: Center(
+                child: Text(
+                  user_input, // 사용자 입력 값
+                  style: TextStyle(fontSize: 30),
+                  textAlign: TextAlign.center,
+                ),
               ),
             ),
           ],
@@ -78,6 +114,16 @@ class _CenterPanelState extends State<CenterPanel> {
         },
         child: Icon(Icons.edit),
       ),
+      floatingActionButtonLocation:
+          FloatingActionButtonLocation.endTop, // 버튼 위치 설정
+      // 오른쪽 위에 타이머 시간 표시
+      persistentFooterButtons: [
+        Container(
+          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+          color: Colors.grey[300],
+          child: Text('${time + 1} 회차 / $seconds 초'),
+        ),
+      ],
     );
   }
 
@@ -90,7 +136,7 @@ class _CenterPanelState extends State<CenterPanel> {
           content: TextField(
             onChanged: (text) {
               setState(() {
-                userInput = text; // 사용자 입력 값 갱신
+                user_input = text; // 사용자 입력 값 갱신
               });
             },
           ),
