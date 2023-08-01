@@ -79,11 +79,13 @@ flutter:
   assets:
     - assets/logo.svg
     - assets/pattern.svg
-    - assets/profile.svg
     - assets/stroop.svg
     - assets/line.svg
     - assets/voca_rp.svg
     - assets/img_desc.svg
+    - assets/child.svg
+    - assets/kid.svg
+    - assets/profile.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
