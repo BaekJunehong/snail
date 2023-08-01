@@ -48,7 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 onChanged: (value) {
                   setState(() {
                     _pw = value; //입력된 비밀번호 저장
-                  })
+                  });
                 },
                 decoration: InputDecoration(
                   labelText: '비밀번호',
