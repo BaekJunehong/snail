@@ -1,15 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'signup.dart';
+import 'login.dart';
 
-class LoginScreen extends StatefulWidget {
+//DB에 중복되는 아이디 판단하는 것은 DB 개발 후 진행해주세요!
+
+class SignupScreen extends StatefulWidget {
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _SignupScreenState createState() => _SignupScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SignupScreenState extends State<SignupScreen> {
   String _id = ''; //입력된 아이디 저장
   String _pw = ''; //입력된 비밀번호 저장
+  String _pwConfirm = ''; //비밀번호 확인란 내용 저장
+
+  //영어와 숫자만 입력 가능하도록 함.
+  bool isAlphanumeric(String input) {
+    final alphanumericRegExp = RegExp(r'^[a-zA-Z0-9]+$');
+    return alphanumericRegExp.hasMatch(input);
+  }
+
+  //비밀번호와 비밀번호 확인란의 텍스트가 일치하는지 확인
+  bool isPasswordMatch() {
+    return _pw == _pwConfirm;
+  }
+
+  //비밀번호 불일치하면 스낵바 띄움
+  void _showPasswordMismatchSnackBar() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('비밀번호를 확인해주세요.')),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,13 +80,41 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             ),
+            SizedBox(height: 10),
+            Container(
+              width: 450, // 너비 설정
+              height: 48, // 높이 설정
+              child: TextField(
+                obscureText: true, //비밀번호를 '*'으로 표시
+                onChanged: (value) {
+                  setState(() {
+                    _pw = value; //입력된 비밀번호 저장
+                  });
+                },
+                decoration: InputDecoration(
+                  labelText: '비밀번호 확인',
+                  border: InputBorder.none,
+                  filled: true,
+                  fillColor: Colors.grey[200],
+                ),
+              ),
+            ),
             SizedBox(height: 20),
             ElevatedButton(
                 onPressed: () {
-                  //로그인 시 함수 입력
+                  if (!isAlphanumeric(_id)) {
+                    SnackBar(content: Text('ID는 영어와 숫자의 조합으로 작성해주세요!'));
+                  } else if (!isPasswordMatch()) {
+                    _showPasswordMismatchSnackBar();
+                  } else {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => LoginScreen()),
+                    );
+                  }
                 },
                 child: Text(
-                  '로그인',
+                  '회원가입',
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w700),
                 ),
@@ -75,22 +124,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       borderRadius: BorderRadius.circular(24)),
                   fixedSize: Size(165, 48),
                 )),
-            SizedBox(height: 10),
-            GestureDetector(
-              onTap: () {
-                //텍스트 클릭 시 signup.dart의 SignupScreen으로 이동
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => SignupScreen()),
-                );
-              },
-              child: Text(
-                'SNaiL이 처음이신가요? | 회원가입',
-                style: TextStyle(
-                  fontSize: 12,
-                ),
-              ),
-            ),
           ],
         ),
       ),

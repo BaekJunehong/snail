@@ -30,7 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_svg: ^0.22.0
+  flutter_svg: ^1.0.1
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -56,15 +56,15 @@ flutter:
   fonts:
     - family: Pretendard
       fonts:
-        - asset: assets/Pretendard/Pretenedard-Black.otf
-        - asset: assets/Pretendard/Pretenedard-Bold.otf
-        - asset: assets/Pretendard/Pretenedard-ExtraBold.otf
-        - asset: assets/Pretendard/Pretenedard-ExtraLight.otf
-        - asset: assets/Pretendard/Pretenedard-Light.otf
-        - asset: assets/Pretendard/Pretenedard-Medium.otf
-        - asset: assets/Pretendard/Pretenedard-Regular.otf
-        - asset: assets/Pretendard/Pretenedard-SemiBold.otf
-        - asset: assets/Pretendard/Pretenedard-Thin.otf
+        - asset: assets\Pretendard\Pretendard-Black.otf
+        - asset: assets\Pretendard\Pretendard-Bold.otf
+        - asset: assets\Pretendard\Pretendard-ExtraBold.otf
+        - asset: assets\Pretendard\Pretendard-ExtraLight.otf
+        - asset: assets\Pretendard\Pretendard-Light.otf
+        - asset: assets\Pretendard\Pretendard-Medium.otf
+        - asset: assets\Pretendard\Pretendard-Regular.otf
+        - asset: assets\Pretendard\Pretendard-SemiBold.otf
+        - asset: assets\Pretendard\Pretendard-Thin.otf
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
@@ -75,11 +75,13 @@ flutter:
   assets:
     - assets/logo.svg
     - assets/pattern.svg
-    - assets/profile.svg
     - assets/stroop.svg
     - assets/line.svg
     - assets/voca_rp.svg
     - assets/img_desc.svg
+    - assets/child.svg
+    - assets/kid.svg
+    - assets/profile.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

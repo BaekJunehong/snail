@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:snail/login.dart';
+import 'package:snail/addprofile.dart';
 
 void main() {
   runApp(MyApp());
@@ -15,7 +16,9 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Pretendard',
       ),
       title: 'SNaiL',
-      home: SplashScreen(),
+      home: Scaffold(
+        body: ChildInfoInputScreen(),
+      ), //처음 접하는 화면을 SplashScreen으로 설정.
     );
   }
 }
