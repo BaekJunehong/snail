@@ -47,7 +47,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
-
+  fl_chart: ^0.40.0
+  video_player: ^2.2.5
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
@@ -75,14 +76,16 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/logo.svg
-    - assets/pattern.svg
-    - assets/stroop.svg
-    - assets/line.svg
-    - assets/voca_rp.svg
-    - assets/img_desc.svg
-    - assets/child.svg
-    - assets/kid.svg
     - assets/profile.png
+    - assets/pattern.png
+    - assets/chosung.png
+    - assets/stroop.png
+    - assets/line.png
+    - assets/voca_rp.png
+    - assets/sentence.png
+    - assets/img_desc.png
+    - assets/okay.png
+    - assets/loading.gif
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
