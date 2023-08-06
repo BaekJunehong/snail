@@ -32,8 +32,12 @@ dependencies:
     sdk: flutter
   flutter_svg: ^0.22.0
   
+  # DataBase
+  http: ^0.13.3
+
   record: ^4.4.4
   audioplayers: ^5.0.0
+  assets_audio_player: ^3.0.6
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -78,6 +82,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+    - assets/correct.png
     - assets/logo.svg
     - assets/profile.png
     - assets/pattern.png
@@ -89,7 +94,8 @@ flutter:
     - assets/img_desc.png
     - assets/okay.png
     - assets/loading.gif
-
+    - assets/child_voice.mp3
+    - assets/chosung_guide_voice.mp3
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 
