@@ -110,7 +110,6 @@ class _SignupScreenState extends State<SignupScreen> {
                   } else if (!isPasswordMatch()) {
                     _showPasswordMismatchSnackBar();
                   } else {
-                    print('아이디 중복?');
                     // 아이디 중복 확인
                     var url = Uri.http('ec2-43-202-128-142.ap-northeast-2.compute.amazonaws.com:3000', '/checkDuplicatedID', {'USER_ID': _id});
                     print(url);
@@ -119,10 +118,9 @@ class _SignupScreenState extends State<SignupScreen> {
 
                     var data = jsonDecode(response.body);
                     var exist = data['exist'];
-                    
+
                     // 중복이 아닌경우 정보 저장
                     if (exist != 1){
-                      print('아이디 중복 아니래');
                       var url = Uri.http('ec2-43-202-128-142.ap-northeast-2.compute.amazonaws.com:3000', '/saveUserInfo');
                       var response = await http.post(url, body: {'USER_ID': _id, 'USER_PW': _pw});
                       print('Response status: ${response.statusCode}');
