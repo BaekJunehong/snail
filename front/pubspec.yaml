@@ -94,13 +94,9 @@ flutter:
     - assets/img_desc.png
     - assets/okay.png
     - assets/loading.gif
-<<<<<<< HEAD
     # - assets/child_voice.mp3
     # - assets/chosung_guide_voice.mp3
-=======
-    - assets/child_voice.mp3
-    - assets/chosung_guide_voice.mp3
->>>>>>> beec71317a6ec642aefce601e9fb544d40ae93d7
+
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 
