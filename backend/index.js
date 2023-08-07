@@ -14,6 +14,7 @@ app.set('port', process.env.PORT || 3000); // 포트
 app.use(bodyParser.urlencoded({ extended: false }));
 
 const cors = require('cors');
+const { log } = require('console');
 app.use(cors());  // 모든 origin 요청 허용
 
 //-------------------------------------------------------------------------------------
@@ -57,6 +58,32 @@ app.get('/checkDuplicatedID', (req, res) => {
   });
 });
 
+// 로그인 정보 확인
+app.post('/login',(req,res) =>{
+  const user_id = req.body.USER_ID;
+  const password = req.body.USER_PW;
+
+  const query = 'SELECT EXISTS(SELECT 1 FROM PARENT WHERE USER_ID = ? and USER_PW = ?) as exist';
+
+  connection.query(query,[user_id, password],(err,rows)=>{
+    if (err){
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+    if (rows.length === 0 ){
+      res.status(404).send('User not found');
+      return;
+    }
+    
+    const isCorrect = rows[0].exist;
+    
+    if(isCorrect){
+      res.status(200).send('1');
+    }else{
+      res.status(200).send('0');
+    }
+  })
+});
 //-------------------------------------------------------------------------------------
 // listener
 app.listen(app.get('port'), () => {
