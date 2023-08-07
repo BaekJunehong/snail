@@ -57,6 +57,28 @@ app.get('/checkDuplicatedID', (req, res) => {
   });
 });
 
+// 아동정보 저장
+app.post('/saveChildInfo', (req, res) => {
+  const name = req.body.NAME;
+  const sex = parseInt(req.body.SEX);
+  const birth = req.body.BIRTH;
+
+  const query = "INSERT INTO CHILD (ID, NAME, SEX, BIRTH) SELECT CONCAT(COALESCE(MAX(ID), 0) + 1, ''), ?, ?, ? FROM CHILD";
+
+  connection.query(query, [name, sex, birth], (err, result) => {
+    if (err) {
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+
+    const id = result.insertId;
+
+    res.set('Location', `/saveChildInfo/${id}`);
+
+    res.status(200).send({id});
+  });
+});
+
 //-------------------------------------------------------------------------------------
 // listener
 app.listen(app.get('port'), () => {
