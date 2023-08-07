@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+
 import 'package:http/http.dart' as http;
 
 class ChildInfoInputScreen extends StatefulWidget {
@@ -191,8 +192,12 @@ class _ChildInfoInputScreenState extends State<ChildInfoInputScreen> {
                       SizedBox(height: 20),
                       Center(
                         child: ElevatedButton(
-                            onPressed: () {
-                              //로그인 시 함수 입력
+                             onPressed: () async {
+                              var _birth = '${_selectedYear.toString().padLeft(4, '0')}-${_selectedMonth.toString().padLeft(2, '0')}-${_selectedDay.toString().padLeft(2, '0')}';
+                              var url = Uri.http('ec2-43-202-128-142.ap-northeast-2.compute.amazonaws.com:3000', '/saveChildInfo');
+                              var response = await http.post(url, body: {'NAME': _childName, 'SEX': _selectedGender.toString(), 'BIRTH': _birth});
+
+                              Navigator.pop(context);
                             },
                             child: Text(
                               '시작하기',
