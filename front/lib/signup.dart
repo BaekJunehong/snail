@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'login.dart';
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
 
 //DB에 중복되는 아이디 판단하는 것은 DB 개발 후 진행해주세요!
 
@@ -9,7 +12,7 @@ class SignupScreen extends StatefulWidget {
   _SignupScreenState createState() => _SignupScreenState();
 }
 
-class _SignupScreenState extends State<SignupScreen> {
+class _SignupScreenState extends State<SignupScreen> {  
   String _id = ''; //입력된 아이디 저장
   String _pw = ''; //입력된 비밀번호 저장
   String _pwConfirm = ''; //비밀번호 확인란 내용 저장
@@ -88,7 +91,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 obscureText: true, //비밀번호를 '*'으로 표시
                 onChanged: (value) {
                   setState(() {
-                    _pw = value; //입력된 비밀번호 저장
+                    _pwConfirm = value; //입력된 비밀번호 저장
                   });
                 },
                 decoration: InputDecoration(
@@ -101,16 +104,32 @@ class _SignupScreenState extends State<SignupScreen> {
             ),
             SizedBox(height: 20),
             ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (!isAlphanumeric(_id)) {
                     SnackBar(content: Text('ID는 영어와 숫자의 조합으로 작성해주세요!'));
                   } else if (!isPasswordMatch()) {
                     _showPasswordMismatchSnackBar();
                   } else {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => LoginScreen()),
-                    );
+                    // 아이디 중복 확인
+                    var url = Uri.http('ec2-43-202-128-142.ap-northeast-2.compute.amazonaws.com:3000', '/checkDuplicatedID', {'USER_ID': _id});
+                    print(url);
+                    var response = await http.get(url);
+                    print('Response status: ${response.statusCode}');
+
+                    var data = jsonDecode(response.body);
+                    var exist = data['exist'];
+
+                    // 중복이 아닌경우 정보 저장
+                    if (exist != 1){
+                      var url = Uri.http('ec2-43-202-128-142.ap-northeast-2.compute.amazonaws.com:3000', '/saveUserInfo');
+                      var response = await http.post(url, body: {'USER_ID': _id, 'USER_PW': _pw});
+                      print('Response status: ${response.statusCode}');
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginScreen()),
+                      );
+                    }
                   }
                 },
                 child: Text(
