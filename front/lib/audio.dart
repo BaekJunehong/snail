@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:record/record.dart';
@@ -235,7 +234,8 @@ class _MyAppState extends State<MyApp> {
           child: showPlayer
               ? Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25),
-                  child: MyAudioPlayer( // Use MyAudioPlayer instead of AudioPlayer
+                  child: MyAudioPlayer(
+                    // Use MyAudioPlayer instead of AudioPlayer
                     source: audioPath!,
                     onDelete: () {
                       setState(() => showPlayer = false);

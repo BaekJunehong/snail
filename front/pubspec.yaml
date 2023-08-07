@@ -96,6 +96,7 @@ flutter:
     - assets/loading.gif
     # - assets/child_voice.mp3
     # - assets/chosung_guide_voice.mp3
+
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 
