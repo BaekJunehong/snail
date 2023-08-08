@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:snail/addprofile.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ProfileSelectionScreen extends StatelessWidget {
   @override
@@ -49,20 +51,47 @@ class ProfileSelectionScreen extends StatelessWidget {
   }
 }
 
-//프로필 카드에 자녀 데이터가 있으면 starttest.dart 페이지로
-//프로필 카드에 자녀 데이터가 없으면 addprofile.dart 페이지로
 class ProfileCard extends StatelessWidget {
+  final bool hasChild = false;
+
+  //ProfileCard({this.hasChild});
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 150,
-      height: 150,
-      decoration: BoxDecoration(
-        color: Color(0xFFd9d9d9),
-        borderRadius: BorderRadius.circular(50),
+    return OutlinedButton(
+      onPressed: () {
+        if (hasChild) {
+          // 캐릭터가 있을 경우 starttest.dart 페이지로 이동
+          /*
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => StartTestScreen()),
+          );
+          */
+        } else {
+          // 캐릭터가 없을 경우 addprofile.dart 페이지로 이동
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ChildInfoInputScreen()),
+          );
+        }
+      },
+      style: OutlinedButton.styleFrom(
+        shape: CircleBorder(),
+        side: BorderSide.none,
       ),
-      child: Center(
-        child: Icon(Icons.add, size: 40, color: Colors.white),
+      child: Container(
+        width: 150,
+        height: 150,
+        decoration: BoxDecoration(
+          color: Color(0xFFd9d9d9),
+          borderRadius: BorderRadius.circular(50),
+        ),
+        child: Center(
+          child: hasChild
+              ? Image.asset('assets/character.png') // 캐릭터가 있을 경우 다른 이미지 표시
+              : Icon(Icons.add, size: 40, color: Colors.white),
+        ),
       ),
     );
   }
