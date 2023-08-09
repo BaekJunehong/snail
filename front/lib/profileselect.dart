@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:snail/addprofile.dart';
+import 'package:snail/starttest.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-class ProfileSelectionScreen extends StatelessWidget {
+class ProfileSelectionScreen extends StatefulWidget {
+  @override
+  _ProfileSelectionScreenState createState() => _ProfileSelectionScreenState();
+}
+class _ProfileSelectionScreenState extends State<ProfileSelectionScreen> {
   final storage = const FlutterSecureStorage();
   List<Map<String, dynamic>>? child_info;
 
@@ -30,6 +35,13 @@ class ProfileSelectionScreen extends StatelessWidget {
     return rows;
   }
 
+  // 화면 갱신
+  void refreshData() {
+    setState(() {
+      _fetchChildData();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -44,15 +56,15 @@ class ProfileSelectionScreen extends StatelessWidget {
             for (int i = 0; i < 3; i++) {
               print(child_info!.length);
               if (i < child_info!.length) {
-                profileCards.add(ProfileCard(child_info: child_info![i]));
+                profileCards.add(ProfileCard(child_info: child_info![i], onRefresh: refreshData));
               } else {
-                profileCards.add(ProfileCard(child_info: null));
+                profileCards.add(ProfileCard(child_info: null, onRefresh: refreshData));
               }
             }
           } else {
             print('아이없음');
             for (int i = 0; i < 3; i++) {
-              profileCards.add(ProfileCard(child_info: null));
+              profileCards.add(ProfileCard(child_info: null, onRefresh: refreshData));
             }
           }
           return Scaffold(
@@ -70,26 +82,6 @@ class ProfileSelectionScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: profileCards,
                   ),
-                  SizedBox(height: 50),
-                  ElevatedButton(
-                    onPressed: () {
-                      print('버튼이 눌렸습니다!');
-                    },
-                    child: Text(
-                      '부모노트',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.black,
-                      ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      primary: Color(0xFFffcb39), // 버튼의 배경색 // 버튼의 글꼴 크기
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(24)),
-                      fixedSize: Size(165, 48),
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -104,9 +96,10 @@ class ProfileSelectionScreen extends StatelessWidget {
 }
 
 class ProfileCard extends StatelessWidget {
-  Map<String, dynamic>? child_info;
+  final Map<String, dynamic>? child_info;
+  final VoidCallback? onRefresh;
 
-  ProfileCard({this.child_info});
+  ProfileCard({this.child_info, this.onRefresh});
 
   @override
   Widget build(BuildContext context) {
@@ -116,19 +109,19 @@ class ProfileCard extends StatelessWidget {
           print(child_info);
           print('아이있음');
           // 캐릭터가 있을 경우 starttest.dart 페이지로 이동
-          /*
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => StartTestScreen()),
           );
-          */
         } else {
           print('아이없음');
           // 캐릭터가 없을 경우 addprofile.dart 페이지로 이동
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => ChildInfoInputScreen()),
-          );
+          ).then((value) {
+            if (onRefresh != null) onRefresh!();
+          });
         }
       },
       style: OutlinedButton.styleFrom(
@@ -144,7 +137,7 @@ class ProfileCard extends StatelessWidget {
         ),
         child: Center(
           child: (child_info != null)
-              ? Image.asset('assets/correct.png') // 캐릭터가 있을 경우 다른 이미지 표시
+              ? Image.asset('assets/profile.png') // 캐릭터가 있을 경우 다른 이미지 표시
               : Icon(Icons.add, size: 40, color: Colors.white),
         ),
       ),
