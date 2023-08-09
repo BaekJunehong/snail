@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:snail/profileselect.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'signup.dart';
+
+import 'package:snail/profileselect.dart';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
@@ -92,6 +94,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     var data = jsonDecode(response.body);
 
                     if (data == 1) {
+                      final storage = const FlutterSecureStorage();
+                      await storage.write(key: 'USER_ID', value: _id);
+
                       Navigator.push(
                           context,
                           MaterialPageRoute(
