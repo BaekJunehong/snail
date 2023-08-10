@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ChildInfoInputScreen extends StatefulWidget {
@@ -18,6 +20,12 @@ class _ChildInfoInputScreenState extends State<ChildInfoInputScreen> {
   // 남 0 / 여 1
   int female = 1;
   int male = 0;
+
+  void _showAddProfileErrorSnackBar() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('입력정보를 확인해주세요.')),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -193,11 +201,19 @@ class _ChildInfoInputScreenState extends State<ChildInfoInputScreen> {
                       Center(
                         child: ElevatedButton(
                              onPressed: () async {
-                              var _birth = '${_selectedYear.toString().padLeft(4, '0')}-${_selectedMonth.toString().padLeft(2, '0')}-${_selectedDay.toString().padLeft(2, '0')}';
-                              var url = Uri.http('ec2-43-202-128-142.ap-northeast-2.compute.amazonaws.com:3000', '/saveChildInfo');
-                              var response = await http.post(url, body: {'NAME': _childName, 'SEX': _selectedGender.toString(), 'BIRTH': _birth});
+                              if (_childName.isEmpty || _selectedGender == null || _selectedYear == null || _selectedMonth == null || _selectedDay == null) {
+                                _showAddProfileErrorSnackBar();
+                              }
+                              else {
+                                final storage = const FlutterSecureStorage();
+                                final parent_id = await storage.read(key: 'USER_ID');
+                                
+                                var _birth = '${_selectedYear.toString().padLeft(4, '0')}-${_selectedMonth.toString().padLeft(2, '0')}-${_selectedDay.toString().padLeft(2, '0')}';
+                                var url = Uri.http('ec2-43-202-128-142.ap-northeast-2.compute.amazonaws.com:3000', '/saveChildInfo');
+                                var response = await http.post(url, body: {'PARENT': parent_id , 'NAME': _childName, 'SEX': _selectedGender.toString(), 'BIRTH': _birth});
 
-                              Navigator.pop(context);
+                                Navigator.pop(context);
+                              }
                             },
                             child: Text(
                               '시작하기',

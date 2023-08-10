@@ -25,7 +25,7 @@ app.post('/saveUserInfo', (req, res) => {
   const user_id = req.body.USER_ID;
   const user_pw = req.body.USER_PW;
 
-  const query = 'INSERT INTO PARENT (USER_ID, USER_PW) VALUES (?, ?)';
+  const query = "INSERT INTO PARENT (PARENT_ID, USER_ID, USER_PW) SELECT CONCAT(COALESCE(MAX(PARENT_ID), 0) + 1, ''), ?, ? FROM PARENT";
 
   connection.query(query, [user_id, user_pw], (err, result) => {
     if (err) {
@@ -42,8 +42,8 @@ app.post('/saveUserInfo', (req, res) => {
 });
 
 // 아이디 중복 확인
-app.get('/checkDuplicatedID', (req, res) => {
-  const user_id = req.query.USER_ID;
+app.post('/checkDuplicatedID', (req, res) => {
+  const user_id = req.body.USER_ID;
 
   const query = 'SELECT EXISTS(SELECT 1 FROM PARENT WHERE USER_ID = ?) as exist';
 
@@ -63,10 +63,11 @@ app.post('/saveChildInfo', (req, res) => {
   const name = req.body.NAME;
   const sex = parseInt(req.body.SEX);
   const birth = req.body.BIRTH;
+  const parent = req.body.PARENT;
 
-  const query = "INSERT INTO CHILD (ID, NAME, SEX, BIRTH) SELECT CONCAT(COALESCE(MAX(ID), 0) + 1, ''), ?, ?, ? FROM CHILD";
+  const query = "INSERT INTO CHILD (CHILD_ID, PARENT_ID, NAME, SEX, BIRTH) SELECT CONCAT(COALESCE(MAX(CHILD_ID), 0) + 1, ''), (SELECT PARENT_ID FROM PARENT WHERE USER_ID = ?), ?, ?, ? FROM CHILD";
 
-  connection.query(query, [name, sex, birth], (err, result) => {
+  connection.query(query, [parent, name, sex, birth], (err, result) => {
     if (err) {
       res.status(500).send('Internal Server Error');
       return;
@@ -106,6 +107,23 @@ app.post('/login',(req,res) =>{
     }
   })
 });
+
+// 자식 정보 가져오기
+app.post('/fetchChildData', (req, res) => {
+  const parent_id = req.body.USER_ID;
+
+  const query = 'SELECT * FROM CHILD WHERE (SELECT PARENT_ID FROM PARENT WHERE USER_ID = ?)';
+
+  connection.query(query, [parent_id], (err, rows) => {
+    if (err) {
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+    res.status(200).send(rows);
+  });
+});
+
+
 //-------------------------------------------------------------------------------------
 // listener
 app.listen(app.get('port'), () => {
