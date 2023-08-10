@@ -9,7 +9,8 @@ class LineTest extends StatefulWidget {
 class _LineTestState extends State<LineTest> {
   final Random _random = Random();
   final List<Offset> _positions = List.generate(7, (index) => Offset.zero);
-  final List<Color> _circleColors = List.generate(7, (index) => Colors.grey);
+  final List<Color> _circleColors =
+      List.generate(7, (index) => Color(0xFFD9D9D9));
   final List<int> _selectedIndices = [];
   double minDistance = 200; // 최소 거리 조절
   bool _isMousePressed = false;
@@ -92,7 +93,7 @@ class _LineTestState extends State<LineTest> {
                       if (_isMousePressed &&
                           !_selectedIndices.contains(index)) {
                         setState(() {
-                          _circleColors[index] = Colors.yellow;
+                          _circleColors[index] = Color(0xFFffcb39);
                           _selectedIndices.add(index);
                           if (_selectedIndices.length == 7) {
                             CheckAnswer(_selectedIndices);
@@ -143,7 +144,7 @@ class LinePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.black
+      ..color = Color(0xFFC9980D)
       ..strokeWidth = 2;
     canvas.drawLine(start, end, paint);
   }
