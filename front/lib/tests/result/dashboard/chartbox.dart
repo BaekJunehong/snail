@@ -10,7 +10,7 @@ class ChartBox extends StatelessWidget {
   final double avgDataValue;
 
   //전체 비교 막대
-  final double maxWidth = 100;
+  final double maxWidth = 1300;
 
   ChartBox({
     required this.title,
@@ -53,20 +53,47 @@ class ChartBox extends StatelessWidget {
             ),
             SizedBox(height: 30),
             // Custom Vertical Bar Chart with Aligned Start
-            Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start, // Align bars to the start
+            Stack(
               children: [
                 Container(
-                  width: dataValue * 1000,
+                  width: maxWidth,
                   height: 30,
-                  color: Color(0XFFffcb39),
+                  decoration: BoxDecoration(
+                      color: Color(0XFFd9d9d9),
+                      borderRadius: BorderRadius.circular(24)),
                 ),
-                SizedBox(height: 20), // Gap between bars
+                Positioned(
+                  left: 0,
+                  child: Container(
+                    width: dataValue * maxWidth,
+                    height: 30,
+                    decoration: BoxDecoration(
+                        color: Color(0XFFffcb39),
+                        borderRadius: BorderRadius.circular(24)),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 20), // Gap between bars
+            // 평균 데이터 막대를 위한 Stack
+            Stack(
+              children: [
                 Container(
-                  width: avgDataValue * 1000,
+                  width: maxWidth,
                   height: 30,
-                  color: Color(0XFFc4c4c4),
+                  decoration: BoxDecoration(
+                      color: Color(0XFFd9d9d9),
+                      borderRadius: BorderRadius.circular(24)),
+                ),
+                Positioned(
+                  left: 0,
+                  child: Container(
+                    width: avgDataValue * maxWidth,
+                    height: 30,
+                    decoration: BoxDecoration(
+                        color: Color(0XFFc4c4c4),
+                        borderRadius: BorderRadius.circular(24)),
+                  ),
                 ),
               ],
             ),
