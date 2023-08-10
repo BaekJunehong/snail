@@ -118,7 +118,7 @@ class RadarChartPainter extends CustomPainter {
     dataLegendTextPainter.layout();
     dataLegendTextPainter.paint(
       canvas,
-      Offset(10 + legendSquareSize + 5, 100),
+      Offset(10 + legendSquareSize + 5, 5),
     );
 
     final avgTextSpan = TextSpan(
@@ -130,7 +130,7 @@ class RadarChartPainter extends CustomPainter {
       textDirection: TextDirection.ltr,
     );
     avgTextPainter.layout();
-    final avgTextOffset = Offset(10, 10 + dataLegendTextPainter.height + 10);
+    final avgTextOffset = Offset(10, 10 + dataLegendTextPainter.height + 5);
     avgTextPainter.paint(canvas, avgTextOffset);
 
     final double legendSquareRect = 10;
@@ -193,7 +193,7 @@ class RadarChartPainter extends CustomPainter {
   }
 }
 
-class RadarChart extends StatelessWidget {
+class PentagonRadarChart extends StatelessWidget {
   final List<double> data;
   final List<double> avgData;
   final int levels;
@@ -202,7 +202,7 @@ class RadarChart extends StatelessWidget {
   final Color dataColor;
   final Color avgColor;
 
-  RadarChart({
+  PentagonRadarChart({
     required this.data,
     required this.avgData,
     required this.levels,
