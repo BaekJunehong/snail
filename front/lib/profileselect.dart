@@ -16,7 +16,7 @@ class _ProfileSelectionScreenState extends State<ProfileSelectionScreen> {
 
   Future<List<Map<String, dynamic>>> _fetchChildData() async {
     final parent_id = await storage.read(key: 'USER_ID');
-
+    print(parent_id);
     final url = Uri.http('ec2-43-202-128-142.ap-northeast-2.compute.amazonaws.com:3000', '/fetchChildData');
     final response = await http.post(url, body: {'USER_ID': parent_id});
 
@@ -82,6 +82,27 @@ class _ProfileSelectionScreenState extends State<ProfileSelectionScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: profileCards,
                   ),
+                  SizedBox(height: 50),
+                  ElevatedButton(
+                    onPressed: () async {
+                      await storage.delete(key: 'USER_ID');
+                      Navigator.pop(context);
+                    },
+                    child: Text(
+                      '로그아웃',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.black,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.grey, // 버튼의 배경색 // 버튼의 글꼴 크기
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(24)),
+                      fixedSize: Size(165, 48),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -106,15 +127,12 @@ class ProfileCard extends StatelessWidget {
     return OutlinedButton(
       onPressed: () {
         if (child_info != null) {
-          print(child_info);
-          print('아이있음');
           // 캐릭터가 있을 경우 starttest.dart 페이지로 이동
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => StartTestScreen()),
           );
         } else {
-          print('아이없음');
           // 캐릭터가 없을 경우 addprofile.dart 페이지로 이동
           Navigator.push(
             context,

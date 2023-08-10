@@ -112,7 +112,7 @@ app.post('/login',(req,res) =>{
 app.post('/fetchChildData', (req, res) => {
   const parent_id = req.body.USER_ID;
 
-  const query = 'SELECT * FROM CHILD WHERE (SELECT PARENT_ID FROM PARENT WHERE USER_ID = ?)';
+  const query = 'SELECT * FROM CHILD WHERE PARENT_ID = (SELECT PARENT_ID FROM PARENT WHERE USER_ID = ?)';
 
   connection.query(query, [parent_id], (err, rows) => {
     if (err) {
