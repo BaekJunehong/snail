@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:snail/profileselect.dart';
 import 'package:snail/tests/result/dashboard/radarchart.dart'; //방사형 그래프 렌더링
-import 'package:snail/tests/result/dashboard/chartbox.dart'; //막대 그래프 렌더링
+import 'package:snail/tests/result/dashboard/gptfeedbackbox.dart'; // gpt 피드백 입력란
+import 'package:snail/tests/result/dashboard/chartbox.dart'; // 역량 설명 및 막대 그래프 템플릿 렌더링
 
 class ParentNoteScreen extends StatelessWidget {
   //레이더 차트에 렌더링되는 데이터
@@ -29,73 +30,40 @@ class ParentNoteScreen extends StatelessWidget {
         child: Center(
           child: Column(
             children: [
-              SizedBox(height: 200),
-              Row(
+              SizedBox(height: 70),
+              Column(
                 children: [
-                  Expanded(
-                    child: Center(
-                      child: PentagonRadarChart(
-                        data: data,
-                        avgData: avgData,
-                        levels: levels,
-                        numberOfPolygons: numberOfPolygons,
-                        labels: labels,
-                        dataColor: dataColor,
-                        avgColor: avgColor,
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: paddingValue),
-                  //GPT 피드백 입력란
                   Container(
-                    width: grayBoxWidth,
-                    height: grayBoxHeight,
-                    decoration: BoxDecoration(
-                      color: Color(0XFFd9d9d9),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.all(30),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '달 선생님의 피드백',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 24,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          SizedBox(height: 25),
-                          Divider(
-                            color: Color(0XFF777777),
-                            thickness: 2,
-                          ),
-                          SizedBox(height: 25),
-                          //이곳에 gpt 피드백이 들어갈 거!
-                          //텍스트가 길어지면 이 영역만 스크롤 가능하도록
-                          Expanded(
-                            child: SingleChildScrollView(
-                              child: Column(
-                                children: [
-                                  // GPT 피드백. 길어질 수 있으므로 스크롤 가능하도록 설정했음.
-                                  Text(
-                                    'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 20,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                    width: 1300,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      '달이의 AI 리포트', //아이 이름 DB에서 꺼내와야 함.
+                      style:
+                          TextStyle(fontSize: 32, fontWeight: FontWeight.w700),
                     ),
                   ),
-                  SizedBox(width: paddingValue),
+                  SizedBox(height: 70),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Center(
+                          child: PentagonRadarChart(
+                            data: data,
+                            avgData: avgData,
+                            levels: levels,
+                            numberOfPolygons: numberOfPolygons,
+                            labels: labels,
+                            dataColor: dataColor,
+                            avgColor: avgColor,
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: paddingValue),
+                      //GPT 피드백 입력란
+                      GPTFeedbackBox(),
+                      SizedBox(width: paddingValue),
+                    ],
+                  ),
                 ],
               ),
               SizedBox(height: 126),
