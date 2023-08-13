@@ -1,42 +1,86 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:record/record.dart';
-import 'my_audio_player.dart';
+import 'dart:js' as js;
+import 'dart:html' as html;
 
 void main() => runApp(const MyApp());
 
 class AudioRecorder extends StatefulWidget {
-  final void Function(String path) onStop;
+  final void Function(String path) onRecordDone;
 
-  const AudioRecorder({Key? key, required this.onStop}) : super(key: key);
+  const AudioRecorder({Key? key, required this.onRecordDone}) : super(key: key);
 
   @override
-  State<AudioRecorder> createState() => _AudioRecorderState();
+  State<AudioRecorder> createState() => _AudioRecorderState(onRecordDone);
 }
 
 class _AudioRecorderState extends State<AudioRecorder> {
-  int _recordDuration = 0;
-  Timer? _timer;
   final _audioRecorder = Record();
-  StreamSubscription<RecordState>? _recordSub;
-  RecordState _recordState = RecordState.stop;
+  late StreamSubscription<html.Event> _audioInputSub;
   StreamSubscription<Amplitude>? _amplitudeSub;
   Amplitude? _amplitude;
+  final void Function(String path) onRecordDone;
+  bool _isRecording = false;
+
+  _AudioRecorderState(this.onRecordDone);
 
   @override
   void initState() {
-    _recordSub = _audioRecorder.onStateChanged().listen((recordState) {
-      setState(() => _recordState = recordState);
-    });
-
-    _amplitudeSub = _audioRecorder
-        .onAmplitudeChanged(const Duration(milliseconds: 300))
-        .listen((amp) => setState(() => _amplitude = amp));
-
     super.initState();
+    // 앱 시작 시 마이크 권한 요청
+    _requestPermission();
+    // 음성 크기 변경 감지 - Web
+    if ((kIsWeb)) {
+      _audioInputSub = html.window.on['audio'].listen((event) {
+        final input = js.JsObject.fromBrowserObject(event)['input'];
+        print(input);
+        if (input > -160 && !_isRecording) {
+          // 음성 크기가 임계값보다 큰 경우 녹음 시작
+          _start();
+        } else if (input <= -161 && _isRecording) {
+          // 음성 크기가 임계값보다 작은 경우 녹음 중지
+          _stop();
+        }
+      });
+    }
+    // 음성 크기 변경 감지 - App
+    else {
+      _amplitudeSub = _audioRecorder
+          .onAmplitudeChanged(const Duration(milliseconds: 300))
+          .listen((amp) {
+        setState(() => _amplitude = amp);
+        if (_amplitude != null && _amplitude!.current > -160 && !_isRecording) {
+          // 음성 크기가 임계값보다 큰 경우 녹음 시작
+          _start();
+        } else if (_amplitude != null && _amplitude!.current <= -161 && _isRecording) {
+          // 음성 크기가 임계값보다 작은 경우 녹음 중지
+          _stop();
+        }
+      });
+    }
   }
 
+  // 마이크 권한 요청
+  Future<void> _requestPermission() async {
+    if (kIsWeb) {
+      // 웹 환경에서 마이크 권한 요청
+      try {
+        await html.window.navigator.mediaDevices?.getUserMedia({'audio': true});
+      } catch (e) {
+        if (kDebugMode) {
+          print(e);
+        }
+      }
+    } else {
+      // 모바일 환경에서 마이크 권한 요청
+      await Permission.microphone.request();
+    }
+  }
+
+  // 녹음 시작
   Future<void> _start() async {
     try {
       if (await _audioRecorder.hasPermission()) {
@@ -46,11 +90,8 @@ class _AudioRecorderState extends State<AudioRecorder> {
         if (kDebugMode) {
           print('${AudioEncoder.aacLc.name} supported: $isSupported');
         }
-
         await _audioRecorder.start();
-        _recordDuration = 0;
-
-        _startTimer();
+        setState(() => _isRecording = true);
       }
     } catch (e) {
       if (kDebugMode) {
@@ -59,198 +100,41 @@ class _AudioRecorderState extends State<AudioRecorder> {
     }
   }
 
+  // 녹음 중지
   Future<void> _stop() async {
-    _timer?.cancel();
-    _recordDuration = 0;
-
     final path = await _audioRecorder.stop();
-
+    setState(() => _isRecording = false);
     if (path != null) {
-      widget.onStop(path);
+      onRecordDone(path);
     }
-  }
-
-  Future<void> _pause() async {
-    _timer?.cancel();
-    await _audioRecorder.pause();
-  }
-
-  Future<void> _resume() async {
-    _startTimer();
-    await _audioRecorder.resume();
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                _buildRecordStopControl(),
-                const SizedBox(width: 20),
-                _buildPauseResumeControl(),
-                const SizedBox(width: 20),
-                _buildText(),
-              ],
-            ),
-            if (_amplitude != null) ...[
-              const SizedBox(height: 40),
-              Text('Current: ${_amplitude?.current ?? 0.0}'),
-              Text('Max: ${_amplitude?.max ?? 0.0}'),
-            ],
-          ],
-        ),
-      ),
-    );
+    return Container(); // UI가 필요하지 않으므로 빈 컨테이너 반환
   }
 
   @override
   void dispose() {
-    _timer?.cancel();
-    _recordSub?.cancel();
+    _audioInputSub.cancel();
     _amplitudeSub?.cancel();
     _audioRecorder.dispose();
     super.dispose();
   }
-
-  Widget _buildRecordStopControl() {
-    late Icon icon;
-    late Color color;
-
-    if (_recordState != RecordState.stop) {
-      icon = const Icon(Icons.stop, color: Colors.red, size: 30);
-      color = Colors.red.withOpacity(0.1);
-    } else {
-      final theme = Theme.of(context);
-      icon = Icon(Icons.mic, color: theme.primaryColor, size: 30);
-      color = theme.primaryColor.withOpacity(0.1);
-    }
-
-    return ClipOval(
-      child: Material(
-        color: color,
-        child: InkWell(
-          child: SizedBox(width: 56, height: 56, child: icon),
-          onTap: () {
-            (_recordState != RecordState.stop) ? _stop() : _start();
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPauseResumeControl() {
-    if (_recordState == RecordState.stop) {
-      return const SizedBox.shrink();
-    }
-
-    late Icon icon;
-    late Color color;
-
-    if (_recordState == RecordState.record) {
-      icon = const Icon(Icons.pause, color: Colors.red, size: 30);
-      color = Colors.red.withOpacity(0.1);
-    } else {
-      final theme = Theme.of(context);
-      icon = const Icon(Icons.play_arrow, color: Colors.red, size: 30);
-      color = theme.primaryColor.withOpacity(0.1);
-    }
-
-    return ClipOval(
-      child: Material(
-        color: color,
-        child: InkWell(
-          child: SizedBox(width: 56, height: 56, child: icon),
-          onTap: () {
-            (_recordState == RecordState.pause) ? _resume() : _pause();
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget _buildText() {
-    if (_recordState != RecordState.stop) {
-      return _buildTimer();
-    }
-
-    return const Text("Waiting to record");
-  }
-
-  Widget _buildTimer() {
-    final String minutes = _formatNumber(_recordDuration ~/ 60);
-    final String seconds = _formatNumber(_recordDuration % 60);
-
-    return Text(
-      '$minutes : $seconds',
-      style: const TextStyle(color: Colors.red),
-    );
-  }
-
-  String _formatNumber(int number) {
-    String numberStr = number.toString();
-    if (number < 10) {
-      numberStr = '0$numberStr';
-    }
-
-    return numberStr;
-  }
-
-  void _startTimer() {
-    _timer?.cancel();
-
-    _timer = Timer.periodic(const Duration(seconds: 1), (Timer t) {
-      setState(() => _recordDuration++);
-    });
-  }
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
-
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  bool showPlayer = false;
-  String? audioPath;
-
-  @override
-  void initState() {
-    showPlayer = false;
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        body: Center(
-          child: showPlayer
-              ? Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25),
-                  child: MyAudioPlayer(
-                    // Use MyAudioPlayer instead of AudioPlayer
-                    source: audioPath!,
-                    onDelete: () {
-                      setState(() => showPlayer = false);
-                    },
-                  ),
-                )
-              : AudioRecorder(
-                  onStop: (path) {
-                    if (kDebugMode) print('Recorded file path: $path');
-                    setState(() {
-                      audioPath = path;
-                      showPlayer = true;
-                    });
-                  },
-                ),
+        body: AudioRecorder(
+          onRecordDone: (path) {
+            // 여기에서 녹음된 음성 파일 처리
+            print('Recorded file path: $path');
+          },
         ),
       ),
     );
