@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:record/record.dart';
-import 'dart:js' as js;
+import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'dart:html' as html;
 
 void main() => runApp(const MyApp());
@@ -19,85 +19,55 @@ class AudioRecorder extends StatefulWidget {
 
 class _AudioRecorderState extends State<AudioRecorder> {
   final _audioRecorder = Record();
-  late StreamSubscription<html.Event> _audioInputSub;
-  StreamSubscription<Amplitude>? _amplitudeSub;
-  Amplitude? _amplitude;
+  final _speech = stt.SpeechToText();
   final void Function(String path) onRecordDone;
-  bool _isRecording = false;
+  bool _isRecording =false;
 
   _AudioRecorderState(this.onRecordDone);
 
   @override
   void initState() {
     super.initState();
-    // 앱 시작 시 마이크 권한 요청
-    _requestPermission();
-    // 음성 크기 변경 감지 - Web
-    if ((kIsWeb)) {
-      _audioInputSub = html.window.on['audio'].listen((event) {
-        final input = js.JsObject.fromBrowserObject(event)['input'];
-        print(input);
-        if (input > -160 && !_isRecording) {
-          // 음성 크기가 임계값보다 큰 경우 녹음 시작
-          _start();
-        } else if (input <= -161 && _isRecording) {
-          // 음성 크기가 임계값보다 작은 경우 녹음 중지
-          _stop();
-        }
-      });
-    }
-    // 음성 크기 변경 감지 - App
-    else {
-      _amplitudeSub = _audioRecorder
-          .onAmplitudeChanged(const Duration(milliseconds: 300))
-          .listen((amp) {
-        setState(() => _amplitude = amp);
-        if (_amplitude != null && _amplitude!.current > -160 && !_isRecording) {
-          // 음성 크기가 임계값보다 큰 경우 녹음 시작
-          _start();
-        } else if (_amplitude != null && _amplitude!.current <= -161 && _isRecording) {
-          // 음성 크기가 임계값보다 작은 경우 녹음 중지
-          _stop();
-        }
-      });
-    }
+    // 앱 시작 시 마이크 권한 요청 및 음성 크기 변경 감지
+    _initialize();
+  }
+
+  Future<void> _initialize() async {
+    await _requestPermission();
+    await _initializeSpeechRecognition();
   }
 
   // 마이크 권한 요청
   Future<void> _requestPermission() async {
     if (kIsWeb) {
       // 웹 환경에서 마이크 권한 요청
-      try {
-        await html.window.navigator.mediaDevices?.getUserMedia({'audio': true});
-      } catch (e) {
-        if (kDebugMode) {
-          print(e);
-        }
-      }
+      await html.window.navigator.mediaDevices?.getUserMedia({'audio': true});
     } else {
       // 모바일 환경에서 마이크 권한 요청
       await Permission.microphone.request();
     }
   }
+  Future<void> _initializeSpeechRecognition() async {
+    await _speech.initialize();
+    await _speech.listen(
+      listenFor: Duration(seconds: 300),
+      pauseFor: Duration(seconds: 2),
+      onResult: (result) {
+        print(result);
+        if (!_isRecording) {
+          _start();
+        }
+        if (result.finalResult) {
+          _stop();
+        }
+      },
+    );
+  }
 
   // 녹음 시작
   Future<void> _start() async {
-    try {
-      if (await _audioRecorder.hasPermission()) {
-        final isSupported = await _audioRecorder.isEncoderSupported(
-          AudioEncoder.aacLc,
-        );
-        if (kDebugMode) {
-          print('${AudioEncoder.aacLc.name} supported: $isSupported');
-        }
-        await _audioRecorder.start();
-        setState(() => _isRecording = true);
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
-    }
+    await _audioRecorder.start();
+    setState(() => _isRecording = true);
   }
 
   // 녹음 중지
@@ -116,8 +86,6 @@ class _AudioRecorderState extends State<AudioRecorder> {
 
   @override
   void dispose() {
-    _audioInputSub.cancel();
-    _amplitudeSub?.cancel();
     _audioRecorder.dispose();
     super.dispose();
   }
