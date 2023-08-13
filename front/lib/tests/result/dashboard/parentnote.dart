@@ -1,7 +1,8 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:snail/tests/result/dashboard/dashboard.dart';
-import 'package:fl_chart/fl_chart.dart';
+import 'package:snail/profileselect.dart';
+import 'package:snail/tests/result/dashboard/radarchart.dart'; //방사형 그래프 렌더링
+import 'package:snail/tests/result/dashboard/gptfeedbackbox.dart'; // gpt 피드백 입력란
+import 'package:snail/tests/result/dashboard/chartbox.dart'; // 역량 설명 및 막대 그래프 템플릿 렌더링
 
 class ParentNoteScreen extends StatelessWidget {
   //레이더 차트에 렌더링되는 데이터
@@ -9,7 +10,12 @@ class ParentNoteScreen extends StatelessWidget {
   final List<double> avgData = [0.5, 0.5, 0.5, 0.5, 0.5]; //연령대 평균 점수 여기에 저장
   final int levels = 5;
   final int numberOfPolygons = 10;
+
+  // A: 주의력, B: 기억력, C: 처리 능력, D: 언어 능력, E: 유연성
+  // 매칭만 되면 되니 인덱스 순서는 백, 모델링 단에서 원하시는 대로 처리하시면 됩니다!
   final List<String> labels = ['A', 'B', 'C', 'D', 'E'];
+
+  //dataColor: 아이, avgColor: 연령대 평균
   final dataColor = Color(0XFFFFCB39);
   final avgColor = Color(0XFFD9D9D9);
 
@@ -24,76 +30,70 @@ class ParentNoteScreen extends StatelessWidget {
         child: Center(
           child: Column(
             children: [
-              SizedBox(height: 200),
-              Row(
+              SizedBox(height: 70),
+              Column(
                 children: [
-                  Expanded(
-                    child: Center(
-                      child: PentagonRadarChart(
-                        data: data,
-                        avgData: avgData,
-                        levels: levels,
-                        numberOfPolygons: numberOfPolygons,
-                        labels: labels,
-                        dataColor: dataColor,
-                        avgColor: avgColor,
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: paddingValue),
-                  //GPT 피드백 입력란
                   Container(
-                    width: grayBoxWidth,
-                    height: grayBoxHeight,
-                    decoration: BoxDecoration(
-                      color: Color(0XFFd9d9d9),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.all(30),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '달 선생님의 피드백',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 24,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          SizedBox(height: 25),
-                          Divider(
-                            color: Color(0XFF777777),
-                            thickness: 2,
-                          ),
-                          SizedBox(height: 25),
-                          //이곳에 gpt 피드백이 들어갈 거!
-                          //텍스트가 길어지면 이 영역만 스크롤 가능하도록
-                          Expanded(
-                            child: SingleChildScrollView(
-                              child: Column(
-                                children: [
-                                  // GPT 피드백. 길어질 수 있으므로 스크롤 가능하도록 설정했음.
-                                  Text(
-                                    'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 20,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                    width: 1300,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      '달이의 AI 리포트', //아이 이름 DB에서 꺼내와야 함.
+                      style:
+                          TextStyle(fontSize: 32, fontWeight: FontWeight.w700),
                     ),
                   ),
-                  SizedBox(width: paddingValue),
+                  SizedBox(height: 70),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Center(
+                          child: PentagonRadarChart(
+                            data: data,
+                            avgData: avgData,
+                            levels: levels,
+                            numberOfPolygons: numberOfPolygons,
+                            labels: labels,
+                            dataColor: dataColor,
+                            avgColor: avgColor,
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: paddingValue),
+                      //GPT 피드백 입력란
+                      GPTFeedbackBox(),
+                      SizedBox(width: paddingValue),
+                    ],
+                  ),
                 ],
               ),
-              SizedBox(height: 200),
+              SizedBox(height: 126),
+              Container(
+                width: 1300,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Text(
+                      '항목별 피드백',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 32,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    Spacer(),
+                    //라벨!
+                    Container(color: Color(0xFFffcb39), width: 55, height: 20),
+                    SizedBox(width: 7),
+                    Text('자녀'),
+                    SizedBox(width: 10),
+                    Container(color: Color(0xFFc4c4c4), width: 55, height: 20),
+                    SizedBox(width: 7),
+                    Text('연령대 평균'),
+                  ],
+                ),
+              ),
+              SizedBox(height: 30),
               Column(
                 children: [
                   ChartBox(
@@ -135,87 +135,31 @@ class ParentNoteScreen extends StatelessWidget {
                     dataValue: data[4],
                     avgDataValue: avgData[4],
                   ),
+                  SizedBox(height: 100),
+                  ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    (ProfileSelectionScreen())));
+                      },
+                      child: Text(
+                        '돌아가기',
+                        style: TextStyle(
+                            color: Colors.black, fontWeight: FontWeight.w700),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        primary: Color(0xFFffcb39),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(24)),
+                        fixedSize: Size(165, 48),
+                      )),
+                  SizedBox(height: 100)
                 ],
               )
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-//차트 컨테이너
-class ChartBox extends StatelessWidget {
-  final String title;
-  final String description;
-
-  // 아이 & 평균 연령대 데이터
-  final double dataValue;
-  final double avgDataValue;
-
-  //전체 비교 막대
-  final double maxWidth = 100;
-
-  ChartBox({
-    required this.title,
-    required this.description,
-    required this.dataValue,
-    required this.avgDataValue,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 1300,
-      height: 280,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: Color(0XFFd9d9d9), width: 2.0),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(30),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 24,
-                  fontWeight: FontWeight.w700),
-            ),
-            SizedBox(height: 10),
-            Divider(
-              color: Color(0XFFd9d9d9),
-              thickness: 2,
-            ),
-            SizedBox(height: 10),
-            Text(
-              description,
-              style: TextStyle(color: Colors.black, fontSize: 20),
-            ),
-            SizedBox(height: 30),
-            // Custom Vertical Bar Chart with Aligned Start
-            Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start, // Align bars to the start
-              children: [
-                Container(
-                  width: dataValue * 1000,
-                  height: 30,
-                  color: Color(0XFFffcb39),
-                ),
-                SizedBox(height: 20), // Gap between bars
-                Container(
-                  width: avgDataValue * 1000,
-                  height: 30,
-                  color: Color(0XFFc4c4c4),
-                ),
-              ],
-            ),
-          ],
         ),
       ),
     );

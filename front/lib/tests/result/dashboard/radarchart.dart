@@ -103,55 +103,6 @@ class RadarChartPainter extends CustomPainter {
       }
     }
 
-    final legendTextStyle = TextStyle(
-      fontSize: 12,
-    );
-
-    final childTextSpan = TextSpan(
-      text: 'My child',
-      style: legendTextStyle,
-    );
-    final dataLegendTextPainter = TextPainter(
-      text: childTextSpan,
-      textDirection: TextDirection.ltr,
-    );
-    dataLegendTextPainter.layout();
-    dataLegendTextPainter.paint(
-      canvas,
-      Offset(10 + legendSquareSize + 5, 5),
-    );
-
-    final avgTextSpan = TextSpan(
-      text: 'Average',
-      style: legendTextStyle,
-    );
-    final avgTextPainter = TextPainter(
-      text: avgTextSpan,
-      textDirection: TextDirection.ltr,
-    );
-    avgTextPainter.layout();
-    final avgTextOffset = Offset(10, 10 + dataLegendTextPainter.height + 5);
-    avgTextPainter.paint(canvas, avgTextOffset);
-
-    final double legendSquareRect = 10;
-    final double legendSpacing = 10;
-
-    final childLegendSquareRect = Rect.fromPoints(
-      Offset(10, 10 - legendSpacing - legendSquareSize),
-      Offset(10 + legendSquareSize, 10),
-    );
-    final avgLegendSquareRect = Rect.fromPoints(
-      Offset(10, 10 + legendSpacing),
-      Offset(10 + legendSquareSize, 10 + legendSquareSize + legendSpacing),
-    );
-
-    final legendSquarePaint = Paint();
-    legendSquarePaint.color = dataColor;
-    canvas.drawRect(childLegendSquareRect, legendSquarePaint);
-
-    legendSquarePaint.color = avgColor;
-    canvas.drawRect(avgLegendSquareRect, legendSquarePaint);
-
     //오각형으로 도형 그리기
     final dataPath = Path();
     for (int i = 0; i < sides; i++) {
@@ -214,21 +165,47 @@ class PentagonRadarChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 300,
-      height: 300,
-      child: CustomPaint(
-        painter: RadarChartPainter(
-          sides: 5,
-          levels: levels,
-          numberOfPolygons: numberOfPolygons,
-          labels: labels,
-          data: data,
-          avgData: avgData,
-          dataColor: dataColor,
-          avgColor: avgColor,
+    return Column(
+      children: [
+        Container(
+          width: 300,
+          height: 300,
+          child: CustomPaint(
+            painter: RadarChartPainter(
+              sides: 5,
+              levels: levels,
+              numberOfPolygons: numberOfPolygons,
+              labels: labels,
+              data: data,
+              avgData: avgData,
+              dataColor: dataColor,
+              avgColor: avgColor,
+            ),
+          ),
         ),
-      ),
+        SizedBox(height: 50), // Add some spacing between chart and labels
+        Row(
+          mainAxisAlignment:
+              MainAxisAlignment.center, // Center the labels horizontally
+          children: [
+            Container(
+              color: dataColor,
+              width: 10,
+              height: 10,
+            ),
+            SizedBox(width: 5),
+            Text('자녀', style: TextStyle(fontSize: 12)),
+            SizedBox(width: 20), // Add spacing between labels
+            Container(
+              color: avgColor,
+              width: 10,
+              height: 10,
+            ),
+            SizedBox(width: 5),
+            Text('연령대 평균', style: TextStyle(fontSize: 12)),
+          ],
+        ),
+      ],
     );
   }
 }
