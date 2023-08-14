@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:snail/starttest.dart';
+import 'package:snail/tests/result/noresults.dart';
 
 void main() {
   runApp(MyApp());
@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
       ),
       title: 'SNaiL',
       home: Scaffold(
-        body: StartTestScreen(),
+        body: NoResultScreen(),
       ), //처음 접하는 화면을 SplashScreen으로 설정.
     );
   }
