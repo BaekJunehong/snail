@@ -21,7 +21,7 @@ class _AudioRecorderState extends State<AudioRecorder> {
   final _audioRecorder = Record();
   final _speech = stt.SpeechToText();
   final void Function(String path) onRecordDone;
-  bool _isRecording =false;
+  bool _isRecording = false;
 
   _AudioRecorderState(this.onRecordDone);
 
@@ -47,6 +47,7 @@ class _AudioRecorderState extends State<AudioRecorder> {
       await Permission.microphone.request();
     }
   }
+
   Future<void> _initializeSpeechRecognition() async {
     await _speech.initialize();
     await _speech.listen(
