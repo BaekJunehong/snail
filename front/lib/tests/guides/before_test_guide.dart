@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:snail/tests/guides/stroop_guide.dart';
 
 class BeforeTestGuideScreen extends StatelessWidget {
   @override
@@ -70,6 +70,25 @@ class BeforeTestGuideScreen extends StatelessWidget {
                         ),
                       ),
                     ),
+                    SizedBox(height: 30),
+                    ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => (StroopGuideScreen())));
+                        },
+                        child: Text(
+                          '시작하기',
+                          style: TextStyle(
+                              color: Colors.black, fontWeight: FontWeight.w700),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          primary: Color(0xFFffcb39),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(24)),
+                          fixedSize: Size(165, 48),
+                        )),
                   ],
                 ),
               ),

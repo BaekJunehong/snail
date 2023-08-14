@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:snail/tests/guides/before_test_guide.dart';
+import 'package:snail/tests/result/parentnote.dart';
 
 class StartTestScreen extends StatelessWidget {
   @override
@@ -39,6 +40,29 @@ class StartTestScreen extends StatelessWidget {
               ),
               style: ElevatedButton.styleFrom(
                 primary: Color(0xFFffcb39),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24)),
+                fixedSize: Size(165, 48),
+              ),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                // 검사 전 가이드로 이동. 아이 데이터 갖고 가야 함.
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ParentNoteScreen(),
+                  ),
+                );
+              },
+              child: Text(
+                '부모노트',
+                style:
+                    TextStyle(color: Colors.black, fontWeight: FontWeight.w700),
+              ),
+              style: ElevatedButton.styleFrom(
+                primary: Color(0xFFd9d9d9),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(24)),
                 fixedSize: Size(165, 48),
