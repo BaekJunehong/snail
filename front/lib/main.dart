@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:snail/splash.dart';
-import 'package:snail/tests/guides/backspace_guide.dart';
 import 'package:snail/tests/tests/story_video.dart';
 
 void main() {
