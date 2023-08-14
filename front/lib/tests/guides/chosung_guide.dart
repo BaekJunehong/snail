@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 //import 'package:flutter_svg/flutter_svg.dart';
-import 'package:snail/tests/tests/chosung_test.dart';
+import 'package:snail/tests/chosung/chosung_test_demo.dart';
 
 void main() {
   runApp(MaterialApp(home: Scaffold(body: ChosungGuideScreen())));

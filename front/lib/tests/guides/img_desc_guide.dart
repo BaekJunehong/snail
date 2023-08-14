@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class VocaRepeatGuideScreen extends StatelessWidget {
+class ImageDescribeGuideScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,7 +24,7 @@ class VocaRepeatGuideScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      '단어 따라 말하기',
+                      '낱말 검사',
                       style: TextStyle(
                           fontSize: 32,
                           color: Colors.black,
@@ -40,17 +40,14 @@ class VocaRepeatGuideScreen extends StatelessWidget {
                     ),
                     SizedBox(height: 20),
                     Text(
-                      '들려주는 단어를 듣고, 들은 순서대로 단어들을 기억해주세요!',
+                      '그림을 보고 그림에 대해 자유롭게 설명하도록 해주세요!',
                       style: TextStyle(
                         fontSize: 20,
                         color: Colors.black,
                       ),
                     ),
-                    SizedBox(height: 30),
-                    Image.asset(
-                      'assets/voca_rp.png',
-                      width: 478,
-                    ),
+                    SizedBox(height: 50),
+                    Image.asset('assets/img_desc.png', width: 549),
                   ],
                 ),
               ),
