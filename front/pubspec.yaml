@@ -94,9 +94,9 @@ flutter:
     - assets/stroop.png
     - assets/line.png
     - assets/voca_rp.png
-    - assets/sentence.png
-    - assets/img_desc.png
     - assets/okay.png
+    - assets/xcomment.png
+    - assets/story.png
     - assets/loading.gif
     # - assets/child_voice.mp3
     # - assets/chosung_guide_voice.mp3
