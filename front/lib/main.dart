@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:snail/splash.dart';
-import 'package:snail/tests/result/dashboard/parentnote.dart';
+import 'package:snail/facerecognition.dart';
 
 void main() {
   runApp(MyApp());
@@ -17,7 +15,7 @@ class MyApp extends StatelessWidget {
       ),
       title: 'SNaiL',
       home: Scaffold(
-        body: ParentNoteScreen(),
+        body: FaceRecognitionScreen(),
       ), //처음 접하는 화면을 SplashScreen으로 설정.
     );
   }
