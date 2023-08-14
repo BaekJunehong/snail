@@ -17,6 +17,9 @@ class _LoginScreenState extends State<LoginScreen> {
   String _id = ''; //입력된 아이디 저장
   String _pw = ''; //입력된 비밀번호 저장
 
+  final TextEditingController idController = TextEditingController();
+  final TextEditingController pwController = TextEditingController();
+
   bool isAlphanumeric(String input) {
     final alphanumericRegExp = RegExp(r'^[a-zA-Z0-9]+$');
     return alphanumericRegExp.hasMatch(input);
@@ -47,6 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
             Container(
               width: 450, // 너비 설정
               child: TextField(
+                controller: idController,
                 onChanged: (value) {
                   setState(() {
                     _id = value; //입력된 아이디 업데이트
@@ -66,6 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
               height: 48, // 높이 설정
               child: TextField(
                 obscureText: true, //비밀번호를 '*'으로 표시
+                controller: pwController,
                 onChanged: (value) {
                   setState(() {
                     _pw = value; //입력된 비밀번호 저장
@@ -97,12 +102,16 @@ class _LoginScreenState extends State<LoginScreen> {
                       final storage = const FlutterSecureStorage();
                       await storage.write(key: 'USER_ID', value: _id);
 
+                      idController.clear();
+                      pwController.clear();
+
                       Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
                                   (ProfileSelectionScreen())));
                     } else {
+                      // 아이디, 패스워드 에러
                       _showLoginErrorSnackBar();
                     }
                   }
