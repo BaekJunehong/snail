@@ -111,24 +111,25 @@ class _SignupScreenState extends State<SignupScreen> {
                     _showPasswordMismatchSnackBar();
                   } else {
                     // 아이디 중복 확인
-                    var url = Uri.http('ec2-43-202-128-142.ap-northeast-2.compute.amazonaws.com:3000', '/checkDuplicatedID');
+                    var url = Uri.http('ec2-43-202-125-41.ap-northeast-2.compute.amazonaws.com:3000', '/checkDuplicatedID');
                     var response = await http.post(url, body: {'USER_ID': _id});
-                    print('Response status: ${response.statusCode}');
+                    print(response.statusCode);
+                    if (response.statusCode != 500) {
+                      var data = jsonDecode(response.body);
+                      var exist = data['exist'];
+                      print(exist);
 
-                    var data = jsonDecode(response.body);
-                    var exist = data['exist'];
-                    print(exist);
+                      // 중복이 아닌경우 정보 저장
+                      if (exist != 1){
+                        var url = Uri.http('ec2-43-202-125-41.ap-northeast-2.compute.amazonaws.com:3000', '/saveUserInfo');
+                        var response = await http.post(url, body: {'USER_ID': _id, 'USER_PW': _pw});
+                        print('Response status: ${response.statusCode}');
 
-                    // 중복이 아닌경우 정보 저장
-                    if (exist != 1){
-                      var url = Uri.http('ec2-43-202-128-142.ap-northeast-2.compute.amazonaws.com:3000', '/saveUserInfo');
-                      var response = await http.post(url, body: {'USER_ID': _id, 'USER_PW': _pw});
-                      print('Response status: ${response.statusCode}');
-
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => LoginScreen()),
-                      );
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => LoginScreen()),
+                        );
+                      }
                     }
                   }
                 },
