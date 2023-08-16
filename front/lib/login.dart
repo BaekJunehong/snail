@@ -91,10 +91,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   var url = Uri.http(
                       'ec2-43-202-125-41.ap-northeast-2.compute.amazonaws.com:3000',
                       '/login');
-                  print(url);
                   var response = await http
                       .post(url, body: {'USER_ID': _id, 'USER_PW': _pw});
-                  print(response.statusCode);
 
                   if (response.statusCode == 200) {
                     var data = jsonDecode(response.body);

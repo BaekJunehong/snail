@@ -49,12 +49,10 @@ class _ProfileSelectionScreenState extends State<ProfileSelectionScreen> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           child_info = snapshot.data;
-          print(child_info);
           // 아이 선택 위젯
           final profileCards = <Widget>[];
           if (child_info != null) {
             for (int i = 0; i < 3; i++) {
-              print(child_info!.length);
               if (i < child_info!.length) {
                 profileCards.add(ProfileCard(child_info: child_info![i], onRefresh: refreshData));
               } else {
@@ -62,7 +60,6 @@ class _ProfileSelectionScreenState extends State<ProfileSelectionScreen> {
               }
             }
           } else {
-            print('아이없음');
             for (int i = 0; i < 3; i++) {
               profileCards.add(ProfileCard(child_info: null, onRefresh: refreshData));
             }
