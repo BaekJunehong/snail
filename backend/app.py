@@ -1,6 +1,6 @@
 from flask import Flask, request
 from flask_cors import CORS
-import json
+import base64
 
 from modeling import main
 
@@ -10,8 +10,9 @@ CORS(app)
 # STT
 @app.route('/audioRecognition', methods=['POST'])
 def audio2Text():
-    audioFile = request.files['audio']
-    transcription_text = main.transcribe_audio(audioFile)
+    encoded = request.form['audio']
+    audioData = base64.b64decode(encoded)
+    transcription_text = main.transcribe_audio(audioData)
     return transcription_text
 
 if __name__ == '__main__':
