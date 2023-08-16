@@ -17,7 +17,7 @@ class _ProfileSelectionScreenState extends State<ProfileSelectionScreen> {
   Future<List<Map<String, dynamic>>> _fetchChildData() async {
     final parent_id = await storage.read(key: 'USER_ID');
     print(parent_id);
-    final url = Uri.http('ec2-43-202-128-142.ap-northeast-2.compute.amazonaws.com:3000', '/fetchChildData');
+    final url = Uri.http('ec2-43-202-125-41.ap-northeast-2.compute.amazonaws.com:3000', '/fetchChildData');
     final response = await http.post(url, body: {'USER_ID': parent_id});
 
     // parent_id가 가진 child 정보
@@ -49,12 +49,10 @@ class _ProfileSelectionScreenState extends State<ProfileSelectionScreen> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           child_info = snapshot.data;
-          print(child_info);
           // 아이 선택 위젯
           final profileCards = <Widget>[];
           if (child_info != null) {
             for (int i = 0; i < 3; i++) {
-              print(child_info!.length);
               if (i < child_info!.length) {
                 profileCards.add(ProfileCard(child_info: child_info![i], onRefresh: refreshData));
               } else {
@@ -62,7 +60,6 @@ class _ProfileSelectionScreenState extends State<ProfileSelectionScreen> {
               }
             }
           } else {
-            print('아이없음');
             for (int i = 0; i < 3; i++) {
               profileCards.add(ProfileCard(child_info: null, onRefresh: refreshData));
             }
