@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -11,23 +10,24 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-void main() => runApp(const audio());
+void main() => runApp(Audio2Text(gameTime: 5,));
 
 class AudioRecorder extends StatefulWidget {
   final void Function(String path) onRecordDone;
-
-  const AudioRecorder({Key? key, required this.onRecordDone}) : super(key: key);
+  final int gameTime;
+  const AudioRecorder({Key? key, required this.onRecordDone, required this.gameTime}) : super(key: key);
 
   @override
-  State<AudioRecorder> createState() => _AudioRecorderState(onRecordDone);
+  State<AudioRecorder> createState() => _AudioRecorderState(onRecordDone, gameTime);
 }
 
 class _AudioRecorderState extends State<AudioRecorder> {
   final _audioRecorder = Record();
   final void Function(String path) onRecordDone;
   bool _isRecording = false;
+  final int gameTime;
 
-  _AudioRecorderState(this.onRecordDone);
+  _AudioRecorderState(this.onRecordDone, this.gameTime);
 
   @override
   void initState() {
@@ -72,8 +72,14 @@ class _AudioRecorderState extends State<AudioRecorder> {
         },
       );
     }
+    int popTime = 0;
     Timer.periodic(Duration(seconds: 1), (timer) async {
-      if (!_speech.isListening) {
+      popTime++;
+      if (popTime >= gameTime) {
+        timer.cancel();
+        Navigator.pop(context);
+      }
+      else if (!_speech.isListening) {
         _recordstop();
         _listen();
       }
@@ -107,16 +113,20 @@ class _AudioRecorderState extends State<AudioRecorder> {
   }
 }
 
-class audio extends StatelessWidget {
-  const audio({Key? key}) : super(key: key);
+class Audio2Text extends StatelessWidget {
+  final int gameTime;
+  Audio2Text({required this.gameTime, Key? key}) : super(key: key);
 
+  final StreamController<String> _responseController = StreamController<String>();
+  
   // 서버로 음성 데이터 전달 및 해당하는 텍스트 받아오기
   Future<void> _postAudio(String path) async {
     //print('Recorded file path: $path');
+    String text = '';
     var url = Uri.http('ec2-43-202-125-41.ap-northeast-2.compute.amazonaws.com:3033', '/audioRecognition');
 
+    // 웹
     if (kIsWeb) {
-      // 웹
       final request = html.HttpRequest();
       request.open('GET', path, async: true);
       request.responseType = 'blob';
@@ -131,17 +141,20 @@ class audio extends StatelessWidget {
           final encoded = base64Encode(buffer);
 
           var response = await http.post(url, body: {'audio': encoded});
-          print(response.body);
+          _responseController.add(text);
+          text = response.body;
         });
       });
       request.send();
-  } else {
-      // 앱
+  } 
+    // 앱
+    else {
       var bytes = await File(path).readAsBytes();
       var encoded = base64Encode(bytes);
 
       var response = await http.post(url, body: {'audio': encoded});
-      print(response.body);
+      _responseController.add(text);
+      text = response.body;
     }
   }
 
@@ -150,8 +163,8 @@ class audio extends StatelessWidget {
     return MaterialApp(
       home: Scaffold(
         body: AudioRecorder(
-          onRecordDone: (path) => _postAudio(path),
-        ),
+          onRecordDone: (path) => _postAudio(path), gameTime: gameTime
+        )
       ),
     );
   }
