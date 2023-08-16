@@ -102,6 +102,7 @@ flutter:
     - assets/story.png
     - assets/loading.gif
     - assets/story_sample.mp4
+    - assets/story_sample.png
     # - assets/child_voice.mp3
     # - assets/chosung_guide_voice.mp3
 
