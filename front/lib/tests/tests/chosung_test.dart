@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:snail/tests/correct_sign.dart';
 import 'package:snail/tests/count_down.dart';
 import 'dart:async';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'dart:html' as html;
 
 // UI는 완성, 채점 알고리즘 작성해야 함.
 class chosungTest extends StatefulWidget {
@@ -10,15 +12,16 @@ class chosungTest extends StatefulWidget {
 }
 
 class _chosungTestState extends State<chosungTest> {
-  String user_input = "";
+  int correctCount = 0;
+  String userInput = "";
   List<String> chosungs = ['ㄱ', 'ㅅ', 'ㅇ'];
 
-  int test_set_time = 60; // 테스트 세트별 시간
+  int test_set_time = 20; // 테스트 세트별 시간
   int test_total_time = 180; // 테스트 총 시간
 
   Timer? timer; // 타이머
   int seconds = 0; // 경과 초
-  int time = 0; // 시행 횟수
+  int order = 0; // 시행 횟수
 
   // int countdownTime = 3;
   int countdownSeconds = 3; // Countdown seconds
@@ -27,6 +30,8 @@ class _chosungTestState extends State<chosungTest> {
   bool isCorrected = false;
   bool isVisible = true;
   bool _isRunning = false;
+
+  final _speech = stt.SpeechToText();
 
   @override
   void initState() {
@@ -48,6 +53,8 @@ class _chosungTestState extends State<chosungTest> {
           // 카운트다운이 끝나면 시작
           countdownTimer?.cancel(); // Cancel the countdown timer
           _isRunning = true;
+          _speech.initialize();
+          getAudio();
           startTestTimer();
         }
       });
@@ -62,14 +69,15 @@ class _chosungTestState extends State<chosungTest> {
           seconds++; // 경과 시간(초) 갱신
           if (seconds % test_set_time == 0) {
             // n초 마다 초성 바꾸기
-            time += 1;
+            order += 1;
             countdownSeconds = 3;
             isVisible = true;
             _isRunning = false;
-            if (time == chosungs.length) {
-              time = 0;
+            if (order == chosungs.length) {
+              order = 0;
               // 다음 페이지로 넘어가기
             }
+            getAudio();
           }
         } else {
           if (countdownSeconds > 1) {
@@ -81,6 +89,55 @@ class _chosungTestState extends State<chosungTest> {
         }
       });
     });
+  }
+
+  void checkAnswer() async {
+    String userAnswer = userInput;
+    //chosungs[order] 에 맞는 답
+    String correctAnswer = '';  // 사전 api 필요
+    //if (userAnswer == correctAnswer) {
+    if (true) {
+      setState(() {
+        isCorrected = true;
+
+        correctCount++;
+      });
+      await Future.delayed(Duration(seconds: 1));
+      setState(() {
+        isCorrected = false;
+        userInput = '';
+      });
+    } else {
+      setState(() {
+        isCorrected = false;
+        // 틀린거로 바꾸면 ㄱㅊ
+      });
+      await Future.delayed(Duration(seconds: 1));
+      setState(() {
+        userInput = '';
+      });
+    }
+      getAudio();
+  }
+
+  void getAudio() async {
+    await html.window.navigator.mediaDevices?.getUserMedia({'audio': true});
+    if (!_speech.isListening) {
+      _speech.listen(
+        listenFor: Duration(seconds: 1000),
+        pauseFor: Duration(seconds: 1000),
+        cancelOnError: true,
+        partialResults: true,
+        listenMode: stt.ListenMode.dictation,
+        onResult: (result) async {
+          _speech.stop();
+          userInput = result.recognizedWords;
+          if (result.finalResult) {
+            checkAnswer();
+          }
+        },
+      );
+    }
   }
 
   @override
@@ -143,7 +200,7 @@ class _chosungTestState extends State<chosungTest> {
                           child: isVisible
                               ? null
                               : Text(
-                                  chosungs[time],
+                                  chosungs[order],
                                   style: TextStyle(
                                       fontSize: 150, color: Colors.black),
                                   textAlign: TextAlign.center,
@@ -164,7 +221,7 @@ class _chosungTestState extends State<chosungTest> {
                         ),
                         child: Center(
                           child: Text(
-                            user_input, // 사용자 입력 값
+                            userInput, // 사용자 입력 값
                             style: TextStyle(fontSize: 30, color: Colors.black),
                             textAlign: TextAlign.center,
                           ),
