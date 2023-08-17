@@ -100,6 +100,7 @@ flutter:
     - assets/xcomment.png
     - assets/story.png
     - assets/snail.png
+    - assets/snail_rainbow.png
     - assets/loading.gif
     # - assets/child_voice.mp3
     # - assets/chosung_guide_voice.mp3
