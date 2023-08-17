@@ -46,6 +46,13 @@
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<key>NSAppTransportSecurity</key>
+<dict>
+    <key>NSAllowsArbitraryLoads</key>
+    <true/>
+</dict>
+<key>NSLocalNetworkUsageDescription</key>
+<string>프로그램이 Wi-Fi 연결 상태를 확인하기 위해 로컬 네트워크 사용 권한이 필요합니다.</string>
 	<true/>
 </dict>
 </plist>
