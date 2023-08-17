@@ -22,9 +22,8 @@ class _StroopTestState extends State<StroopTest> {
 
   //정답처리 관련 변수
   int randIndex = 0;
-  TextEditingController answerController = TextEditingController();
   int correctCount = 0;
-  String input = '';
+  String userInput = '';
   bool isCorrected = false;
 
   //countdown 관련 변수
@@ -118,8 +117,7 @@ class _StroopTestState extends State<StroopTest> {
   }
 
   void checkAnswer() async {
-    String userAnswer = input;
-    print(userAnswer);
+    String userAnswer = userInput;
     String correctAnswer = words[randIndex][1];
     if (userAnswer == correctAnswer) {
       setState(() {
@@ -131,7 +129,7 @@ class _StroopTestState extends State<StroopTest> {
       setState(() {
         isCorrected = false;
         randIndex = getRandomIndex();
-        input = '';
+        userInput = '';
       });
     } else {
       setState(() {
@@ -141,7 +139,7 @@ class _StroopTestState extends State<StroopTest> {
       await Future.delayed(Duration(seconds: 1));
       setState(() {
         randIndex = getRandomIndex();
-        input = '';
+        userInput = '';
       });
     }
     getNextQuestion();
@@ -158,7 +156,7 @@ class _StroopTestState extends State<StroopTest> {
         listenMode: stt.ListenMode.dictation,
         onResult: (result) async {
           _speech.stop();
-          input = result.recognizedWords;
+          userInput = result.recognizedWords;
           if (result.finalResult) {
             checkAnswer();
           }
@@ -209,11 +207,10 @@ class _StroopTestState extends State<StroopTest> {
                     ),
                     child: Center(
                       child: TextField(
-                        controller: answerController,
                         enabled: false,
                         readOnly: true,
                         decoration: InputDecoration(
-                          labelText: input,
+                          labelText: userInput,
                           border: InputBorder.none,
                         ),
                         style: TextStyle(
