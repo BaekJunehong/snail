@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:snail/tests/correct_sign.dart';
+import 'package:snail/tests/count_down.dart';
 
 class StroopTest extends StatefulWidget {
   @override
@@ -16,14 +19,76 @@ class _StroopTestState extends State<StroopTest> {
     ['보라', '초록', 'green']
   ];
 
+  //정답처리 관련 변수
   int randIndex = 0;
   TextEditingController answerController = TextEditingController();
   int correctCount = 0;
+  bool isCorrected = false;
 
+  //countdown 관련 변수
+  bool isVisible = true;
+  int countdownSeconds = 3; // Countdown seconds
+  Timer? countdownTimer; // Countdown timer
+  bool _isRunning = true; //true일때 countdown
+
+  //game time
+  Timer? timer; // 타이머
+  int seconds = 0; // 경과 초
+  int time = 0; // 시행 횟수
+
+  int test_set_time = 60; // 테스트 세트별 시간
+  int test_total_time = 180; // 테스트 총 시간
   @override
   void initState() {
     super.initState();
     randIndex = getRandomIndex();
+
+    // 3초 카운트, 3초 뒤 안보이게
+    Future.delayed(Duration(seconds: 3), () {
+      setState(() {
+        isVisible = false;
+      });
+    });
+
+    // 3초 카운트다운 타이머
+    countdownTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        if (countdownSeconds > 0) {
+          countdownSeconds--;
+        } else {
+          // 카운트다운이 끝나면 시작
+          countdownTimer?.cancel(); // Cancel the countdown timer
+          _isRunning = true;
+          startTestTimer();
+        }
+      });
+    });
+  }
+
+  void startTestTimer() {
+    // 1초마다 타이머 콜백
+    timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        if (_isRunning) {
+          seconds++; // 경과 시간(초) 갱신
+          time += 1;
+          countdownSeconds = 3;
+          // isVisible = true;
+          _isRunning = false;
+          if (time == test_total_time) {
+            time = 0;
+            // 다음 페이지로 넘어가기
+          }
+        } else {
+          if (countdownSeconds > 1) {
+            countdownSeconds--;
+          } else {
+            // isVisible = false;
+            _isRunning = true;
+          }
+        }
+      });
+    });
   }
 
   int getRandomIndex() {
@@ -55,11 +120,13 @@ class _StroopTestState extends State<StroopTest> {
         correctCount++;
         randIndex = getRandomIndex();
         answerController.clear();
+        isCorrected = true;
       });
     } else {
       setState(() {
         randIndex = getRandomIndex();
         answerController.clear();
+        isCorrected = false;
       });
     }
   }
@@ -82,15 +149,18 @@ class _StroopTestState extends State<StroopTest> {
             children: [
               Container(
                 margin: EdgeInsets.fromLTRB(100, 25, 100, 230),
+                // color: Colors.black,
                 child: Center(
-                  child: Text(
-                    words[randIndex][0],
-                    style: TextStyle(
-                      fontSize: 200,
-                      fontWeight: FontWeight.bold,
-                      color: Color(getColorValue(words[randIndex][2])),
-                    ),
-                  ),
+                  child: isVisible
+                      ? null
+                      : Text(
+                          words[randIndex][0],
+                          style: TextStyle(
+                            fontSize: 200,
+                            fontWeight: FontWeight.bold,
+                            color: Color(getColorValue(words[randIndex][2])),
+                          ),
+                        ),
                 ),
               ),
               Container(
@@ -129,6 +199,22 @@ class _StroopTestState extends State<StroopTest> {
                   ),
                 ),
               ),
+              Positioned(
+                // left: (MediaQuery.of(context).size.width / 2) - (480 / 2),
+                // top: (MediaQuery.of(context).size.height / 2) - (500 / 2),
+                child: Visibility(
+                    visible: isVisible,
+                    child: Center(
+                      child: CountdownTimer(seconds: 3),
+                    )),
+              ),
+              if (isCorrected)
+                Positioned(
+                    // left: correctSignPosition.dx,
+                    // top: correctSignPosition.dy,
+                    child: Center(
+                  child: correctSign(),
+                )),
             ],
           ),
         ),
