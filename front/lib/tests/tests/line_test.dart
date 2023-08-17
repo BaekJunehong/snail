@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'package:snail/tests/correct_sign.dart';
+import 'package:snail/tests/count_down.dart';
+import 'dart:async';
 
 class LineTest extends StatefulWidget {
   @override
@@ -7,22 +10,85 @@ class LineTest extends StatefulWidget {
 }
 
 class _LineTestState extends State<LineTest> {
+  //원 생성 관련 변수
   final Random _random = Random();
   final List<Offset> _positions = List.generate(7, (index) => Offset.zero);
   final List<Color> _circleColors =
       List.generate(7, (index) => Color(0xFFD9D9D9));
   final List<int> _selectedIndices = [];
   double minDistance = 200; // 최소 거리 조절
-  bool _isMousePressed = false;
-  bool _isAnswerCorrect = false;
+  bool MousePressed = false;
+  bool isCorrected = false;
+
+  //countdown 관련 변수
+  bool isVisible = true;
+  int countdownSeconds = 3; // Countdown seconds
+  Timer? countdownTimer; // Countdown timer
+  bool _isRunning = true; //true일때 countdown
+
+  //game time
+  Timer? timer; // 타이머
+  int seconds = 0; // 경과 초
+  int time = 0; // 시행 횟수
+
+  int test_total_time = 180; // 테스트 총 시간
+
+  int CorrectCount = 0;
 
   //원 생성
   @override
   void initState() {
     super.initState();
+
     for (int i = 0; i < 7; i++) {
       generateNonOverlappingPosition(i);
     }
+    // 3초 카운트, 3초 뒤 안보이게
+    Future.delayed(Duration(seconds: 3), () {
+      setState(() {
+        isVisible = false;
+      });
+    });
+
+    // 3초 카운트다운 타이머
+    countdownTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        if (countdownSeconds > 0) {
+          countdownSeconds--;
+        } else {
+          // 카운트다운이 끝나면 시작
+          countdownTimer?.cancel(); // Cancel the countdown timer
+          _isRunning = true;
+          startTestTimer();
+        }
+      });
+    });
+  }
+
+  void startTestTimer() {
+    // 1초마다 타이머 콜백
+    timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        if (_isRunning) {
+          seconds++; // 경과 시간(초) 갱신
+          time += 1;
+          countdownSeconds = 3;
+          // isVisible = true;
+          _isRunning = false;
+          if (time == test_total_time) {
+            time = 0;
+            // 다음 페이지로 넘어가기
+          }
+        } else {
+          if (countdownSeconds > 1) {
+            countdownSeconds--;
+          } else {
+            // isVisible = false;
+            _isRunning = true;
+          }
+        }
+      });
+    });
   }
 
   //원을 랜덤한 위치에 지정
@@ -48,15 +114,35 @@ class _LineTestState extends State<LineTest> {
     if (_selectedIndices.length == 7) {
       for (int i = 0; i < 7; i++) {
         if (_selectedIndices[i] != i) {
-          isCorrect = false;
-          break;
+          setState(() {
+            isCorrect = false;
+          });
         }
       }
+      if (isCorrect == true) {
+        CorrectCount += 1;
+      }
       setState(() {
-        _isAnswerCorrect = isCorrect;
+        isCorrected = isCorrect;
+        MousePressed = false;
+        Future.delayed(Duration(seconds: 2), () {
+          resetTest();
+        });
       });
     }
-    print(_isAnswerCorrect);
+    print(CorrectCount);
+  }
+
+  void resetTest() {
+    setState(() {
+      _selectedIndices.clear(); // 정답 상태 초기화
+      _circleColors.clear();
+
+      for (int i = 0; i < 7; i++) {
+        generateNonOverlappingPosition(i);
+        _circleColors.add(Color(0xFFD9D9D9));
+      }
+    });
   }
 
   @override
@@ -90,8 +176,7 @@ class _LineTestState extends State<LineTest> {
                   top: _positions[index].dy,
                   child: MouseRegion(
                     onEnter: (_) {
-                      if (_isMousePressed &&
-                          !_selectedIndices.contains(index)) {
+                      if (MousePressed && !_selectedIndices.contains(index)) {
                         setState(() {
                           _circleColors[index] = Color(0xFFffcb39);
                           _selectedIndices.add(index);
@@ -101,32 +186,47 @@ class _LineTestState extends State<LineTest> {
                         });
                       }
                     },
-                    child: GestureDetector(
-                      onTap: () => setState(() {
-                        _isMousePressed = !_isMousePressed;
-                      }),
-                      child: Container(
-                        width: 100,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: _circleColors[index],
-                        ),
-                        child: Center(
-                          child: Text(
-                            (index + 1).toString(),
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                    child: isVisible
+                        ? null
+                        : GestureDetector(
+                            onTap: () => setState(() {
+                              MousePressed = !MousePressed;
+                            }),
+                            child: Container(
+                              width: 100,
+                              height: 100,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: _circleColors[index],
+                              ),
+                              child: Center(
+                                child: Text(
+                                  (index + 1).toString(),
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                    ),
                   ),
                 ),
               ),
+              Positioned(
+                child: Visibility(
+                    visible: isVisible,
+                    child: Center(
+                      child: CountdownTimer(seconds: 3),
+                    )),
+              ),
+              if (_selectedIndices.length == 7 && isCorrected)
+                Positioned(
+                  child: Center(
+                    child: correctSign(),
+                  ),
+                ),
             ],
           ),
         ),

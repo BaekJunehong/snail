@@ -36,8 +36,8 @@ class _StroopTestState extends State<StroopTest> {
   int seconds = 0; // 경과 초
   int time = 0; // 시행 횟수
 
-  int test_set_time = 60; // 테스트 세트별 시간
   int test_total_time = 180; // 테스트 총 시간
+
   @override
   void initState() {
     super.initState();
@@ -200,8 +200,6 @@ class _StroopTestState extends State<StroopTest> {
                 ),
               ),
               Positioned(
-                // left: (MediaQuery.of(context).size.width / 2) - (480 / 2),
-                // top: (MediaQuery.of(context).size.height / 2) - (500 / 2),
                 child: Visibility(
                     visible: isVisible,
                     child: Center(
@@ -210,8 +208,6 @@ class _StroopTestState extends State<StroopTest> {
               ),
               if (isCorrected)
                 Positioned(
-                    // left: correctSignPosition.dx,
-                    // top: correctSignPosition.dy,
                     child: Center(
                   child: correctSign(),
                 )),
