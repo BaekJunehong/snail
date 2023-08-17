@@ -59,7 +59,8 @@ class _LineTestState extends State<LineTest> {
           // 카운트다운이 끝나면 시작
           countdownTimer?.cancel(); // Cancel the countdown timer
           _isRunning = true;
-          startTestTimer();
+          print(1222);
+          //startTestTimer();
         }
       });
     });
@@ -175,24 +176,29 @@ class _LineTestState extends State<LineTest> {
                   left: _positions[index].dx,
                   top: _positions[index].dy,
                   child: MouseRegion(
-                    onEnter: (_) {
-                      if (MousePressed && !_selectedIndices.contains(index)) {
-                        setState(() {
-                          _circleColors[index] = Color(0xFFffcb39);
-                          _selectedIndices.add(index);
-                          if (_selectedIndices.length == 7) {
-                            CheckAnswer(_selectedIndices);
-                          }
-                        });
-                      }
+                    onHover: (_) {
+                      // print(33);
+                      // print(!_selectedIndices.contains(index));
+                      // print(MousePressed);
+                      MousePressed = true;
                     },
-                    child: isVisible
-                        ? null
-                        : GestureDetector(
-                            onTap: () => setState(() {
-                              MousePressed = !MousePressed;
-                            }),
-                            child: Container(
+                    child: GestureDetector(
+                      onTap: () {
+                        if (MousePressed && !_selectedIndices.contains(index)) {
+                          setState(() {
+                            print(11);
+                            _circleColors[index] = Color(0xFFffcb39);
+                            MousePressed = false;
+                            _selectedIndices.add(index);
+                            if (_selectedIndices.length == 7) {
+                              CheckAnswer(_selectedIndices);
+                            }
+                          });
+                        }
+                      },
+                      child: isVisible
+                          ? null
+                          : Container(
                               width: 100,
                               height: 100,
                               decoration: BoxDecoration(
@@ -210,7 +216,7 @@ class _LineTestState extends State<LineTest> {
                                 ),
                               ),
                             ),
-                          ),
+                    ),
                   ),
                 ),
               ),
