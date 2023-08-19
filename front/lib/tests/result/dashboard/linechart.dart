@@ -24,8 +24,8 @@ class _LineChartSample2State extends State<LineChartSample2> {
     [0.3, 0.5, 0.9, 1.0, 0.8], //8월
     [0.5, 0.6, 0.8, 0.9, 1.0], //9월
     [0.6, 0.4, 0.5, 0.7, 0.2], //10월
-    [0.5, 0.6, 0.8, 0.9, 1.0], //1월
-    [0.1, 0.4, 0.5, 0.7, 0.9], //2월
+    [0.5, 0.6, 0.8, 0.9, 1.0], //11월
+    [0.1, 0.4, 0.5, 0.7, 0.9], //12월
   ];
 
   //평균으로 변환하는 함수
@@ -156,12 +156,12 @@ class _LineChartSample2State extends State<LineChartSample2> {
       lineBarsData: [
         LineChartBarData(
             spots: allSpots,
-            isCurved: true,
+            isCurved: false,
             colors: [Color(0XFFffcb39)],
             barWidth: 5,
             isStrokeCapRound: true,
             dotData: FlDotData(
-              show: false,
+              show: true,
             ),
             belowBarData: BarAreaData(show: true, colors: [
               Color(0XFFffcb39).withOpacity(0.3),
@@ -211,12 +211,12 @@ class _LineChartSample2State extends State<LineChartSample2> {
             FlSpot(9.5, 3.44),
             FlSpot(11, 3.44),
           ],
-          isCurved: true,
+          isCurved: false,
           colors: [Color(0XFFffcb39)],
           barWidth: 5,
           isStrokeCapRound: true,
           dotData: FlDotData(
-            show: false,
+            show: true,
           ),
           belowBarData: BarAreaData(
             show: true,
