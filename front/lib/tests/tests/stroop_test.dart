@@ -30,14 +30,13 @@ class _StroopTestState extends State<StroopTest> {
   bool isVisible = true;
   int countdownSeconds = 3; // Countdown seconds
   Timer? countdownTimer; // Countdown timer
-  bool _isRunning = true; //true일때 countdown
 
   //game time
   Timer? timer; // 타이머
   int seconds = 0; // 경과 초
   int time = 0; // 시행 횟수
 
-  int test_total_time = 180; // 테스트 총 시간
+  int test_total_time = 10; // 테스트 총 시간
 
   final _speech = stt.SpeechToText();
 
@@ -60,7 +59,6 @@ class _StroopTestState extends State<StroopTest> {
         } else {
           // 카운트다운이 끝나면 시작
           countdownTimer?.cancel(); // Cancel the countdown timer
-          _isRunning = true;
           _speech.initialize();
           getNextQuestion();
           startTestTimer();
@@ -69,29 +67,27 @@ class _StroopTestState extends State<StroopTest> {
     });
   }
 
+   @override
+    void dispose() {
+      countdownTimer?.cancel(); // Cancel the countdown timer
+      timer?.cancel(); // Cancel the test timer
+      _speech.stop(); // Stop the speech recognition
+      super.dispose();
+    }
+
   void startTestTimer() {
     // 1초마다 타이머 콜백
     timer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
-        if (_isRunning) {
           seconds++; // 경과 시간(초) 갱신
           time += 1;
           countdownSeconds = 3;
           // isVisible = true;
-          _isRunning = false;
           if (time == test_total_time) {
-            time = 0;
-            // 다음 페이지로 넘어가기
-          }
-        } else {
-          if (countdownSeconds > 1) {
-            countdownSeconds--;
-          } else {
-            // isVisible = false;
-            _isRunning = true;
+            Navigator.pop(context, correctCount);
           }
         }
-      });
+      );
     });
   }
 

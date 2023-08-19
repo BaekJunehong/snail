@@ -2,15 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:snail/tests/tests/stroop_test.dart';
 
-class StroopGuideScreen extends StatelessWidget {
+class StroopGuideScreen extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    Future.delayed(Duration(seconds: 10), () {
-      Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (_) => StroopTest(),
-      ));
+  _StroopGuideScreenState createState() => _StroopGuideScreenState();
+}
+
+class _StroopGuideScreenState extends State<StroopGuideScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration(seconds: 10), () async {
+      final result = await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => StroopTest()),
+      );
+      Navigator.pop(context, result);
     });
-    
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {    
     return Scaffold(
       body: Stack(
         children: [
