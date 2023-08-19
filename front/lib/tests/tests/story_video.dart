@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:snail/splash.dart';
+import 'package:snail/tests/tests/story_test/story_test.dart';
 import 'package:video_player/video_player.dart';
 
 class StoryVideoScreen extends StatefulWidget {
@@ -77,7 +77,7 @@ class _StoryVideoScreenState extends State<StoryVideoScreen> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => (SplashScreen())));
+                              builder: (context) => (StoryTestScreen())));
                     }
                   : null,
               child: Text(
