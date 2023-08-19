@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:snail/tests/guides/backspace_guide.dart';
-import 'package:snail/tests/test/story_test.dart';
+import 'package:snail/tests/tests/story_test/story_video.dart';
 
 class MyNavigatorObserver extends NavigatorObserver {
   final GlobalKey<NavigatorState> navigatorKey;
