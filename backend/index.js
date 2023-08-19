@@ -1,9 +1,9 @@
 // ftp로 ec2 서버에 현재 index.js를 옮긴 후
 // putty를 사용해 node index.js 실행 후 사용가능
 
-const express    = require('express'); //express import
-const mysql      = require('mysql'); // mysql import
-const dbconfig   = require('./config/database.js'); //master 연결 정보
+const express = require('express'); //express import
+const mysql = require('mysql'); // mysql import
+const dbconfig = require('./config/database.js'); //master 연결 정보
 //const dbconfig_slave = require('./config/database-slave.js'); // slave 연결 정보
 const connection = mysql.createConnection(dbconfig); // master 연결
 //const connection_slave = mysql.createConnection(dbconfig_slave); // slave 연결
@@ -37,7 +37,7 @@ app.post('/saveUserInfo', (req, res) => {
 
     res.set('Location', `/user/${id}`);
 
-    res.status(200).send({id});
+    res.status(200).send({ id });
   });
 });
 
@@ -54,7 +54,7 @@ app.post('/checkDuplicatedID', (req, res) => {
     }
     const exist = rows[0].exist;
 
-    res.status(200).send({exist});
+    res.status(200).send({ exist });
   });
 });
 
@@ -77,32 +77,32 @@ app.post('/saveChildInfo', (req, res) => {
 
     res.set('Location', `/saveChildInfo/${id}`);
 
-    res.status(200).send({id});
+    res.status(200).send({ id });
   });
 });
 
 // 로그인 정보 확인
-app.post('/login',(req,res) =>{
+app.post('/login', (req, res) => {
   const user_id = req.body.USER_ID;
   const password = req.body.USER_PW;
-
+  console.log('success');
   const query = 'SELECT EXISTS(SELECT 1 FROM PARENT WHERE USER_ID = ? and USER_PW = ?) as exist';
 
-  connection.query(query,[user_id, password],(err,rows)=>{
-    if (err){
+  connection.query(query, [user_id, password], (err, rows) => {
+    if (err) {
       res.status(500).send('Internal Server Error');
       return;
     }
-    if (rows.length === 0 ){
+    if (rows.length === 0) {
       res.status(404).send('User not found');
       return;
     }
-    
+
     const isCorrect = rows[0].exist;
-    
-    if(isCorrect){
+
+    if (isCorrect) {
       res.status(200).send('1');
-    }else{
+    } else {
       res.status(200).send('0');
     }
   })
@@ -122,6 +122,32 @@ app.post('/fetchChildData', (req, res) => {
     res.status(200).send(rows);
   });
 });
+
+app.post('/KoreanAPI', (req, res) => {
+  const word = req.body.word;
+
+  const key = 'F5C5A3E80A690DCDBE97D60088D48B52';
+  const url = `https://stdict.korean.go.kr/api/search.do?key=${key}&type_search=search&q=${word}`;
+
+  const https = require('https');
+
+  console.log('success');
+  https.get(url, (response) => {
+    let data = '';
+
+    response.on('data', (chunk) => {
+      data += chunk;
+    });
+
+    response.on('end', () => {
+      res.status(200).send(data);
+    });
+  }).on('error', (error) => {
+    console.error(error);
+    
+  });
+
+})
 
 
 //-------------------------------------------------------------------------------------
