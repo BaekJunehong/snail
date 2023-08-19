@@ -64,11 +64,14 @@ class _StoryTestState extends State<StoryTest> {
               ),
             ),
             SizedBox(height: 30),
-            Container(
-              width: 872,
-              height: 539,
+            GestureDetector(
+              onTap: () {
+                playVideo(videoUrl);
+              },
               child: Image.asset(
                 'story_sample.png',
+                width: 872,
+                height: 539,
                 fit: BoxFit.fill,
               ),
             ),
