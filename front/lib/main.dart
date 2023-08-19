@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:snail/tests/tests/story_test/story_test.dart';
-import 'package:snail/tests/test/story_test.dart';
+import 'package:snail/tests/tests/story_test/story_video.dart';
 
 void main() {
   runApp(MyApp());

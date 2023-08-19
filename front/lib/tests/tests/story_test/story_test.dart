@@ -11,6 +11,7 @@ class _StoryTestScreenState extends State<StoryTestScreen> {
   bool showGreetBubble = false;
   bool showQuestionBubble = false;
   bool showAnswerBubble = false;
+  bool showEndBubble = false;
 
   @override
   void initState() {
@@ -19,27 +20,41 @@ class _StoryTestScreenState extends State<StoryTestScreen> {
   }
 
   void _showBubbles() async {
-    await Future.delayed(Duration(milliseconds: 1000), () {
+    await Future.delayed(Duration(milliseconds: 2000), () {
       setState(() {
         showGreetBubble = true;
       });
     });
 
-    await Future.delayed(Duration(milliseconds: 1000), () {
+    await Future.delayed(Duration(milliseconds: 2000), () {
       setState(() {
         showQuestionBubble = true;
       });
     });
 
-    await Future.delayed(Duration(milliseconds: 1000), () {
+    await Future.delayed(Duration(milliseconds: 2000), () {
       setState(() {
         showAnswerBubble = true;
       });
     });
+
+    await Future.delayed(Duration(milliseconds: 2000), () {
+      setState(() {
+        showEndBubble = true;
+      });
+    });
   }
+
+  // void _onAnswerBubbleSubmitted() {
+  //   setState(() {
+  //     answeredBubbleCount++; //응답한 말풍선 개수 더함
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
+    bool isButtonEnabled = showEndBubble; // showEndBubble에 따라 버튼 활성화
+
     return Scaffold(
       body: Stack(
         children: [
@@ -66,16 +81,24 @@ class _StoryTestScreenState extends State<StoryTestScreen> {
                     height: showAnswerBubble ? null : 0,
                     child: BubbleFromChild(),
                   ),
+                  AnimatedContainer(
+                    duration: Duration(milliseconds: 30000),
+                    curve: Curves.easeInOut,
+                    height: showAnswerBubble ? null : 0,
+                    child: EndBubbleFromService(),
+                  ),
                   SizedBox(height: 100),
                   ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => LoadingResultScreen(),
-                        ),
-                      );
-                    },
+                    onPressed: isButtonEnabled
+                        ? () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => LoadingResultScreen(),
+                              ),
+                            );
+                          }
+                        : null,
                     child: Text(
                       '종료하기',
                       style: TextStyle(
@@ -84,7 +107,9 @@ class _StoryTestScreenState extends State<StoryTestScreen> {
                       ),
                     ),
                     style: ElevatedButton.styleFrom(
-                      primary: Color(0xFFffcb39),
+                      primary: isButtonEnabled
+                          ? Color(0xFFffcb39)
+                          : Color(0xFFd9d9d9),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(24),
                       ),
