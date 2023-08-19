@@ -99,7 +99,7 @@ class _BeforeTestGuideScreenState extends State<BeforeTestGuideScreen> {
                     ElevatedButton(
                       onPressed: () {
                         // 검사 전 가이드로 이동.
-                        Navigator.pop(context);
+                        Navigator.pop(context, 0);
                       },
                       child: Text(
                         '시작하기',
