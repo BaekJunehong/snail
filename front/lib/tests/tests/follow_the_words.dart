@@ -115,8 +115,7 @@ class _followeTestState extends State<followTest> {
   void getNextTest() async {
     await html.window.navigator.mediaDevices?.getUserMedia({'audio': true});
 
-    // await 음성 들려주기
-
+    UserInput = [];
     listenCount = 0;
     if (numb >= 6) {
       Navigator.pop(context, correctCount);
@@ -140,18 +139,19 @@ class _followeTestState extends State<followTest> {
       }
       print(Answer);
     });
+    // await 음성 들려주기
     _listen();
   }
 
-  void _listen() async {
+  void _listen() {
     if (!_speech.isListening) {
-      await _speech.listen(
+      _speech.listen(
         listenFor: Duration(seconds: 1000),
         pauseFor: Duration(seconds: 1000),
         cancelOnError: true,
         partialResults: true,
         listenMode: stt.ListenMode.dictation,
-        onResult: (result) async {
+        onResult: (result) {
           print(result.recognizedWords);
           setState(() {
             _speech.stop();
