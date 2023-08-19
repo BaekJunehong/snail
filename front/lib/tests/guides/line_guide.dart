@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:snail/tests/tests/line_test.dart';
 
 class LineGuideScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    Future.delayed(Duration(seconds: 10), () {
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+        builder: (_) => LineTest(),
+      ));
+    });
+
     return Scaffold(
       body: Stack(
         children: [

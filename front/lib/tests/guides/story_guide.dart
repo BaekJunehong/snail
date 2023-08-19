@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:snail/tests/guides/backspace_guide.dart';
+import 'package:snail/tests/test/story_test.dart';
 
 class MyNavigatorObserver extends NavigatorObserver {
   final GlobalKey<NavigatorState> navigatorKey;
@@ -21,6 +22,12 @@ class MyNavigatorObserver extends NavigatorObserver {
 class StoryGuideScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    Future.delayed(Duration(seconds: 2), () {
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+        builder: (_) => StoryTest(),
+      ));
+    });
+
     return Scaffold(
       body: Stack(
         children: [

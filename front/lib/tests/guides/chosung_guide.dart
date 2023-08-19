@@ -10,7 +10,7 @@ void main() {
 class ChosungGuideScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    Future.delayed(Duration(seconds: 20), () {
+    Future.delayed(Duration(seconds: 5), () {
       Navigator.of(context).pushReplacement(MaterialPageRoute(
         builder: (_) => chosungTest(),
       ));

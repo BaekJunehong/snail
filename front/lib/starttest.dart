@@ -1,8 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:snail/tests/guides/before_test_guide.dart';
+import 'package:snail/tests/guides/stroop_guide.dart';
+import 'package:snail/tests/guides/chosung_guide.dart';
+import 'package:snail/tests/guides/line_guide.dart';
+import 'package:snail/tests/guides/voca_rp_guide.dart';
+import 'package:snail/tests/guides/story_guide.dart';
 import 'package:snail/tests/result/parentnote.dart';
+import 'package:snail/tests/tests/chosung_test.dart';
 
 class StartTestScreen extends StatelessWidget {
+  // 검사 가이드 리스트
+  final List<Widget Function()> screens = [
+    () => BeforeTestGuideScreen(),
+    () => StroopGuideScreen(),
+    () => ChosungGuideScreen(),
+    () => VocaRepeatGuideScreen(),
+    () => LineGuideScreen(),
+    () => StoryGuideScreen(),
+  ];
+  
+
+  late int result;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,14 +43,15 @@ class StartTestScreen extends StatelessWidget {
             ),
             SizedBox(height: 25),
             ElevatedButton(
-              onPressed: () {
-                // 검사 전 가이드로 이동. 아이 데이터 갖고 가야 함.
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => BeforeTestGuideScreen(),
-                  ),
-                );
+              onPressed: () async {
+                // 검사 전 가이드로 이동.
+                for (var screen in screens) {
+                  result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => screen()),
+                  );
+                  print(result);
+                }
               },
               child: Text(
                 '시작하기',
@@ -48,7 +68,7 @@ class StartTestScreen extends StatelessWidget {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // 검사 전 가이드로 이동. 아이 데이터 갖고 가야 함.
+                // 검사 전 가이드로 이동.
                 Navigator.push(
                   context,
                   MaterialPageRoute(

@@ -1,7 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter/foundation.dart';
+import 'dart:html' as html;
 
-class BeforeTestGuideScreen extends StatelessWidget {
+class BeforeTestGuideScreen extends StatefulWidget {
+  @override
+  _BeforeTestGuideScreenState createState() => _BeforeTestGuideScreenState();
+}
+
+class _BeforeTestGuideScreenState extends State<BeforeTestGuideScreen> {
+  // 마이크 권한 요청
+  Future<void> _requestPermission() async {
+    if (kIsWeb) {
+      // 웹 환경에서 마이크 권한 요청
+      await html.window.navigator.mediaDevices?.getUserMedia({'audio': true});
+    } else {
+      // 모바일 환경에서 마이크 권한 요청
+      await Permission.microphone.request();
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _requestPermission();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,6 +93,24 @@ class BeforeTestGuideScreen extends StatelessWidget {
                           fontSize: 20,
                           color: Colors.black,
                         ),
+                      ),
+                    ),
+                    SizedBox(height: 30),
+                    ElevatedButton(
+                      onPressed: () {
+                        // 검사 전 가이드로 이동.
+                        Navigator.pop(context, 0);
+                      },
+                      child: Text(
+                        '시작하기',
+                        style:
+                            TextStyle(color: Colors.black, fontWeight: FontWeight.w700),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        primary: Color(0xFFffcb39),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(24)),
+                        fixedSize: Size(165, 48),
                       ),
                     ),
                   ],
