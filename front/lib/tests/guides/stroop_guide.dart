@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:snail/tests/tests/stroop_test.dart';
 
 class StroopGuideScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    Future.delayed(Duration(seconds: 10), () {
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+        builder: (_) => StroopTest(),
+      ));
+    });
+    
     return Scaffold(
       body: Stack(
         children: [
