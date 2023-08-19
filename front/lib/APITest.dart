@@ -5,6 +5,7 @@ import 'dart:convert';
 
 class OpenApiExample extends StatelessWidget {
   final word = '나무';
+        var jsonData = xml2Json.toParker();
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
