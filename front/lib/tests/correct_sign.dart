@@ -12,7 +12,7 @@ class _correctSignState extends State<correctSign> {
   void initState() {
     super.initState();
     // 1초 후에 _isVisible을 false로 변경하여 위젯을 숨깁니다.
-    Future.delayed(Duration(seconds: 2), () {
+    Future.delayed(Duration(seconds: 1), () {
       setState(() {
         _isVisible = false;
       });
