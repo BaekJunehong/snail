@@ -12,6 +12,7 @@
 - Amazon AWS EC2, RDS
 - Node.js
 - Flask
+- MariaDB(MySQL)
 
 ### 실행 방법
 
