@@ -30,6 +30,7 @@ class _ProfileSelectionScreenState extends State<ProfileSelectionScreen> {
         'NAME': data[i]['NAME'],
         'SEX': data[i]['SEX'],
         'BIRTH': data[i]['BIRTH'],
+        'IMG': data[i]['IMG'],
       });
     }
     return rows;
@@ -154,6 +155,8 @@ class ProfileCard extends StatelessWidget {
         ),
         child: Center(
           child: (child_info != null)
+              // child_info!['IMG'] 를 기준으로 이미지 설정
+              // addprofile도 작업 필요함
               ? Image.asset('assets/profile.png') // 캐릭터가 있을 경우 다른 이미지 표시
               : Icon(Icons.add, size: 40, color: Colors.white),
         ),
