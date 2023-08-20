@@ -40,7 +40,7 @@ class FaceImgSender {
       var response = await request.send();
 
       response.stream.listen((value) {
-        // count ++ 작성
+        print(value);
       });
 
       sendFaceImg();
