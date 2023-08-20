@@ -4,6 +4,8 @@ import 'dart:math';
 import 'package:snail/tests/correct_sign.dart';
 import 'package:snail/tests/count_down.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:snail/tests/eyetracking.dart';
+import 'package:camera/camera.dart';
 import 'dart:html' as html;
 
 class StroopTest extends StatefulWidget {
@@ -39,10 +41,13 @@ class _StroopTestState extends State<StroopTest> {
   int test_total_time = 10; // 테스트 총 시간
 
   final _speech = stt.SpeechToText();
+  late CameraController _controller;
+  late var imgSender;
 
   @override
   void initState() {
     super.initState();
+    openCamera();
 
     // 3초 카운트, 3초 뒤 안보이게
     Future.delayed(Duration(seconds: 3), () {
@@ -67,13 +72,20 @@ class _StroopTestState extends State<StroopTest> {
     });
   }
 
-   @override
-    void dispose() {
-      countdownTimer?.cancel(); // Cancel the countdown timer
-      timer?.cancel(); // Cancel the test timer
-      _speech.stop(); // Stop the speech recognition
-      super.dispose();
-    }
+  Future<void> openCamera() async {
+    _controller = await initializeCamera();
+
+    imgSender = FaceImgSender(_controller);
+    imgSender.startSending();
+  }
+
+  @override
+  void dispose() {
+    countdownTimer?.cancel(); // Cancel the countdown timer
+    timer?.cancel(); // Cancel the test timer
+    _speech.stop(); // Stop the speech recognition
+    super.dispose();
+  }
 
   void startTestTimer() {
     // 1초마다 타이머 콜백
@@ -84,7 +96,8 @@ class _StroopTestState extends State<StroopTest> {
           countdownSeconds = 3;
           // isVisible = true;
           if (time == test_total_time) {
-            Navigator.pop(context, correctCount);
+            int etCount = imgSender.stopSending();
+            Navigator.pop(context, [correctCount, etCount]);
           }
         }
       );

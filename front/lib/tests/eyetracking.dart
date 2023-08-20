@@ -16,11 +16,8 @@ class FaceImgSender {
     sendFaceImg();
   }
 
-  void stopSending() {
+  int stopSending() {
     _isSending = false;
-  }
-
-  int getCount() {
     return _count;
   }
 
