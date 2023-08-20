@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:snail/tests/correct_sign.dart';
 import 'package:snail/tests/count_down.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'dart:async';
 import 'dart:math';
+import 'dart:html' as html;
 
 class followTest extends StatefulWidget {
   @override
@@ -12,6 +14,7 @@ class followTest extends StatefulWidget {
 //논의 사항 : 테스트별 시간
 
 class _followeTestState extends State<followTest> {
+
   String user_input = "";
   List<String> words = [
     '자라',
@@ -50,7 +53,11 @@ class _followeTestState extends State<followTest> {
   // bool _isRunning = false;
 
   List<String> Answer = [];
+  List<String> UserInput = [];
   List<int> availableIndices = [];
+
+  final _speech = stt.SpeechToText();
+  var listenCount = 0;
 
   @override
   void initState() {
@@ -73,14 +80,8 @@ class _followeTestState extends State<followTest> {
         } else {
           // 카운트다운이 끝나면 시작
           countdownTimer?.cancel(); // Cancel the countdown timer
-          while (Answer.length < wordNumber) {
-            int randomIndex = Random().nextInt(words.length);
-            if (!Answer.contains(randomIndex)) {
-              Answer.add(words[randomIndex]);
-              availableIndices.removeAt(randomIndex);
-            }
-          }
-          startTestTimer();
+          _speech.initialize();
+          getNextTest();
         }
       });
     });
@@ -89,56 +90,85 @@ class _followeTestState extends State<followTest> {
   TextEditingController answerController = TextEditingController();
   List<bool> correct = [];
   int correctCount = 0;
+
   void checkAnswer(correctAnswer) {
-    String userAnswer = answerController.text;
+    String userAnswer = user_input;
+
+    print(userAnswer);
+    print(correctAnswer);
+    print(userAnswer == correctAnswer);
+    //await Future.delayed(Duration(seconds: 1));
+    user_input = '';
     if (userAnswer == correctAnswer) {
       setState(() {
         correct.add(true);
         correctCount++;
-        answerController.clear();
       });
     } else {
       setState(() {
         correct.add(false);
-        answerController.clear();
       });
     }
+    getNextTest();
   }
 
-  void startTestTimer() {
-    // 1초마다 타이머 콜백
-    timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      setState(() {
-        if (wordNumber < 5) {
-          seconds++; // 경과 시간(초) 갱신
-          if (seconds % test_set_time == 0) {
-            // n초 마다 글자 바꾸기
-            time += 1;
-            if (numb == 1) {
-              numb = 0;
-              wordNumber += 1;
-            } else {
-              numb += 1;
-            }
+  void getNextTest() async {
+    await html.window.navigator.mediaDevices?.getUserMedia({'audio': true});
 
-            Answer.clear(); // 기존 답변 인덱스 초기화
+    UserInput = [];
+    listenCount = 0;
+    if (numb >= 6) {
+      Navigator.pop(context, correctCount);
+    }
+    setState(() {
+      if (numb != 0 && numb % 2 == 0) {
+        wordNumber += 1;
+      }
+      numb += 1;
 
-            //랜덤 글자 선정 . wordNumber 개수만큼
-            while (Answer.length < wordNumber && availableIndices.isNotEmpty) {
-              int randomIndex = Random().nextInt(availableIndices.length);
-              int selectedWordIndex = availableIndices[randomIndex];
-              Answer.add(words[selectedWordIndex]);
+      Answer.clear(); // 기존 답변 인덱스 초기화
 
-              // 이미 선택한 인덱스를 제거하여 중복 선택 방지
-              availableIndices.removeAt(randomIndex);
-            }
-          }
+      //랜덤 글자 선정 . wordNumber 개수만큼
+      while (Answer.length < wordNumber && availableIndices.isNotEmpty) {
+        int randomIndex = Random().nextInt(availableIndices.length);
+        int selectedWordIndex = availableIndices[randomIndex];
+        Answer.add(words[selectedWordIndex]);
 
-          print(Answer);
-        }
-      });
+        // 이미 선택한 인덱스를 제거하여 중복 선택 방지
+        availableIndices.removeAt(randomIndex);
+      }
+      print(Answer);
     });
+    // await 음성 들려주기
+    _listen();
   }
+
+  void _listen() {
+    if (!_speech.isListening) {
+      _speech.listen(
+        listenFor: Duration(seconds: 1000),
+        pauseFor: Duration(seconds: 1000),
+        cancelOnError: true,
+        partialResults: true,
+        listenMode: stt.ListenMode.dictation,
+        onResult: (result) {
+          print(result.recognizedWords);
+          setState(() {
+            _speech.stop();
+            if (result.finalResult){
+              UserInput.add(result.recognizedWords);
+              user_input = UserInput.join(' ');
+              if (listenCount < wordNumber) {
+                listenCount++;
+                _listen();
+              }
+            }
+          });
+        },
+      );
+    }   
+  }
+
 
   @override
   void dispose() {
@@ -168,60 +198,81 @@ class _followeTestState extends State<followTest> {
                   // left: (MediaQuery.of(context).size.width / 2) - (500 / 2),
                   // top: (MediaQuery.of(context).size.height / 2) - (520 / 2),
                   child: Center(
-                child: Container(
-                  height: 520,
-                  padding: const EdgeInsets.all(10),
-                  //clipBehavior: Clip.antiAlias,
-                  decoration: BoxDecoration(color: Color.fromARGB(0, 0, 0, 0)),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      // 초성
-                      Container(
-                        width: 800,
-                        height: 300,
-                        padding: EdgeInsets.all(20),
-                        // margin: EdgeInsets.fromLTRB(0, 50, 0, 0),
-                        child: Center(
-                          child: isVisible
-                              ? null
-                              : Text(
-                                  '들려준 단어를 따라 말해보세요!',
-                                  style: TextStyle(
-                                    fontSize: 50,
+                  child: Container(
+                    height: 600,
+                    padding: const EdgeInsets.all(10),
+                    //clipBehavior: Clip.antiAlias,
+                    decoration: BoxDecoration(color: Color.fromARGB(0, 0, 0, 0)),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // 초성
+                        Container(
+                          width: 800,
+                          height: 300,
+                          padding: EdgeInsets.all(20),
+                          // margin: EdgeInsets.fromLTRB(0, 50, 0, 0),
+                          child: Center(
+                            child: isVisible
+                                ? null
+                                : Text(
+                                    '들려준 단어를 따라 말해보세요!',
+                                    style: TextStyle(
+                                      fontSize: 50,
+                                    ),
                                   ),
-                                ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 50),
-                      // 입력칸
-                      Container(
-                        width: 240,
-                        height: 100,
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Center(
-                          child: Text(
-                            user_input, // 사용자 입력 값
-                            style: TextStyle(fontSize: 30, color: Colors.black),
-                            textAlign: TextAlign.center,
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-              )
-                  // 검사 프레임
 
+                        const SizedBox(height: 50),
+                        // 입력칸
+                        Container(
+                          width: 480,
+                          height: 100,
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Center(
+                            child: Text(
+                              user_input, // 사용자 입력 값
+                              style: TextStyle(fontSize: 30, color: Colors.black),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 50),
+                        // 확인 버튼
+                        ElevatedButton(
+                          onPressed: (user_input == '') 
+                            ? null 
+                            : () {
+                            // 체크 로직
+                            checkAnswer(Answer.join(' '));
+                          },
+                          child: Text(
+                            '확인',
+                            style:
+                                TextStyle(color: Colors.black, fontWeight: FontWeight.w700),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            primary: (user_input == '') 
+                              ? Color(0xFFd9d9d9)
+                              : Color(0xFFffcb39),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(24)),
+                            fixedSize: Size(165, 48),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
+                )
+              ),
               // 3초 카운트 다운
               Positioned(
                 left: (MediaQuery.of(context).size.width / 2) - (480 / 2),

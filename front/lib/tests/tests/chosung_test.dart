@@ -1,7 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:snail/tests/correct_sign.dart';
 import 'package:snail/tests/count_down.dart';
 import 'dart:async';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'dart:html' as html;
+import 'package:http/http.dart' as http;
+import 'package:xml2json/xml2json.dart' as xml2json;
 
 // UI는 완성, 채점 알고리즘 작성해야 함.
 class chosungTest extends StatefulWidget {
@@ -10,15 +16,17 @@ class chosungTest extends StatefulWidget {
 }
 
 class _chosungTestState extends State<chosungTest> {
-  String user_input = "";
+  int correctCount = 0;
+  String userInput = "";
   List<String> chosungs = ['ㄱ', 'ㅅ', 'ㅇ'];
+  int SearchNum = 0; //특정 단어로 검색한 갯수
 
-  int test_set_time = 60; // 테스트 세트별 시간
+  int test_set_time = 20; // 테스트 세트별 시간
   int test_total_time = 180; // 테스트 총 시간
 
   Timer? timer; // 타이머
   int seconds = 0; // 경과 초
-  int time = 0; // 시행 횟수
+  int order = 0; // 시행 횟수
 
   // int countdownTime = 3;
   int countdownSeconds = 3; // Countdown seconds
@@ -27,6 +35,8 @@ class _chosungTestState extends State<chosungTest> {
   bool isCorrected = false;
   bool isVisible = true;
   bool _isRunning = false;
+
+  final _speech = stt.SpeechToText();
 
   @override
   void initState() {
@@ -48,6 +58,8 @@ class _chosungTestState extends State<chosungTest> {
           // 카운트다운이 끝나면 시작
           countdownTimer?.cancel(); // Cancel the countdown timer
           _isRunning = true;
+          _speech.initialize();
+          getAudio();
           startTestTimer();
         }
       });
@@ -62,14 +74,15 @@ class _chosungTestState extends State<chosungTest> {
           seconds++; // 경과 시간(초) 갱신
           if (seconds % test_set_time == 0) {
             // n초 마다 초성 바꾸기
-            time += 1;
+            order += 1;
             countdownSeconds = 3;
             isVisible = true;
             _isRunning = false;
-            if (time == chosungs.length) {
-              time = 0;
+            if (order == chosungs.length) {
+              order = 0;
               // 다음 페이지로 넘어가기
             }
+            getAudio();
           }
         } else {
           if (countdownSeconds > 1) {
@@ -81,6 +94,82 @@ class _chosungTestState extends State<chosungTest> {
         }
       });
     });
+  }
+
+  //검색의 결과가 나왔는가? -> 검색 결과 개수 초기화 함수
+  Future<void> KoreanAPI(String userInput) async {
+    var url = Uri.http(
+        'ec2-43-202-125-41.ap-northeast-2.compute.amazonaws.com:3000',
+        '/KoreanAPI');
+    try {
+      var response = await http.post(url, body: {'word': userInput});
+      print(response.statusCode);
+      if (response.statusCode == 200) {
+        final xml2json.Xml2Json xml2Json = xml2json.Xml2Json();
+        xml2Json.parse(response.body);
+        var jsonData = xml2Json.toParker();
+
+        var decodedData = jsonDecode(jsonData);
+        var total = decodedData['channel']['total'];
+        print('Total: $total');
+        setState(() {
+          SearchNum = total; // 검색 결과 개수.
+        });
+      } else {
+        print('API 요청이 실패했습니다.');
+      }
+    } catch (e) {
+      print('API 요청 중 오류 발생: $e');
+    }
+  }
+
+  // user의 input 값을 받아 해당 단어가 존재하는지 검색
+  // 있다면 개수가 0이 아닐 것.
+  void checkAnswer(String userInput) async {
+    KoreanAPI(userInput); // 사전 api 필요
+    //if (userAnswer == correctAnswer) {
+    if (SearchNum != 0) {
+      setState(() {
+        isCorrected = true;
+
+        correctCount++;
+      });
+      await Future.delayed(Duration(seconds: 1));
+      setState(() {
+        isCorrected = false;
+        userInput = '';
+      });
+    } else {
+      setState(() {
+        isCorrected = false;
+        // 틀린거로 바꾸면 ㄱㅊ
+      });
+      await Future.delayed(Duration(seconds: 1));
+      setState(() {
+        userInput = '';
+      });
+    }
+    getAudio();
+  }
+
+  void getAudio() async {
+    await html.window.navigator.mediaDevices?.getUserMedia({'audio': true});
+    if (!_speech.isListening) {
+      _speech.listen(
+        listenFor: Duration(seconds: 1000),
+        pauseFor: Duration(seconds: 1000),
+        cancelOnError: true,
+        partialResults: true,
+        listenMode: stt.ListenMode.dictation,
+        onResult: (result) async {
+          _speech.stop();
+          userInput = result.recognizedWords;
+          if (result.finalResult) {
+            checkAnswer(userInput);
+          }
+        },
+      );
+    }
   }
 
   @override
@@ -143,7 +232,7 @@ class _chosungTestState extends State<chosungTest> {
                           child: isVisible
                               ? null
                               : Text(
-                                  chosungs[time],
+                                  chosungs[order],
                                   style: TextStyle(
                                       fontSize: 150, color: Colors.black),
                                   textAlign: TextAlign.center,
@@ -164,7 +253,7 @@ class _chosungTestState extends State<chosungTest> {
                         ),
                         child: Center(
                           child: Text(
-                            user_input, // 사용자 입력 값
+                            userInput, // 사용자 입력 값
                             style: TextStyle(fontSize: 30, color: Colors.black),
                             textAlign: TextAlign.center,
                           ),
