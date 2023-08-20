@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:snail/tests/result/dashboard/linechart.dart';
 import 'package:snail/tests/result/dashboard/chartbox.dart';
+//버튼 누르면 이동할 페이지
+import 'package:snail/tests/result/parentnote.dart';
+import 'package:snail/starttest.dart';
 
 class ParentMonthlyDashboardScreen extends StatelessWidget {
   final List<double> currentData = [0.3, 0.5, 0.9, 0.4, 0.8]; //최근 검사 점수
@@ -83,7 +86,11 @@ class ParentMonthlyDashboardScreen extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 70),
-                  LineChartSample2(),
+                  Container(
+                    alignment: Alignment.centerLeft,
+                    width: 1400,
+                    child: LineChartSample2(),
+                  ),
                 ],
               ),
               SizedBox(height: 126),
@@ -114,43 +121,79 @@ class ParentMonthlyDashboardScreen extends StatelessWidget {
               ),
               SizedBox(height: 30),
               Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    '이 역량이 발달했어요!',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 24,
+                  Container(
+                    width: 1300,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      '이 역량이 발달했어요!',
+                      style: TextStyle(fontSize: 24),
                     ),
-                    textAlign: TextAlign.start,
                   ),
-                  // 핵심 역량: 지난 달 검사보다 최근 검사의 점수가 높은 역량
+                  SizedBox(height: 20),
+                  //핵심역량 ChartBox 렌더링
                   ...corevaluelist,
                   SizedBox(height: 100),
-                  Text(
-                    '이 역량은 조금만 지켜봐주세요!',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 24,
+                  Container(
+                    width: 1300,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      '이 역량은 조금만 지켜봐주세요!',
+                      style: TextStyle(fontSize: 24),
                     ),
                   ),
+                  SizedBox(height: 20),
+                  //취약역량 ChartBox 렌더링
                   ...weakvaluelist,
-                  ElevatedButton(
-                    onPressed: () {},
-                    child: Text(
-                      '돌아가기',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w700,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => (ParentNoteScreen())));
+                        },
+                        child: Text(
+                          '최근 검사',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          primary: Color(0xFFffcb39),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(24),
+                          ),
+                          fixedSize: Size(165, 48),
+                        ),
                       ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      primary: Color(0xFFffcb39),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(24),
+                      SizedBox(width: 120),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => (StartTestScreen())));
+                        },
+                        child: Text(
+                          '돌아가기',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          primary: Color(0xFFd9d9d9),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(24),
+                          ),
+                          fixedSize: Size(165, 48),
+                        ),
                       ),
-                      fixedSize: Size(165, 48),
-                    ),
+                    ],
                   ),
                   SizedBox(height: 100),
                 ],

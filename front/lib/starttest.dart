@@ -5,7 +5,8 @@ import 'package:snail/tests/guides/chosung_guide.dart';
 import 'package:snail/tests/guides/line_guide.dart';
 import 'package:snail/tests/guides/voca_rp_guide.dart';
 import 'package:snail/tests/guides/story_guide.dart';
-import 'package:snail/tests/result/parentnote.dart';
+import 'package:snail/tests/result/parentdashboard.dart';
+import 'package:snail/tests/tests/chosung_test.dart';
 
 class StartTestScreen extends StatelessWidget {
   // 검사 가이드 리스트
@@ -17,6 +18,8 @@ class StartTestScreen extends StatelessWidget {
     () => LineGuideScreen(),
     () => StoryGuideScreen(),
   ];
+
+  late int result;
   
   @override
   Widget build(BuildContext context) {
@@ -69,7 +72,7 @@ class StartTestScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ParentNoteScreen(),
+                    builder: (context) => ParentMonthlyDashboardScreen(),
                   ),
                 );
               },
