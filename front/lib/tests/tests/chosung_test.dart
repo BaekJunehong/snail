@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:snail/tests/correct_sign.dart';
 import 'package:snail/tests/count_down.dart';
@@ -8,6 +7,8 @@ import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'dart:html' as html;
 import 'package:http/http.dart' as http;
 import 'package:xml2json/xml2json.dart' as xml2json;
+import 'package:snail/tests/eyetracking.dart';
+import 'package:camera/camera.dart';
 
 // UI는 완성, 채점 알고리즘 작성해야 함.
 class chosungTest extends StatefulWidget {
@@ -37,10 +38,13 @@ class _chosungTestState extends State<chosungTest> {
   bool _isRunning = false;
 
   final _speech = stt.SpeechToText();
+  late CameraController _controller;
+  late var imgSender;
 
   @override
   void initState() {
     super.initState();
+    openCamera();
 
     // 3초 카운트, 3초 뒤 안보이게
     Future.delayed(Duration(seconds: 3), () {
@@ -66,6 +70,13 @@ class _chosungTestState extends State<chosungTest> {
     });
   }
 
+  Future<void> openCamera() async {
+    _controller = await initializeCamera();
+
+    imgSender = FaceImgSender(_controller);
+    imgSender.startSending();
+  }
+
   void startTestTimer() {
     // 1초마다 타이머 콜백
     timer = Timer.periodic(Duration(seconds: 1), (timer) {
@@ -79,8 +90,8 @@ class _chosungTestState extends State<chosungTest> {
             isVisible = true;
             _isRunning = false;
             if (order == chosungs.length) {
-              order = 0;
-              // 다음 페이지로 넘어가기
+              int etCount = imgSender.stopSending();
+              Navigator.pop(context, [correctCount, etCount]);
             }
             getAudio();
           }

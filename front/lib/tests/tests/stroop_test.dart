@@ -48,7 +48,6 @@ class _StroopTestState extends State<StroopTest> {
   void initState() {
     super.initState();
     openCamera();
-    openCamera();
 
     // 3초 카운트, 3초 뒤 안보이게
     Future.delayed(Duration(seconds: 3), () {
