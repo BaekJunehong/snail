@@ -10,13 +10,17 @@ class BeforeTestGuideScreen extends StatefulWidget {
 }
 
 class _BeforeTestGuideScreenState extends State<BeforeTestGuideScreen> {
-  // 마이크 권한 요청
   Future<void> _requestPermission() async {
     if (kIsWeb) {
-      // 웹 환경에서 마이크 권한 요청
+      // 웹 환경
+      // 마이크 권한 요청
       await html.window.navigator.mediaDevices?.getUserMedia({'audio': true});
-    } else {
-      // 모바일 환경에서 마이크 권한 요청
+      // 카메라 권한 요청
+      await html.window.navigator.getUserMedia(audio: true, video: true); 
+    } 
+    else {
+      // 모바일 환경
+      // 마이크 권한 요청
       await Permission.microphone.request();
     }
   }
