@@ -7,8 +7,14 @@ import 'package:snail/tests/guides/line_guide.dart';
 import 'package:snail/tests/guides/voca_rp_guide.dart';
 import 'package:snail/tests/guides/story_guide.dart';
 import 'package:snail/tests/result/parentdashboard.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-class StartTestScreen extends StatelessWidget {
+class StartTestScreen extends StatefulWidget {
+  @override
+  _StartTestScreenState createState() => _StartTestScreenState();
+}
+
+class _StartTestScreenState extends State<StartTestScreen> {
   // 검사 가이드 리스트
   final List<Widget Function()> screens = [
     () => BeforeTestGuideScreen(),
@@ -21,6 +27,25 @@ class StartTestScreen extends StatelessWidget {
   ];
 
   late int result;
+  final storage = const FlutterSecureStorage();
+  String? child_name;
+
+  @override
+  void initState() {
+    super.initState();
+    readChildInfo();
+  }
+
+  void readChildInfo() async {
+    var user_id = await storage.read(key: 'USER_ID');
+    var child_id = await storage.read(key: 'CHILD_ID');
+    child_name = await storage.read(key: 'CHILD_NAME');
+
+    // 검사 종료 후 test 데이터 저장 후
+    // 만난지 n개월 되었다는 쿼리 작성
+
+    setState(() {});
+  }
   
   @override
   Widget build(BuildContext context) {
@@ -32,7 +57,7 @@ class StartTestScreen extends StatelessWidget {
           children: [
             Text(
               // 아이 이름, 개월 수는 DB에서 꺼내 써야 함.
-              'OO이를 만난 지 N개월이 지났어요!',
+              '${child_name}(이)를 만난 지 N개월이 지났어요!',
               style: TextStyle(fontSize: 20),
             ),
             SizedBox(height: 25),
