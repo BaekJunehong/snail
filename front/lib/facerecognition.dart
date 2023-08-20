@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:camera/camera.dart'; // camera 패키지를 추가해야 합니다.
+import 'package:camera/camera.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter/foundation.dart';
+import 'package:http_parser/http_parser.dart';
 
 class FaceRecognitionScreen extends StatefulWidget {
   @override
@@ -9,7 +12,7 @@ class FaceRecognitionScreen extends StatefulWidget {
 class _FaceRecognitionScreenState extends State<FaceRecognitionScreen> {
   bool _isButtonDisabled = true;
   late CameraController _controller;
-  late Future<void> _initializeControllerFuture;
+  bool cameraIsOn = false;
 
   @override
   void initState() {
@@ -17,7 +20,7 @@ class _FaceRecognitionScreenState extends State<FaceRecognitionScreen> {
     _initializeCamera();
   }
 
-  Future<void> _initializeCamera() async {
+  void _initializeCamera() async {
     // 사용 가능한 카메라 목록 가져오기
     final cameras = await availableCameras();
     final firstCamera = cameras.first;
@@ -27,13 +30,41 @@ class _FaceRecognitionScreenState extends State<FaceRecognitionScreen> {
       firstCamera,
       ResolutionPreset.medium,
     );
-
-    // 카메라 컨트롤러 초기화 완료 대기
     await _controller.initialize();
+    // 카메라 컨트롤러 초기화 완료 대기
+    cameraIsOn = true;
 
     if (mounted) {
       setState(() {}); // 상태 갱신
     }
+
+    Future<void> sendFaceImg() async {
+      Future.delayed(const Duration(milliseconds: 20), () async {
+        XFile image = await _controller.takePicture();
+        
+        final byteData = await convertImageToJpeg(image);
+
+        // 서버로 이미지 전송
+        var request = http.MultipartRequest('POST', Uri.parse('ec2-43-202-125-41.ap-northeast-2.compute.amazonaws.com:3033/faceRecognize'));
+        request.files.add(http.MultipartFile.fromBytes(
+          'image', 
+          byteData, 
+          filename: 'face.jpg',
+          contentType: MediaType('image', 'jpeg'),
+        ));
+        var response = await request.send();
+
+        // response 코드
+
+        sendFaceImg();
+      });
+    }
+    sendFaceImg();
+  }
+  
+  Future<Uint8List> convertImageToJpeg(XFile image) async {
+    final bytes = await image.readAsBytes();
+    return bytes;
   }
 
   void startRecognition() {
@@ -47,6 +78,7 @@ class _FaceRecognitionScreenState extends State<FaceRecognitionScreen> {
     });
   }
 
+
   @override
   void dispose() {
     _controller.dispose();
@@ -55,12 +87,6 @@ class _FaceRecognitionScreenState extends State<FaceRecognitionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_controller.value.isInitialized) {
-      return Center(
-        child: CircularProgressIndicator(),
-      );
-    }
-
     return Scaffold(
       body: Center(
         child: Column(
@@ -79,7 +105,13 @@ class _FaceRecognitionScreenState extends State<FaceRecognitionScreen> {
             Container(
               width: 872, // 카메라 화면 너비 설정
               height: 539, // 카메라 화면 높이 설정
-              child: CameraPreview(_controller), // 카메라 화면을 표시하는 위젯
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Colors.black, // 테두리 색상 설정
+                  width: 3, // 테두리 두께 설정
+                ),
+              ),
+              child: cameraIsOn ? CameraPreview(_controller) : Container(), // 카메라 화면을 표시하는 위젯
             ),
             SizedBox(height: 25),
             ElevatedButton(
