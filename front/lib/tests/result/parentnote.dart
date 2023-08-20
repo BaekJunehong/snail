@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:snail/profileselect.dart';
+import 'package:snail/starttest.dart';
+import 'package:snail/tests/result/parentdashboard.dart';
 import 'package:snail/tests/result/dashboard/radarchart.dart'; //방사형 그래프 렌더링
 import 'package:snail/tests/result/dashboard/gptfeedbackbox.dart'; // gpt 피드백 입력란
 import 'package:snail/tests/result/dashboard/chartbox.dart'; // 역량 설명 및 막대 그래프 템플릿 렌더링
@@ -136,25 +137,57 @@ class ParentNoteScreen extends StatelessWidget {
                     avgDataValue: avgData[4],
                   ),
                   SizedBox(height: 100),
-                  ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    (ProfileSelectionScreen())));
-                      },
-                      child: Text(
-                        '돌아가기',
-                        style: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.w700),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      (ParentMonthlyDashboardScreen())));
+                        },
+                        child: Text(
+                          '대시보드',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          primary: Color(0xFFffcb39),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(24),
+                          ),
+                          fixedSize: Size(165, 48),
+                        ),
                       ),
-                      style: ElevatedButton.styleFrom(
-                        primary: Color(0xFFffcb39),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(24)),
-                        fixedSize: Size(165, 48),
-                      )),
+                      SizedBox(width: 120),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => (StartTestScreen())));
+                        },
+                        child: Text(
+                          '돌아가기',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          primary: Color(0xFFd9d9d9),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(24),
+                          ),
+                          fixedSize: Size(165, 48),
+                        ),
+                      ),
+                    ],
+                  ),
                   SizedBox(height: 100)
                 ],
               )
