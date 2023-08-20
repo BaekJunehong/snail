@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:snail/tests/guides/before_test_guide.dart';
+import 'package:snail/tests/guides/face_recognition_guide.dart';
 import 'package:snail/tests/guides/stroop_guide.dart';
 import 'package:snail/tests/guides/chosung_guide.dart';
 import 'package:snail/tests/guides/line_guide.dart';
 import 'package:snail/tests/guides/voca_rp_guide.dart';
 import 'package:snail/tests/guides/story_guide.dart';
 import 'package:snail/tests/result/parentdashboard.dart';
-import 'package:snail/tests/tests/chosung_test.dart';
 
 class StartTestScreen extends StatelessWidget {
   // 검사 가이드 리스트
   final List<Widget Function()> screens = [
     () => BeforeTestGuideScreen(),
+    () => FaceRecognitionScreen(),
     () => StroopGuideScreen(),
     () => ChosungGuideScreen(),
     () => VocaRepeatGuideScreen(),
