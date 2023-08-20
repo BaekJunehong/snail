@@ -2,15 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:snail/tests/tests/follow_the_words.dart';
 
-class VocaRepeatGuideScreen extends StatelessWidget {
+class VocaRepeatGuideScreen extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    Future.delayed(Duration(seconds: 2), () {
-      Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (_) => followTest(),
-      ));
-    });
+  _VocaRepeatGuideScreenState createState() => _VocaRepeatGuideScreenState();
+}
 
+class _VocaRepeatGuideScreenState extends State<VocaRepeatGuideScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration(seconds: 10), () async {
+      final result = await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => followTest()),
+      );
+      Navigator.pop(context, result);
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {  
     return Scaffold(
       body: Stack(
         children: [

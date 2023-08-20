@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:snail/splash.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:flutter/foundation.dart';
+import 'story_test.dart';
 
 class StoryTest extends StatefulWidget {
   @override
@@ -25,7 +26,7 @@ class _StoryTestState extends State<StoryTest> {
     playVideo(videoUrl);
 
     //04분 후 활성화
-    Timer(Duration(minutes: 4), () {
+    Timer(Duration(minutes: 1), () {
       setState(() {
         _isVideoCompleted = true;
       });
@@ -64,11 +65,14 @@ class _StoryTestState extends State<StoryTest> {
               ),
             ),
             SizedBox(height: 30),
-            Container(
-              width: 872,
-              height: 539,
+            GestureDetector(
+              onTap: () {
+                playVideo(videoUrl);
+              },
               child: Image.asset(
                 'story_sample.png',
+                width: 872,
+                height: 539,
                 fit: BoxFit.fill,
               ),
             ),
@@ -79,7 +83,7 @@ class _StoryTestState extends State<StoryTest> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => (SplashScreen())));
+                              builder: (context) => (StoryTestScreen())));
                     }
                   : null,
               child: Text(

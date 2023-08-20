@@ -20,7 +20,7 @@ class StartTestScreen extends StatelessWidget {
   ];
 
   late int result;
-
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,6 +44,7 @@ class StartTestScreen extends StatelessWidget {
             ElevatedButton(
               onPressed: () async {
                 // 검사 전 가이드로 이동.
+                late int result;
                 for (var screen in screens) {
                   result = await Navigator.push(
                     context,
