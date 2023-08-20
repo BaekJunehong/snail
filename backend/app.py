@@ -24,11 +24,8 @@ def faceRecognize():
     imagefile = request.files['image']
     byteImg = imagefile.read()
 
-    eyetrack.eyetract(byteImg)
-
-    # 리턴 작성
-
-    return 'success'
+    etCount = eyetrack.eyetract(byteImg)
+    return str(etCount)
 
 if __name__ == '__main__':
     app.run(host='172.31.3.182', port=3033)
