@@ -6,7 +6,7 @@ def eyetract(byteImg):
 
     # 얼굴 인식 및 특징점 추출 모델 로드
     detector = dlib.get_frontal_face_detector()
-    predictor = dlib.shape_predictor('backend/eyetracking\shape_predictor_68_face_landmarks.dat')
+    predictor = dlib.shape_predictor('eyetracking/shape_predictor_68_face_landmarks.dat')
 
     # 바이트 데이터 -> 이미지
     byteData = byteImg
