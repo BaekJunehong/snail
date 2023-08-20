@@ -2,32 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:snail/tests/guides/backspace_guide.dart';
 import 'package:snail/tests/tests/story_test/story_video.dart';
 
-class MyNavigatorObserver extends NavigatorObserver {
-  final GlobalKey<NavigatorState> navigatorKey;
-  MyNavigatorObserver(this.navigatorKey);
-
+class StoryGuideScreen extends StatefulWidget {
   @override
-  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    if (previousRoute == null) {
-      //뒤로 가기 동작
-      print("뒤로 가기 동작 감지: BackSpaceGuideScreen을 push합니다.");
-      navigatorKey.currentState?.push(MaterialPageRoute(
-        builder: (context) => BackSpaceGuideScreen(),
-        fullscreenDialog: true,
-      ));
-    }
-  }
+  _StoryGuideScreenState createState() => _StoryGuideScreenState();
 }
 
-class StoryGuideScreen extends StatelessWidget {
+class _StoryGuideScreenState extends State<StoryGuideScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration(seconds: 10), () async {
+      final result = await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => StoryTest()),
+      );
+      Navigator.pop(context, result);
+    });
+  }
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    Future.delayed(Duration(seconds: 2), () {
-      Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (_) => StoryTest(),
-      ));
-    });
-
     return Scaffold(
       body: Stack(
         children: [
