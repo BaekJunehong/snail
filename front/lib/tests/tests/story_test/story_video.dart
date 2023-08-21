@@ -68,19 +68,69 @@ class _StoryTestState extends State<StoryTest> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              '영상을 보고 이야기를 나눠봐요!',
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 32,
-                fontWeight: FontWeight.w700,
+      body: Stack(
+        children: [
+          Container(
+            width: double.infinity, // 컨테이너를 화면 너비에 맞게 설정
+            // height: double.infinity, // 컨테이너를 화면 높이에 맞게 설정
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/background/background_video.png'),
+                fit: BoxFit.fill, // 이미지를 컨테이너에 꽉 채우도록 설정
               ),
             ),
+
+          ),
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  '영상을 보고 이야기를 나눠봐요!',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 32,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                SizedBox(height: 10),
+                GestureDetector(
+                  onTap: () {
+                    playVideo(videoUrl);
+                  },
+                  child: Image.asset(
+                    'story_sample.png',
+                    width: 872,
+                    height: 539,
+                    fit: BoxFit.fill,
+                  ),
+                ),
+                SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: _isVideoCompleted
+                      ? () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => (StoryTestScreen())));
+                        }
+                      : null,
+                  child: Text(
+                    '시작하기',
+                    style: TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.w700),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    primary: _isVideoCompleted
+                        ? Color(0XFFffcb39)
+                        : Color(0XFFd9d9d9),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(24)),
+                    fixedSize: Size(165, 48),
+                  ),
+                ),
+              ],
             SizedBox(height: 30),
             GestureDetector(
               onTap: () {
@@ -117,8 +167,8 @@ class _StoryTestState extends State<StoryTest> {
                 fixedSize: Size(165, 48),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

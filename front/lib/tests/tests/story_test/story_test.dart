@@ -165,14 +165,16 @@ class _StoryTestScreenState extends State<StoryTestScreen> {
             height: double.infinity,
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/background_story.png'), // 이미지 경로 지정
+                image: AssetImage(
+                    'assets/background/background_story.png'), // 이미지 경로 지정
                 fit: BoxFit.fill,
               ),
             ),
           ),
           SingleChildScrollView(
             child: Padding(
-              padding: EdgeInsets.all(60),
+              //좌우: 200, 상하: 50
+              padding: EdgeInsets.fromLTRB(200, 50, 200, 50),
               child: Column(
                 children: [
                   AnimatedContainer(

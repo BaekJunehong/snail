@@ -193,25 +193,30 @@ class _followeTestState extends State<followTest> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Column(
-      children: [
-        // 전체 화면
-        Container(
-          width: double.infinity,
-          height: MediaQuery.of(context).size.height,
-          clipBehavior: Clip.antiAlias,
-          decoration: ShapeDecoration(
-            color: Colors.white,
-            shape: RoundedRectangleBorder(side: BorderSide(width: 0.50)),
+      body: Stack(
+        children: [
+          Container(
+            width: double.infinity,
+            // 높이 조정 가능한 크기로 설정
+            // height: MediaQuery.of(context).size.height - 50, // 예시로 50을 빼서 조정
+            clipBehavior: Clip.antiAlias,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/background/background_voca_rp.png'),
+                fit: BoxFit.fill,
+              ),
+            ),
           ),
-          child: Stack(
+          Stack(
             children: [
               Positioned(
                   // left: (MediaQuery.of(context).size.width / 2) - (500 / 2),
                   // top: (MediaQuery.of(context).size.height / 2) - (520 / 2),
                   child: Center(
                 child: Container(
+
                   height: 600,
+
                   padding: const EdgeInsets.all(10),
                   //clipBehavior: Clip.antiAlias,
                   decoration: BoxDecoration(color: Color.fromARGB(0, 0, 0, 0)),
@@ -223,7 +228,9 @@ class _followeTestState extends State<followTest> {
                       // 초성
                       Container(
                         width: 800,
+
                         height: 300,
+
                         padding: EdgeInsets.all(20),
                         // margin: EdgeInsets.fromLTRB(0, 50, 0, 0),
                         child: Center(
@@ -242,7 +249,9 @@ class _followeTestState extends State<followTest> {
                       // 입력칸
                       Container(
                         width: 480,
+
                         height: 100,
+
                         padding:
                             EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                         decoration: BoxDecoration(
@@ -302,8 +311,8 @@ class _followeTestState extends State<followTest> {
                 ),
             ],
           ),
-        ),
-      ],
-    ));
+        ],
+      ),
+    );
   }
 }

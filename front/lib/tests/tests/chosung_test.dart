@@ -257,97 +257,111 @@ class _chosungTestState extends State<chosungTest> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Column(
-      children: [
-        // 전체 화면
-        Container(
-          width: double.infinity,
-          height: MediaQuery.of(context).size.height,
-          clipBehavior: Clip.antiAlias,
-          decoration: ShapeDecoration(
-            color: Colors.white,
-            shape: RoundedRectangleBorder(side: BorderSide(width: 0.50)),
+      body: Stack(
+        children: [
+          Image.asset(
+            'assets/background/background_chosung.png', // 배경 이미지 파일 경로
+            fit: BoxFit.fill,
+            width: double.infinity, // 너비를 전체 화면으로 설정
+            // height: double.infinity,
           ),
-          child: Stack(
+          Column(
             children: [
-              Positioned(
-                left: (MediaQuery.of(context).size.width / 2) - (500 / 2),
-                top: (MediaQuery.of(context).size.height / 2) - (520 / 2),
-                // 검사 프레임
-                child: Container(
-                  height: 520,
-                  padding: const EdgeInsets.all(10),
-                  //clipBehavior: Clip.antiAlias,
-                  decoration: BoxDecoration(color: Color.fromARGB(0, 0, 0, 0)),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      // 초성
-                      Container(
-                        width: 500,
-                        height: 300,
-                        padding: EdgeInsets.all(20),
-                        // decoration: BoxDecoration(
-                        //   color: Colors.grey[200],
-                        //   borderRadius: BorderRadius.circular(50),
-                        // ),
-                        child: Center(
-                          child: isVisible
-                              ? null
-                              : Text(
-                                  chosungs[order],
+              Container(
+                width: double.infinity,
+                height: MediaQuery.of(context).size.height,
+                clipBehavior: Clip.antiAlias,
+                decoration: ShapeDecoration(
+                  // color: Colors.white,
+                  shape: RoundedRectangleBorder(side: BorderSide(width: 0.50)),
+                ),
+                child: Stack(
+                  children: [
+                    Positioned(
+                      left: (MediaQuery.of(context).size.width / 2) - (500 / 2),
+                      top: (MediaQuery.of(context).size.height / 2) - (520 / 2),
+                      // 검사 프레임
+                      child: Container(
+                        height: 520,
+                        padding: const EdgeInsets.all(10),
+                        //clipBehavior: Clip.antiAlias,
+                        decoration:
+                            BoxDecoration(color: Color.fromARGB(0, 0, 0, 0)),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            // 초성
+                            Container(
+                              width: 500,
+                              height: 300,
+                              padding: EdgeInsets.all(20),
+                              // decoration: BoxDecoration(
+                              //   color: Colors.grey[200],
+                              //   borderRadius: BorderRadius.circular(50),
+                              // ),
+                              child: Center(
+                                child: isVisible
+                                    ? null
+                                    : Text(
+                                        chosungs[order],
+                                        style: TextStyle(
+                                            fontSize: 150, color: Colors.black),
+                                        textAlign: TextAlign.center,
+                                      ),
+                              ),
+                            ),
+
+                            const SizedBox(height: 50),
+                            // 입력칸
+                            Container(
+                              width: 240,
+                              height: 100,
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 10),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[300],
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  userInput, // 사용자 입력 값
                                   style: TextStyle(
-                                      fontSize: 150, color: Colors.black),
+                                      fontSize: 30, color: Colors.black),
                                   textAlign: TextAlign.center,
                                 ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-
-                      const SizedBox(height: 50),
-                      // 입력칸
-                      Container(
-                        width: 240,
-                        height: 100,
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Center(
-                          child: Text(
-                            userInput, // 사용자 입력 값
-                            style: TextStyle(fontSize: 30, color: Colors.black),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
+                    ),
+                    // 3초 카운트 다운
+                    Positioned(
+                      left: (MediaQuery.of(context).size.width / 2) - (480 / 2),
+                      top: (MediaQuery.of(context).size.height / 2) - (500 / 2),
+                      child: Visibility(
+                        visible: isVisible,
+                        child: CountdownTimer(seconds: 3),
                       ),
-                    ],
-                  ),
+                    ),
+                    // correct
+                    if (isCorrected)
+                      Positioned(
+                        left:
+                            (MediaQuery.of(context).size.width / 2) - (380 / 2),
+                        top: (MediaQuery.of(context).size.height / 2) -
+                            (200 / 2),
+                        child: correctSign(),
+                      ),
+                  ],
                 ),
               ),
-              // 3초 카운트 다운
-              Positioned(
-                left: (MediaQuery.of(context).size.width / 2) - (480 / 2),
-                top: (MediaQuery.of(context).size.height / 2) - (500 / 2),
-                child: Visibility(
-                  visible: isVisible,
-                  child: CountdownTimer(seconds: 3),
-                ),
-              ),
-              // correct
-              if (isCorrected)
-                Positioned(
-                  left: (MediaQuery.of(context).size.width / 2) - (380 / 2),
-                  top: (MediaQuery.of(context).size.height / 2) - (200 / 2),
-                  child: correctSign(),
-                ),
             ],
-          ),
-        ),
-      ],
-    ));
+          )
+        ],
+      ),
+    );
   }
 }

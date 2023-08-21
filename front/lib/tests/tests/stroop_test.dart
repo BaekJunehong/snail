@@ -175,76 +175,88 @@ class _StroopTestState extends State<StroopTest> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Container(
-          width: 862,
-          height: 554,
-          child: Stack(
-            children: [
-              Container(
-                margin: EdgeInsets.fromLTRB(100, 25, 100, 230),
-                // color: Colors.black,
-                child: Center(
-                  child: isVisible
-                      ? null
-                      : Text(
-                          words[randIndex][0],
-                          style: TextStyle(
-                            fontSize: 200,
-                            fontWeight: FontWeight.bold,
-                            color: Color(getColorValue(words[randIndex][2])),
+      body: Stack(
+        children: [
+          // 배경 이미지
+          Image.asset(
+            'assets/background/background_stroop.png', // 배경 이미지 파일 경로
+            fit: BoxFit.fill,
+            width: double.infinity,
+          ),
+          Center(
+            child: Container(
+              width: 862,
+              height: 554,
+              child: Stack(
+                children: [
+                  Container(
+                    margin: EdgeInsets.fromLTRB(100, 25, 100, 230),
+                    child: Center(
+                      child: isVisible
+                          ? null
+                          : Text(
+                              words[randIndex][0],
+                              style: TextStyle(
+                                fontSize: 200,
+                                fontWeight: FontWeight.bold,
+                                color:
+                                    Color(getColorValue(words[randIndex][2])),
+                              ),
+                            ),
+                    ),
+                  ),
+                  Container(
+                    child: Center(
+                      child: Container(
+                        width: 401,
+                        height: 134,
+                        margin: EdgeInsets.fromLTRB(100, 320, 100, 20),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 155, vertical: 10),
+                        clipBehavior: Clip.antiAlias,
+                        decoration: ShapeDecoration(
+                          color: Color(0xFFD9D9D9),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                ),
-              ),
-              Container(
-                child: Center(
-                  child: Container(
-                    width: 401,
-                    height: 134,
-                    margin: EdgeInsets.fromLTRB(100, 320, 100, 20),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 155, vertical: 10),
-                    clipBehavior: Clip.antiAlias,
-                    decoration: ShapeDecoration(
-                      color: Color(0xFFD9D9D9),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: Center(
-                      child: TextField(
-                        enabled: false,
-                        readOnly: true,
-                        decoration: InputDecoration(
-                          labelText: userInput,
-                          border: InputBorder.none,
+                        child: Center(
+                          child: TextField(
+                            enabled: false,
+                            readOnly: true,
+                            decoration: InputDecoration(
+                              labelText: userInput,
+                              border: InputBorder.none,
+                            ),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 50,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
                         ),
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 50,
-                        ),
-                        textAlign: TextAlign.center,
                       ),
                     ),
                   ),
-                ),
+                  Positioned(
+                    child: Visibility(
+                      visible: isVisible,
+                      child: Center(
+                        child: CountdownTimer(seconds: 3),
+                      ),
+                    ),
+                  ),
+                  if (isCorrected)
+                    Positioned(
+                      child: Center(
+                        child: correctSign(),
+                      ),
+                    ),
+                ],
               ),
-              Positioned(
-                child: Visibility(
-                    visible: isVisible,
-                    child: Center(
-                      child: CountdownTimer(seconds: 3),
-                    )),
-              ),
-              if (isCorrected)
-                Positioned(
-                    child: Center(
-                  child: correctSign(),
-                )),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
