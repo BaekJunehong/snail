@@ -172,7 +172,7 @@ class _StoryTestScreenState extends State<StoryTestScreen> {
           ),
           SingleChildScrollView(
             child: Padding(
-              padding: EdgeInsets.all(60),
+              padding: EdgeInsets.fromLTRB(120, 60, 120, 60),
               child: Column(
                 children: [
                   AnimatedContainer(

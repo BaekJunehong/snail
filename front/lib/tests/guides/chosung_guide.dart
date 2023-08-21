@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:snail/tests/tests/chosung_test/chosung_test.dart';
+import 'package:snail/tests/tests/chosung_test.dart';
 
 class ChosungGuideScreen extends StatefulWidget {
   @override
