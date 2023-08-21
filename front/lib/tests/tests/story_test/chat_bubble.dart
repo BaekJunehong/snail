@@ -44,6 +44,9 @@ class GreetBubbleFromService extends StatelessWidget {
 
 //문제 출제 버블
 class QuestionBubbleFromService extends StatelessWidget {
+  final String text;
+  QuestionBubbleFromService({required this.text});
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -58,7 +61,7 @@ class QuestionBubbleFromService extends StatelessWidget {
           Container(
             margin: EdgeInsets.only(top: 50),
             child: BubbleSpecialThree(
-              text: '첫 번째 문제는...',
+              text: text,
               color: Color(0xFFd9d9d9),
               tail: true, // 꼬리 없는 말풍선
               textStyle: TextStyle(color: Colors.black, fontSize: 16),
@@ -72,15 +75,30 @@ class QuestionBubbleFromService extends StatelessWidget {
 }
 
 //아이의 답변
-class BubbleFromChild extends StatelessWidget {
-  final VoidCallback? onSubmitted;
-  BubbleFromChild({this.onSubmitted});
+class BubbleFromChildBefore extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(bottom: 10),
       child: BubbleSpecialThree(
         text: '정답을 말해주세요!',
+        color: Color(0xFFFFCB39),
+        tail: true, // 꼬리 없는 말풍선
+        textStyle: TextStyle(color: Colors.black, fontSize: 16),
+      ),
+    );
+  }
+}
+
+class BubbleFromChildAfter extends StatelessWidget {
+  final String Answer;
+  BubbleFromChildAfter({required this.Answer});
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 10),
+      child: BubbleSpecialThree(
+        text: Answer,
         color: Color(0xFFFFCB39),
         tail: true, // 꼬리 없는 말풍선
         textStyle: TextStyle(color: Colors.black, fontSize: 16),

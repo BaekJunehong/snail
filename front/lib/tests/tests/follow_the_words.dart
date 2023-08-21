@@ -16,7 +16,6 @@ class followTest extends StatefulWidget {
 //논의 사항 : 테스트별 시간
 
 class _followeTestState extends State<followTest> {
-
   String user_input = "";
   List<String> words = [
     '자라',
@@ -169,7 +168,7 @@ class _followeTestState extends State<followTest> {
           print(result.recognizedWords);
           setState(() {
             _speech.stop();
-            if (result.finalResult){
+            if (result.finalResult) {
               UserInput.add(result.recognizedWords);
               user_input = UserInput.join(' ');
               if (listenCount < wordNumber) {
@@ -180,7 +179,7 @@ class _followeTestState extends State<followTest> {
           });
         },
       );
-    }   
+    }
   }
 
   @override
@@ -211,81 +210,80 @@ class _followeTestState extends State<followTest> {
                   // left: (MediaQuery.of(context).size.width / 2) - (500 / 2),
                   // top: (MediaQuery.of(context).size.height / 2) - (520 / 2),
                   child: Center(
-                  child: Container(
-                    height: 600,
-                    padding: const EdgeInsets.all(10),
-                    //clipBehavior: Clip.antiAlias,
-                    decoration: BoxDecoration(color: Color.fromARGB(0, 0, 0, 0)),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        // 초성
-                        Container(
-                          width: 800,
-                          height: 300,
-                          padding: EdgeInsets.all(20),
-                          // margin: EdgeInsets.fromLTRB(0, 50, 0, 0),
-                          child: Center(
-                            child: isVisible
-                                ? null
-                                : Text(
-                                    '들려준 단어를 따라 말해보세요!',
-                                    style: TextStyle(
-                                      fontSize: 50,
-                                    ),
+                child: Container(
+                  height: 600,
+                  padding: const EdgeInsets.all(10),
+                  //clipBehavior: Clip.antiAlias,
+                  decoration: BoxDecoration(color: Color.fromARGB(0, 0, 0, 0)),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // 초성
+                      Container(
+                        width: 800,
+                        height: 300,
+                        padding: EdgeInsets.all(20),
+                        // margin: EdgeInsets.fromLTRB(0, 50, 0, 0),
+                        child: Center(
+                          child: isVisible
+                              ? null
+                              : Text(
+                                  '들려준 단어를 따라 말해보세요!',
+                                  style: TextStyle(
+                                    fontSize: 50,
                                   ),
-                          ),
+                                ),
                         ),
+                      ),
 
-                        const SizedBox(height: 50),
-                        // 입력칸
-                        Container(
-                          width: 480,
-                          height: 100,
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[300],
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Center(
-                            child: Text(
-                              user_input, // 사용자 입력 값
-                              style: TextStyle(fontSize: 30, color: Colors.black),
-                              textAlign: TextAlign.center,
-                            ),
+                      const SizedBox(height: 50),
+                      // 입력칸
+                      Container(
+                        width: 480,
+                        height: 100,
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Center(
+                          child: Text(
+                            user_input, // 사용자 입력 값
+                            style: TextStyle(fontSize: 30, color: Colors.black),
+                            textAlign: TextAlign.center,
                           ),
                         ),
-                        const SizedBox(height: 50),
-                        // 확인 버튼
-                        ElevatedButton(
-                          onPressed: (user_input == '') 
-                            ? null 
+                      ),
+                      const SizedBox(height: 50),
+                      // 확인 버튼
+                      ElevatedButton(
+                        onPressed: (user_input == '')
+                            ? null
                             : () {
-                            // 체크 로직
-                            checkAnswer(Answer.join(' '));
-                          },
-                          child: Text(
-                            '확인',
-                            style:
-                                TextStyle(color: Colors.black, fontWeight: FontWeight.w700),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            primary: (user_input == '') 
+                                // 체크 로직
+                                checkAnswer(Answer.join(' '));
+                              },
+                        child: Text(
+                          '확인',
+                          style: TextStyle(
+                              color: Colors.black, fontWeight: FontWeight.w700),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          primary: (user_input == '')
                               ? Color(0xFFd9d9d9)
                               : Color(0xFFffcb39),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(24)),
-                            fixedSize: Size(165, 48),
-                          ),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(24)),
+                          fixedSize: Size(165, 48),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                )
-              ),
+                ),
+              )),
               // 3초 카운트 다운
               Positioned(
                 left: (MediaQuery.of(context).size.width / 2) - (480 / 2),

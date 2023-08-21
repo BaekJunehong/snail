@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:snail/splash.dart';
 import 'package:universal_html/html.dart' as html;
@@ -13,20 +13,33 @@ class StoryTest extends StatefulWidget {
 
 class _StoryTestState extends State<StoryTest> {
   //영상은 url로 가져오고 영상 관련 이미지는 asset에 저장.
-  //list = [url,이미지,[문제,답]]로 생성으로 할 듯 합니다.
+  //1. 우리끼리 가자 2. 내 꿈은 무슨 색일까
+  List<String> VideoUrl = [
+    'https://www.nlcy.go.kr/multiLanguageStory/2011/Nlcy_007_005/Nlcy_007_005.mp4',
+    'https://www.nlcy.go.kr/multiLanguageStory/2011/Nlcy_010_002/Nlcy_010_002.mp4'
+  ];
 
-  String videoUrl =
-      'https://www.nlcy.go.kr/multiLanguageStory/2022/Nlcy_001_003/Nlcy_001_003_ko.mp4'; // 예시 URL
+  int videoNumber = 0;
+  String videoUrl = '';
   bool _isVideoCompleted = false;
 
   @override
   void initState() {
     super.initState();
+
+    //video 랜덤 실행
+    Random random = Random();
+    int randomIndex = random.nextInt(VideoUrl.length);
+    videoUrl = VideoUrl[randomIndex];
+
+    setState(() {
+      videoNumber = randomIndex;
+    });
     _isVideoCompleted = false;
     playVideo(videoUrl);
 
     //04분 후 활성화
-    Timer(Duration(minutes: 1), () {
+    Timer(Duration(milliseconds: 1), () {
       setState(() {
         _isVideoCompleted = true;
       });
@@ -83,7 +96,8 @@ class _StoryTestState extends State<StoryTest> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => (StoryTestScreen())));
+                              builder: (context) =>
+                                  (StoryTestScreen(videoNum: videoNumber))));
                     }
                   : null,
               child: Text(
