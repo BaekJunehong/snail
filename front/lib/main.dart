@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:snail/tests/result/parentdashboard.dart';
+import 'package:snail/tests/result/parentnote.dart';
 
 void main() {
   runApp(MyApp());
@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
       ),
       title: 'SNaiL',
       home: Scaffold(
-        body: ParentMonthlyDashboardScreen(),
+        body: ParentNoteScreen(),
       ), //처음 접하는 화면을 SplashScreen으로 설정.
     );
   }

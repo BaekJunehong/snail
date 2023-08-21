@@ -26,175 +26,198 @@ class ParentNoteScreen extends StatelessWidget {
     final double grayBoxHeight = 400;
     final double paddingValue = 60; //여백
 
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            children: [
-              SizedBox(height: 70),
-              Column(
-                children: [
-                  Container(
-                    width: 1300,
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      '달이의 AI 리포트', //아이 이름 DB에서 꺼내와야 함.
-                      style:
-                          TextStyle(fontSize: 32, fontWeight: FontWeight.w700),
-                    ),
-                  ),
-                  SizedBox(height: 70),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Center(
-                          child: PentagonRadarChart(
-                            data: data,
-                            avgData: avgData,
-                            levels: levels,
-                            numberOfPolygons: numberOfPolygons,
-                            labels: labels,
-                            dataColor: dataColor,
-                            avgColor: avgColor,
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: paddingValue),
-                      //GPT 피드백 입력란
-                      GPTFeedbackBox(),
-                      SizedBox(width: paddingValue),
-                    ],
-                  ),
-                ],
-              ),
-              SizedBox(height: 126),
-              Container(
-                width: 1300,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  mainAxisSize: MainAxisSize.max,
+    return Scaffold(body: LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        final double screenWidth = constraints.maxWidth;
+        final bool isSmallScreen = screenWidth < 800;
+        return SingleChildScrollView(
+          child: Center(
+            child: Column(
+              children: [
+                SizedBox(height: 70),
+                Column(
                   children: [
-                    Text(
-                      '항목별 피드백',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 32,
-                        fontWeight: FontWeight.w700,
+                    Container(
+                      width: 1300,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        '달이의 AI 리포트', //아이 이름 DB에서 꺼내와야 함.
+                        style: TextStyle(
+                            fontSize: 32, fontWeight: FontWeight.w700),
                       ),
                     ),
-                    Spacer(),
-                    //라벨!
-                    Container(color: Color(0xFFffcb39), width: 55, height: 20),
-                    SizedBox(width: 7),
-                    Text('자녀'),
-                    SizedBox(width: 10),
-                    Container(color: Color(0xFFc4c4c4), width: 55, height: 20),
-                    SizedBox(width: 7),
-                    Text('연령대 평균'),
+                    SizedBox(height: 70),
+                    isSmallScreen
+                        ? Column(
+                            children: [
+                              PentagonRadarChart(
+                                  data: data,
+                                  avgData: avgData,
+                                  levels: levels,
+                                  numberOfPolygons: numberOfPolygons,
+                                  labels: labels,
+                                  dataColor: dataColor,
+                                  avgColor: avgColor),
+                              SizedBox(width: paddingValue),
+                              SizedBox(height: 50),
+                              GPTFeedbackBox(),
+                              SizedBox(width: paddingValue),
+                            ],
+                          )
+                        : Row(
+                            children: [
+                              Expanded(
+                                child: Center(
+                                  child: PentagonRadarChart(
+                                    data: data,
+                                    avgData: avgData,
+                                    levels: levels,
+                                    numberOfPolygons: numberOfPolygons,
+                                    labels: labels,
+                                    dataColor: dataColor,
+                                    avgColor: avgColor,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: paddingValue),
+                              //GPT 피드백 입력란
+                              GPTFeedbackBox(),
+                              SizedBox(width: paddingValue),
+                            ],
+                          ),
                   ],
                 ),
-              ),
-              SizedBox(height: 30),
-              Column(
-                children: [
-                  ChartBox(
-                    title: '주의력(A)',
-                    description:
-                        '외부 자극으로부터 일정 시간동안 지속적으로 주의를 유지하는 능력을 말해요. 한 가지 활동에 집중해야 하는 상황에서 중요한 능력이에요.',
-                    dataValue: data[0],
-                    avgDataValue: avgData[0],
-                  ),
-                  SizedBox(height: 36), // 각 차트 박스 사이 간격 조절
-                  ChartBox(
-                    title: '기억력(B)',
-                    description:
-                        '정보를 저장하고 꺼내어 활용할 수 있는 능력이에요. 필요한 준비물을 챙기는 것과 같이 수많은 일상 활동들이 기억력과 연관되어 있어요.',
-                    dataValue: data[1],
-                    avgDataValue: avgData[1],
-                  ),
-                  SizedBox(height: 36),
-                  ChartBox(
-                    title: '처리 능력(C)',
-                    description:
-                        '정보를 빠르고 정확하게 처리하는 능력을 말해요. 처리 능력은 특히 기본적인 학습 기술인 읽기, 연산 등의 분야와 관련된 능력이에요.',
-                    dataValue: data[2],
-                    avgDataValue: avgData[2],
-                  ),
-                  SizedBox(height: 36),
-                  ChartBox(
-                    title: '언어 능력(D)',
-                    description:
-                        '사회의 구성원으로서 사회에서 사용되는 언어를 자연스럽게 사용하는 능력이에요. 일상에서 상대에게 이야기하고 싶은 내용을 잘 전달할 수 있어요.',
-                    dataValue: data[3],
-                    avgDataValue: avgData[3],
-                  ),
-                  SizedBox(height: 36),
-                  ChartBox(
-                    title: '유연성(E)',
-                    description:
-                        '유연성은 습관화된 반응이나 사고를 극복하고 새로운 상황에 적응하는 능력이에요. 물체, 생각 또는 상황을 동시에 고려할 때 필요한 능력이에요.',
-                    dataValue: data[4],
-                    avgDataValue: avgData[4],
-                  ),
-                  SizedBox(height: 100),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                SizedBox(height: 126),
+                Container(
+                  width: 1300,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisSize: MainAxisSize.max,
                     children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      (ParentMonthlyDashboardScreen())));
-                        },
-                        child: Text(
-                          '대시보드',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          primary: Color(0xFFffcb39),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(24),
-                          ),
-                          fixedSize: Size(165, 48),
+                      Text(
+                        '항목별 피드백',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 32,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
-                      SizedBox(width: 120),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => (StartTestScreen())));
-                        },
-                        child: Text(
-                          '돌아가기',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          primary: Color(0xFFd9d9d9),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(24),
-                          ),
-                          fixedSize: Size(165, 48),
-                        ),
-                      ),
+                      Spacer(),
+                      //라벨!
+                      Container(
+                          color: Color(0xFFffcb39), width: 55, height: 20),
+                      SizedBox(width: 7),
+                      Text('자녀'),
+                      SizedBox(width: 10),
+                      Container(
+                          color: Color(0xFFc4c4c4), width: 55, height: 20),
+                      SizedBox(width: 7),
+                      Text('연령대 평균'),
                     ],
                   ),
-                  SizedBox(height: 100)
-                ],
-              )
-            ],
+                ),
+                SizedBox(height: 30),
+                Column(
+                  children: [
+                    ChartBox(
+                      title: '주의력(A)',
+                      description:
+                          '외부 자극으로부터 일정 시간동안 지속적으로 주의를 유지하는 능력을 말해요. 한 가지 활동에 집중해야 하는 상황에서 중요한 능력이에요.',
+                      dataValue: data[0],
+                      avgDataValue: avgData[0],
+                    ),
+                    SizedBox(height: 36), // 각 차트 박스 사이 간격 조절
+                    ChartBox(
+                      title: '기억력(B)',
+                      description:
+                          '정보를 저장하고 꺼내어 활용할 수 있는 능력이에요. 필요한 준비물을 챙기는 것과 같이 수많은 일상 활동들이 기억력과 연관되어 있어요.',
+                      dataValue: data[1],
+                      avgDataValue: avgData[1],
+                    ),
+                    SizedBox(height: 36),
+                    ChartBox(
+                      title: '처리 능력(C)',
+                      description:
+                          '정보를 빠르고 정확하게 처리하는 능력을 말해요. 처리 능력은 특히 기본적인 학습 기술인 읽기, 연산 등의 분야와 관련된 능력이에요.',
+                      dataValue: data[2],
+                      avgDataValue: avgData[2],
+                    ),
+                    SizedBox(height: 36),
+                    ChartBox(
+                      title: '언어 능력(D)',
+                      description:
+                          '사회의 구성원으로서 사회에서 사용되는 언어를 자연스럽게 사용하는 능력이에요. 일상에서 상대에게 이야기하고 싶은 내용을 잘 전달할 수 있어요.',
+                      dataValue: data[3],
+                      avgDataValue: avgData[3],
+                    ),
+                    SizedBox(height: 36),
+                    ChartBox(
+                      title: '유연성(E)',
+                      description:
+                          '유연성은 습관화된 반응이나 사고를 극복하고 새로운 상황에 적응하는 능력이에요. 물체, 생각 또는 상황을 동시에 고려할 때 필요한 능력이에요.',
+                      dataValue: data[4],
+                      avgDataValue: avgData[4],
+                    ),
+                    SizedBox(height: 100),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        (ParentMonthlyDashboardScreen())));
+                          },
+                          child: Text(
+                            '대시보드',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            primary: Color(0xFFffcb39),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(24),
+                            ),
+                            fixedSize: Size(165, 48),
+                          ),
+                        ),
+                        SizedBox(width: 120),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => (StartTestScreen())));
+                          },
+                          child: Text(
+                            '돌아가기',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            primary: Color(0xFFd9d9d9),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(24),
+                            ),
+                            fixedSize: Size(165, 48),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 100)
+                  ],
+                )
+              ],
+            ),
           ),
-        ),
-      ),
-    );
+        );
+      },
+    ));
   }
 }
