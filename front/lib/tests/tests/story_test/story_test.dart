@@ -58,16 +58,17 @@ class _StoryTestScreenState extends State<StoryTestScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          // Container(
-          //   width: double.infinity,
-          //   height: double.infinity,
-          //   decoration: BoxDecoration(
-          //     image: DecorationImage(
-          //       image: AssetImage('assets/background_story.png'), // 이미지 경로 지정
-          //       fit: BoxFit.fill,
-          //     ),
-          //   ),
-          // ),
+          Container(
+            width: double.infinity,
+            height: double.infinity,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage(
+                    'assets/background/background_story.png'), // 이미지 경로 지정
+                fit: BoxFit.fill,
+              ),
+            ),
+          ),
           SingleChildScrollView(
             child: Padding(
               padding: EdgeInsets.all(60),
