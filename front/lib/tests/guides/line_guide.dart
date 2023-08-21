@@ -2,15 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:snail/tests/tests/line_test.dart';
 
-class LineGuideScreen extends StatelessWidget {
+class LineGuideScreen extends StatefulWidget {
+  @override
+  _LineGuideScreenState createState() => _LineGuideScreenState();
+}
+
+class _LineGuideScreenState extends State<LineGuideScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration(seconds: 10), () async {
+      final result = await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => LineTest()),
+      );
+      Navigator.pop(context, result);
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    Future.delayed(Duration(seconds: 10), () {
-      Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (_) => LineTest(),
-      ));
-    });
-
     return Scaffold(
       body: Stack(
         children: [

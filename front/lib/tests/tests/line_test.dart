@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:snail/tests/correct_sign.dart';
 import 'package:snail/tests/count_down.dart';
+import 'package:snail/tests/eyetracking.dart';
+import 'package:camera/camera.dart';
 import 'dart:async';
 
 class LineTest extends StatefulWidget {
@@ -33,12 +35,16 @@ class _LineTestState extends State<LineTest> {
 
   int test_total_time = 180; // 테스트 총 시간
 
-  int CorrectCount = 0;
+  int correctCount = 0;
+
+  late CameraController _controller;
+  late var imgSender;
 
   //원 생성
   @override
   void initState() {
     super.initState();
+    openCamera();
 
     for (int i = 0; i < 7; i++) {
       generateNonOverlappingPosition(i);
@@ -59,11 +65,17 @@ class _LineTestState extends State<LineTest> {
           // 카운트다운이 끝나면 시작
           countdownTimer?.cancel(); // Cancel the countdown timer
           _isRunning = true;
-          print(1222);
           //startTestTimer();
         }
       });
     });
+  }
+
+  Future<void> openCamera() async {
+    _controller = await initializeCamera();
+
+    imgSender = FaceImgSender(_controller);
+    imgSender.startSending();
   }
 
   void startTestTimer() {
@@ -77,8 +89,8 @@ class _LineTestState extends State<LineTest> {
           // isVisible = true;
           _isRunning = false;
           if (time == test_total_time) {
-            time = 0;
-            // 다음 페이지로 넘어가기
+            int etCount = imgSender.stopSending();
+            Navigator.pop(context, [correctCount, etCount]);
           }
         } else {
           if (countdownSeconds > 1) {
@@ -121,7 +133,7 @@ class _LineTestState extends State<LineTest> {
         }
       }
       if (isCorrect == true) {
-        CorrectCount += 1;
+        correctCount += 1;
       }
       setState(() {
         isCorrected = isCorrect;
@@ -131,7 +143,7 @@ class _LineTestState extends State<LineTest> {
         });
       });
     }
-    print(CorrectCount);
+    print(correctCount);
   }
 
   void resetTest() {

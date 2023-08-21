@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:snail/tests/correct_sign.dart';
 import 'package:snail/tests/count_down.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:snail/tests/eyetracking.dart';
+import 'package:camera/camera.dart';
 import 'dart:async';
 import 'dart:math';
 import 'dart:html' as html;
@@ -57,11 +59,15 @@ class _followeTestState extends State<followTest> {
   List<int> availableIndices = [];
 
   final _speech = stt.SpeechToText();
+  late CameraController _controller;
+  late var imgSender;
+
   var listenCount = 0;
 
   @override
   void initState() {
     super.initState();
+    openCamera();
 
     // 3초 카운트, 3초 뒤 안보이게
     Future.delayed(Duration(seconds: 3), () {
@@ -85,6 +91,13 @@ class _followeTestState extends State<followTest> {
         }
       });
     });
+  }
+
+  Future<void> openCamera() async {
+    _controller = await initializeCamera();
+
+    imgSender = FaceImgSender(_controller);
+    imgSender.startSending();
   }
 
   TextEditingController answerController = TextEditingController();
@@ -118,6 +131,7 @@ class _followeTestState extends State<followTest> {
     UserInput = [];
     listenCount = 0;
     if (numb >= 6) {
+      int etCount = imgSender.stopSending();
       Navigator.pop(context, correctCount);
     }
     setState(() {
@@ -168,7 +182,6 @@ class _followeTestState extends State<followTest> {
       );
     }   
   }
-
 
   @override
   void dispose() {

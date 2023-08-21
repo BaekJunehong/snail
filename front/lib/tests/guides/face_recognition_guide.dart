@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:snail/tests/eyetracking.dart';
 import 'package:camera/camera.dart';
-import 'package:http/http.dart' as http;
-import 'package:flutter/foundation.dart';
-import 'package:http_parser/http_parser.dart';
 
 class FaceRecognitionScreen extends StatefulWidget {
   @override
@@ -10,74 +8,24 @@ class FaceRecognitionScreen extends StatefulWidget {
 }
 
 class _FaceRecognitionScreenState extends State<FaceRecognitionScreen> {
-  bool _isButtonDisabled = true;
+  bool _isButtonDisabled = false;
   late CameraController _controller;
   bool cameraIsOn = false;
 
   @override
   void initState() {
     super.initState();
-    _initializeCamera();
+    openCamera();
   }
 
-  void _initializeCamera() async {
-    // 사용 가능한 카메라 목록 가져오기
-    final cameras = await availableCameras();
-    final firstCamera = cameras.first;
-
-    // 카메라 컨트롤러 초기화
-    _controller = CameraController(
-      firstCamera,
-      ResolutionPreset.medium,
-    );
-    await _controller.initialize();
-    // 카메라 컨트롤러 초기화 완료 대기
+  Future<void> openCamera() async {
+    _controller = await initializeCamera();
     cameraIsOn = true;
 
     if (mounted) {
-      setState(() {}); // 상태 갱신
+      setState(() {});
     }
-
-    Future<void> sendFaceImg() async {
-      Future.delayed(const Duration(milliseconds: 20), () async {
-        XFile image = await _controller.takePicture();
-        
-        final byteData = await convertImageToJpeg(image);
-
-        // 서버로 이미지 전송
-        var request = http.MultipartRequest('POST', Uri.parse('ec2-43-202-125-41.ap-northeast-2.compute.amazonaws.com:3033/faceRecognize'));
-        request.files.add(http.MultipartFile.fromBytes(
-          'image', 
-          byteData, 
-          filename: 'face.jpg',
-          contentType: MediaType('image', 'jpeg'),
-        ));
-        var response = await request.send();
-
-        // response 코드
-
-        sendFaceImg();
-      });
-    }
-    sendFaceImg();
   }
-  
-  Future<Uint8List> convertImageToJpeg(XFile image) async {
-    final bytes = await image.readAsBytes();
-    return bytes;
-  }
-
-  void startRecognition() {
-    //얼굴 인식 등록되면 버튼 활성화
-    //DB에 얼굴 인식 저장? 일단 자녀 선택 프로필로 이동
-    Future.delayed(Duration(seconds: 10), () {
-      setState(() {
-        _isButtonDisabled = false; //버튼 활성화
-      });
-      Navigator.pushReplacementNamed(context, '/starttest'); //검사 시작 전 화면으로 이동
-    });
-  }
-
 
   @override
   void dispose() {
@@ -115,7 +63,10 @@ class _FaceRecognitionScreenState extends State<FaceRecognitionScreen> {
             ),
             SizedBox(height: 25),
             ElevatedButton(
-              onPressed: _isButtonDisabled ? null : startRecognition,
+              onPressed: () {
+                // 검사 전 가이드로 이동.
+                Navigator.pop(context, 0);
+              },
               child: Text(
                 '시작하기',
                 style:
