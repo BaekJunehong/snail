@@ -9,8 +9,8 @@ class ChartBox extends StatelessWidget {
   final double dataValue;
   final double avgDataValue;
 
-  //전체 비교 막대
-  final double maxWidth = 1300;
+  // //전체 비교 막대
+  // final double maxWidth = 1300;
 
   ChartBox({
     required this.title,
@@ -21,9 +21,21 @@ class ChartBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
+    final bool isSmallScreen = screenWidth < 800;
+    final double maxWidth = isSmallScreen ? screenWidth * 0.9 : 1300;
+    double containerHeight = 280; //기본값
+
+    if (isSmallScreen) {
+      // isSmallScreen일 때, containerWidth를 280보다 크게 유지
+      containerHeight = 280 + 20 + 30 * 2;
+      containerHeight = containerHeight.clamp(280, screenHeight);
+    }
+
     return Container(
       width: 1300,
-      height: 280,
+      height: containerHeight,
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border.all(color: Color(0XFFd9d9d9), width: 2.0),
@@ -65,7 +77,7 @@ class ChartBox extends StatelessWidget {
                 Positioned(
                   left: 0,
                   child: Container(
-                    width: dataValue * maxWidth,
+                    width: (dataValue * maxWidth).clamp(0, maxWidth),
                     height: 30,
                     decoration: BoxDecoration(
                         color: Color(0XFFffcb39),
@@ -88,7 +100,7 @@ class ChartBox extends StatelessWidget {
                 Positioned(
                   left: 0,
                   child: Container(
-                    width: avgDataValue * maxWidth,
+                    width: (avgDataValue * maxWidth).clamp(0, maxWidth),
                     height: 30,
                     decoration: BoxDecoration(
                         color: Color(0XFFc4c4c4),

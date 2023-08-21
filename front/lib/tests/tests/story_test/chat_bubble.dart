@@ -20,14 +20,14 @@ class GreetBubbleFromService extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 BubbleSpecialThree(
-                  text: '안녕! 이야기는 재미있었어?',
+                  text: '안녕! 이야기는 재미있었어요?',
                   color: Color(0xFFd9d9d9),
                   tail: false,
                   textStyle: TextStyle(color: Colors.black, fontSize: 16),
                   isSender: false,
                 ),
                 BubbleSpecialThree(
-                  text: '지금부터 이야기와 관련된 문제를 잘 보고 정답을 말해주면 돼!',
+                  text: '지금부터 이야기와 관련된 문제를 잘 보고 정답을 말해주세요!',
                   color: Color(0xFFd9d9d9),
                   tail: true,
                   textStyle: TextStyle(color: Colors.black, fontSize: 16),
@@ -127,21 +127,21 @@ class EndBubbleFromService extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 BubbleSpecialThree(
-                  text: '정말 잘했어! 지금까지 모든 게임을 마쳤어',
+                  text: '정말 잘했어요! 이제 모든 게임이 끝났어요.',
                   color: Color(0xFFd9d9d9),
                   tail: false,
                   textStyle: TextStyle(color: Colors.black, fontSize: 16),
                   isSender: false,
                 ),
                 BubbleSpecialThree(
-                  text: '종료하기 버튼을 누르면 게임을 마무리할 수 있어!',
+                  text: '종료하기 버튼을 누르면 게임을 마무리할 수 있어요!',
                   color: Color(0xFFd9d9d9),
                   tail: true,
                   textStyle: TextStyle(color: Colors.black, fontSize: 16),
                   isSender: false,
                 ),
                 BubbleSpecialThree(
-                  text: '우리 또 만나자! 안녕~!',
+                  text: '우리 또 만나요! 안녕~!',
                   color: Color(0xFFd9d9d9),
                   tail: true,
                   textStyle: TextStyle(color: Colors.black, fontSize: 16),
