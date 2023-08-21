@@ -214,7 +214,9 @@ class _followeTestState extends State<followTest> {
                   // top: (MediaQuery.of(context).size.height / 2) - (520 / 2),
                   child: Center(
                 child: Container(
-                  // height: 600,
+
+                  height: 600,
+
                   padding: const EdgeInsets.all(10),
                   //clipBehavior: Clip.antiAlias,
                   decoration: BoxDecoration(color: Color.fromARGB(0, 0, 0, 0)),
@@ -226,7 +228,9 @@ class _followeTestState extends State<followTest> {
                       // 초성
                       Container(
                         width: 800,
-                        // height: 300,
+
+                        height: 300,
+
                         padding: EdgeInsets.all(20),
                         // margin: EdgeInsets.fromLTRB(0, 50, 0, 0),
                         child: Center(
@@ -240,11 +244,14 @@ class _followeTestState extends State<followTest> {
                                 ),
                         ),
                       ),
+
                       const SizedBox(height: 50),
                       // 입력칸
                       Container(
                         width: 480,
-                        // height: 100,
+
+                        height: 100,
+
                         padding:
                             EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                         decoration: BoxDecoration(

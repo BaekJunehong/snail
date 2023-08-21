@@ -21,7 +21,6 @@ class _chosungTestState extends State<chosungTest> {
   String userInput = "";
   List<String> chosungs = ['ㄱ', 'ㅅ', 'ㅇ'];
   int SearchNum = 0; //특정 단어로 검색한 갯수
-
   int test_set_time = 20; // 테스트 세트별 시간
   int test_total_time = 180; // 테스트 총 시간
 
@@ -40,6 +39,33 @@ class _chosungTestState extends State<chosungTest> {
   final _speech = stt.SpeechToText();
   late CameraController _controller;
   late var imgSender;
+
+  //고대 자모 -> 현대 자모
+  String convertArchaicToModernJamo(String archaicJamo) {
+    final Map<String, String> conversionMap = {
+      'ᄀ': 'ㄱ',
+      'ᄁ': 'ㄲ',
+      'ᄂ': 'ㄴ',
+      'ᄃ': 'ㄷ',
+      'ᄄ': 'ㄸ',
+      'ᄅ': 'ㄹ',
+      'ᄆ': 'ㅁ',
+      'ᄇ': 'ㅂ',
+      'ᄈ': 'ㅃ',
+      'ᄉ': 'ㅅ',
+      'ᄊ': 'ㅆ',
+      'ᄋ': 'ㅇ',
+      'ᄌ': 'ㅈ',
+      'ᄍ': 'ㅉ',
+      'ᄎ': 'ㅊ',
+      'ᄏ': 'ㅋ',
+      'ᄐ': 'ㅌ',
+      'ᄑ': 'ㅍ',
+      'ᄒ': 'ㅎ'
+    };
+
+    return conversionMap[archaicJamo] ?? archaicJamo;
+  }
 
   @override
   void initState() {
@@ -112,9 +138,9 @@ class _chosungTestState extends State<chosungTest> {
     var url = Uri.http(
         'ec2-43-202-125-41.ap-northeast-2.compute.amazonaws.com:3000',
         '/KoreanAPI');
+
     try {
       var response = await http.post(url, body: {'word': userInput});
-      print(response.statusCode);
       if (response.statusCode == 200) {
         final xml2json.Xml2Json xml2Json = xml2json.Xml2Json();
         xml2Json.parse(response.body);
@@ -122,10 +148,12 @@ class _chosungTestState extends State<chosungTest> {
 
         var decodedData = jsonDecode(jsonData);
         var total = decodedData['channel']['total'];
-        print('Total: $total');
+        var totalAsInt = int.tryParse(total) ?? 0;
+        print('Total: $totalAsInt');
         setState(() {
-          SearchNum = total; // 검색 결과 개수.
-        });
+          SearchNum = totalAsInt;
+        }); // 검색 결과 개수를 갱신
+        print(SearchNum);
       } else {
         print('API 요청이 실패했습니다.');
       }
@@ -134,12 +162,38 @@ class _chosungTestState extends State<chosungTest> {
     }
   }
 
+  String extractConsonants(String text) {
+    final List<int> unicodeValues = text.runes.toList();
+    String consonants = '';
+
+    for (int unicodeValue in unicodeValues) {
+      if (0xAC00 <= unicodeValue && unicodeValue <= 0xD7A3) {
+        // Check if it's a Hangul syllable
+        final int consonantIndex = ((unicodeValue - 0xAC00) ~/ 28) ~/ 21;
+        consonants += String.fromCharCode(0x1100 + consonantIndex);
+      }
+    }
+
+    return consonants[0];
+  }
+
   // user의 input 값을 받아 해당 단어가 존재하는지 검색
   // 있다면 개수가 0이 아닐 것.
   void checkAnswer(String userInput) async {
-    KoreanAPI(userInput); // 사전 api 필요
-    //if (userAnswer == correctAnswer) {
-    if (SearchNum != 0) {
+    await KoreanAPI(userInput); // 사전 api 필요
+
+    print('$userInput API search number $SearchNum');
+
+    String extractConsonant =
+        extractConsonants(userInput).replaceAll(' ', '')[0].trim();
+    extractConsonant = convertArchaicToModernJamo(extractConsonant);
+    String cho = chosungs[order];
+
+    print('초성$cho');
+    print('초성$extractConsonant');
+    print(extractConsonant == cho);
+    if (SearchNum > 0 && extractConsonant == cho) {
+      print(00);
       setState(() {
         isCorrected = true;
 
