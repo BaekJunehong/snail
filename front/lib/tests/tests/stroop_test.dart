@@ -91,16 +91,14 @@ class _StroopTestState extends State<StroopTest> {
     // 1초마다 타이머 콜백
     timer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
-          seconds++; // 경과 시간(초) 갱신
-          time += 1;
-          countdownSeconds = 3;
-          // isVisible = true;
-          if (time == test_total_time) {
-            int etCount = imgSender.stopSending();
-            Navigator.pop(context, [correctCount, etCount]);
-          }
+        seconds++; // 경과 시간(초) 갱신
+        time += 1;
+        countdownSeconds = 3;
+        // isVisible = true;
+        if (time == test_total_time) {
+          Navigator.pop(context, correctCount);
         }
-      );
+      });
     });
   }
 
@@ -206,7 +204,7 @@ class _StroopTestState extends State<StroopTest> {
                     height: 134,
                     margin: EdgeInsets.fromLTRB(100, 320, 100, 20),
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 155, vertical: 10),
+                        horizontal: 155, vertical: 10),
                     clipBehavior: Clip.antiAlias,
                     decoration: ShapeDecoration(
                       color: Color(0xFFD9D9D9),
@@ -241,9 +239,9 @@ class _StroopTestState extends State<StroopTest> {
               ),
               if (isCorrected)
                 Positioned(
-                  child: Center(
-                    child: correctSign(),
-                  )),
+                    child: Center(
+                  child: correctSign(),
+                )),
             ],
           ),
         ),
