@@ -19,9 +19,13 @@ class _StoryTestState extends State<StoryTest> {
     'https://www.nlcy.go.kr/multiLanguageStory/2011/Nlcy_010_002/Nlcy_010_002.mp4'
   ];
 
+  List<String> videoImg = ['go_with_me.png', 'what_is_my_dream_color.png'];
+
   int videoNumber = 0;
   String videoUrl = '';
   bool _isVideoCompleted = false;
+
+  int randomIndex = 0;
 
   @override
   void initState() {
@@ -83,9 +87,9 @@ class _StoryTestState extends State<StoryTest> {
                 playVideo(videoUrl);
               },
               child: Image.asset(
-                'story_sample.png',
-                width: 872,
-                height: 539,
+                videoImg[videoNumber],
+                width: 700,
+                height: 430,
                 fit: BoxFit.fill,
               ),
             ),
