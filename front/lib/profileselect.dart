@@ -10,6 +10,7 @@ class ProfileSelectionScreen extends StatefulWidget {
   @override
   _ProfileSelectionScreenState createState() => _ProfileSelectionScreenState();
 }
+
 class _ProfileSelectionScreenState extends State<ProfileSelectionScreen> {
   final storage = const FlutterSecureStorage();
   List<Map<String, dynamic>>? child_info;
@@ -17,7 +18,9 @@ class _ProfileSelectionScreenState extends State<ProfileSelectionScreen> {
   Future<List<Map<String, dynamic>>> _fetchChildData() async {
     final parent_id = await storage.read(key: 'USER_ID');
     print(parent_id);
-    final url = Uri.http('ec2-43-202-125-41.ap-northeast-2.compute.amazonaws.com:3000', '/fetchChildData');
+    final url = Uri.http(
+        'ec2-43-202-125-41.ap-northeast-2.compute.amazonaws.com:3000',
+        '/fetchChildData');
     final response = await http.post(url, body: {'USER_ID': parent_id});
 
     // parent_id가 가진 child 정보
@@ -54,14 +57,17 @@ class _ProfileSelectionScreenState extends State<ProfileSelectionScreen> {
           if (child_info != null) {
             for (int i = 0; i < 3; i++) {
               if (i < child_info!.length) {
-                profileCards.add(ProfileCard(child_info: child_info![i], onRefresh: refreshData));
+                profileCards.add(ProfileCard(
+                    child_info: child_info![i], onRefresh: refreshData));
               } else {
-                profileCards.add(ProfileCard(child_info: null, onRefresh: refreshData));
+                profileCards
+                    .add(ProfileCard(child_info: null, onRefresh: refreshData));
               }
             }
           } else {
             for (int i = 0; i < 3; i++) {
-              profileCards.add(ProfileCard(child_info: null, onRefresh: refreshData));
+              profileCards
+                  .add(ProfileCard(child_info: null, onRefresh: refreshData));
             }
           }
           return Scaffold(
@@ -104,8 +110,7 @@ class _ProfileSelectionScreenState extends State<ProfileSelectionScreen> {
               ),
             ),
           );
-        }
-        else {
+        } else {
           return CircularProgressIndicator();
         }
       },
@@ -143,18 +148,31 @@ class ProfileCard extends StatelessWidget {
         shape: CircleBorder(),
         side: BorderSide.none,
       ),
-      child: Container(
-        width: 150,
-        height: 150,
-        decoration: BoxDecoration(
-          color: Color(0xFFd9d9d9),
-          borderRadius: BorderRadius.circular(50),
-        ),
-        child: Center(
-          child: (child_info != null)
-              ? Image.asset('assets/profile.png') // 캐릭터가 있을 경우 다른 이미지 표시
-              : Icon(Icons.add, size: 40, color: Colors.white),
-        ),
+      child: Column(
+        children: [
+          Container(
+            width: 150,
+            height: 150,
+            decoration: BoxDecoration(
+              color: Color(0xFFd9d9d9),
+              borderRadius: BorderRadius.circular(50),
+            ),
+            child: Center(
+              child: (child_info != null)
+                  ? Image.asset('assets/profile.png') // 캐릭터가 있을 경우 다른 이미지 표시
+                  : Icon(Icons.add, size: 40, color: Colors.white),
+            ),
+          ),
+          SizedBox(height: 10),
+          //자녀 이름 입력하기!
+          Text(
+            '자녀 이름',
+            style: TextStyle(
+              fontSize: 18,
+              color: Colors.black,
+            ),
+          ),
+        ],
       ),
     );
   }
