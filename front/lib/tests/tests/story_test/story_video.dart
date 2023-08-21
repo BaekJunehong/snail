@@ -79,7 +79,6 @@ class _StoryTestState extends State<StoryTest> {
                 fit: BoxFit.fill, // 이미지를 컨테이너에 꽉 채우도록 설정
               ),
             ),
-
           ),
           Center(
             child: Column(
@@ -94,26 +93,27 @@ class _StoryTestState extends State<StoryTest> {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                SizedBox(height: 10),
+                SizedBox(height: 30),
                 GestureDetector(
                   onTap: () {
                     playVideo(videoUrl);
                   },
                   child: Image.asset(
-                    'story_sample.png',
-                    width: 872,
-                    height: 539,
+                    videoImg[videoNumber],
+                    width: 700,
+                    height: 430,
                     fit: BoxFit.fill,
                   ),
                 ),
-                SizedBox(height: 10),
+                SizedBox(height: 25),
                 ElevatedButton(
                   onPressed: _isVideoCompleted
                       ? () {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => (StoryTestScreen())));
+                                  builder: (context) => (StoryTestScreen(
+                                      videoNum: videoNumber))));
                         }
                       : null,
                   child: Text(
@@ -131,41 +131,6 @@ class _StoryTestState extends State<StoryTest> {
                   ),
                 ),
               ],
-            SizedBox(height: 30),
-            GestureDetector(
-              onTap: () {
-                playVideo(videoUrl);
-              },
-              child: Image.asset(
-                videoImg[videoNumber],
-                width: 700,
-                height: 430,
-                fit: BoxFit.fill,
-              ),
-            ),
-            SizedBox(height: 25),
-            ElevatedButton(
-              onPressed: _isVideoCompleted
-                  ? () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  (StoryTestScreen(videoNum: videoNumber))));
-                    }
-                  : null,
-              child: Text(
-                '시작하기',
-                style:
-                    TextStyle(color: Colors.black, fontWeight: FontWeight.w700),
-              ),
-              style: ElevatedButton.styleFrom(
-                primary:
-                    _isVideoCompleted ? Color(0XFFffcb39) : Color(0XFFd9d9d9),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(24)),
-                fixedSize: Size(165, 48),
-              ),
             ),
           ),
         ],

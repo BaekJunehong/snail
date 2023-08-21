@@ -165,8 +165,7 @@ class _StoryTestScreenState extends State<StoryTestScreen> {
             height: double.infinity,
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage(
-                    'assets/background/background_story.png'), // 이미지 경로 지정
+                image: AssetImage('assets/background/background_video.png'),
                 fit: BoxFit.fill,
               ),
             ),
