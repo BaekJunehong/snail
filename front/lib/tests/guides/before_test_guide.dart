@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:html' as html;
+import 'dart:async';
 
 class BeforeTestGuideScreen extends StatefulWidget {
   @override
@@ -10,21 +11,42 @@ class BeforeTestGuideScreen extends StatefulWidget {
 }
 
 class _BeforeTestGuideScreenState extends State<BeforeTestGuideScreen> {
-  // 마이크 권한 요청
+  bool isPermitted = false;
+  Timer? _timer;
+
   Future<void> _requestPermission() async {
-    if (kIsWeb) {
-      // 웹 환경에서 마이크 권한 요청
-      await html.window.navigator.mediaDevices?.getUserMedia({'audio': true});
-    } else {
-      // 모바일 환경에서 마이크 권한 요청
-      await Permission.microphone.request();
-    }
+    _timer = Timer.periodic(Duration(seconds: 1), (Timer t) async {
+      if (kIsWeb) {
+        // 웹 환경
+        // 카메라, 마이크 권한 요청
+        try {
+          await html.window.navigator.getUserMedia(audio: true, video: true); 
+          isPermitted = true;
+        } catch (e) {
+          print("Permission denied: $e");
+          isPermitted = false;
+        }
+      } 
+      else {
+        // 모바일 환경
+        // 마이크 권한 요청
+        var status = await Permission.microphone.request();
+        isPermitted = status.isGranted;
+      }
+      setState(() {});
+    });
   }
 
   @override
   void initState() {
     super.initState();
     _requestPermission();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -97,10 +119,10 @@ class _BeforeTestGuideScreenState extends State<BeforeTestGuideScreen> {
                     ),
                     SizedBox(height: 30),
                     ElevatedButton(
-                      onPressed: () {
+                      onPressed: isPermitted ? () {
                         // 검사 전 가이드로 이동.
                         Navigator.pop(context, 0);
-                      },
+                      } : null,
                       child: Text(
                         '시작하기',
                         style:

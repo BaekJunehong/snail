@@ -16,6 +16,10 @@ def eyetract(byteImg):
     # 얼굴 인식
     faces = detector(img)
 
+    # 인식이 되지 않은 경우
+    if len(faces) == 0:
+        return -1
+
     for face in faces:
         # 얼굴 특징점 추출
         landmarks = predictor(img, face)
@@ -52,17 +56,7 @@ def eyetract(byteImg):
         contours_right_eye, _ = cv2.findContours(threshold_right_eye, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         contours_right_eye = sorted(contours_right_eye, key=lambda x: cv2.contourArea(x), reverse=True)
 
-        '''
-        # 왼쪽 눈동자 위치 찾기 및 컨투어 그리기
-        if len(contours_left_eye) > 0:
-            c1 = max(contours_left_eye, key=cv2.contourArea)
-            cv2.drawContours(roi_left_eye, [c1], -1, (0,0,255), 3)
-
-        # 오른쪽 눈동자 위치 찾기 및 컨투어 그리기
-        if len(contours_right_eye) > 0:
-            c2 = max(contours_right_eye,key=cv2.contourArea)
-            cv2.drawContours(roi_right_eye,[c2],-1,(0,0,255),3)
-        '''
+        etCount = 0
 
         # 왼쪽 눈동자 위치 찾기 및 컨투어 그리기
         if len(contours_left_eye) > 0:
@@ -73,13 +67,17 @@ def eyetract(byteImg):
 
             if pupil_center_y1 < left_eye_y + left_eye_h // 2:
                 print("왼쪽 눈이 위를 보고 있습니다.")
+                etCount += 1
             elif pupil_center_y1 > left_eye_y + left_eye_h // 2:
                 print("왼쪽 눈이 아래를 보고 있습니다.")
+                etCount += 1
 
             if pupil_center_x1 < left_eye_x + left_eye_w // 2:
                 print("왼쪽 눈이 왼쪽을 보고 있습니다.")
+                etCount += 1
             elif pupil_center_x1 > left_eye_x + left_eye_w // 2:
                 print("왼쪽 눈이 오른쪽을 보고 있습니다.")
+                etCount += 1
 
         # 오른쪽 눈동자 위치 찾기 및 컨투어 그리기
         if len(contours_right_eye) > 0:
@@ -90,21 +88,19 @@ def eyetract(byteImg):
 
             if pupil_center_y2 < right_eye_y + right_eye_h // 2:
                 print("오른쪽 눈이 위를 보고 있습니다.")
+                etCount += 1
             elif pupil_center_y2 > right_eye_y + right_eye_h // 2:
                 print("오른쪽 눈이 아래를 보고 있습니다.")
+                etCount += 1
 
             if pupil_center_x2 < right_eye_x + right_eye_w // 2:
                 print("오른쪽 눈이 왼쪽을 보고 있습니다.")
+                etCount += 1
             elif pupil_center_x2 > right_eye_x + right_eye_w // 2:
                 print("오른쪽 눈이 오른쪽을 보고 있습니다.")
+                etCount += 1
 
-    '''
-    # 결과 출력
-    cv2.imshow("Frame", img)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-
-    '''
+    return etCount
 
 if __name__ == '__main__':
     eyetract()

@@ -6,17 +6,17 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+final storage = const FlutterSecureStorage();
+
 class ProfileSelectionScreen extends StatefulWidget {
   @override
   _ProfileSelectionScreenState createState() => _ProfileSelectionScreenState();
 }
 class _ProfileSelectionScreenState extends State<ProfileSelectionScreen> {
-  final storage = const FlutterSecureStorage();
   List<Map<String, dynamic>>? child_info;
 
   Future<List<Map<String, dynamic>>> _fetchChildData() async {
     final parent_id = await storage.read(key: 'USER_ID');
-    print(parent_id);
     final url = Uri.http('ec2-43-202-125-41.ap-northeast-2.compute.amazonaws.com:3000', '/fetchChildData');
     final response = await http.post(url, body: {'USER_ID': parent_id});
 
@@ -30,6 +30,7 @@ class _ProfileSelectionScreenState extends State<ProfileSelectionScreen> {
         'NAME': data[i]['NAME'],
         'SEX': data[i]['SEX'],
         'BIRTH': data[i]['BIRTH'],
+        'IMG': data[i]['IMG'],
       });
     }
     return rows;
@@ -122,9 +123,11 @@ class ProfileCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return OutlinedButton(
-      onPressed: () {
+      onPressed: () async {
         if (child_info != null) {
           // 캐릭터가 있을 경우 starttest.dart 페이지로 이동
+          await storage.write(key: 'CHILD_ID', value: child_info!['CHILD_ID']);
+          await storage.write(key: 'CHILD_NAME', value: child_info!['NAME']);
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => StartTestScreen()),
@@ -152,6 +155,8 @@ class ProfileCard extends StatelessWidget {
         ),
         child: Center(
           child: (child_info != null)
+              // child_info!['IMG'] 를 기준으로 이미지 설정
+              // addprofile도 작업 필요함
               ? Image.asset('assets/profile.png') // 캐릭터가 있을 경우 다른 이미지 표시
               : Icon(Icons.add, size: 40, color: Colors.white),
         ),

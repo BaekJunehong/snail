@@ -1,21 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:snail/tests/tests/chosung_test.dart';
 
-//import 'package:flutter_svg/flutter_svg.dart';
-import 'package:snail/tests/tests/chosung_test_demo.dart';
-
-void main() {
-  runApp(MaterialApp(home: Scaffold(body: ChosungGuideScreen())));
+class ChosungGuideScreen extends StatefulWidget {
+  @override
+  _ChosungGuideScreenState createState() => _ChosungGuideScreenState();
 }
 
-class ChosungGuideScreen extends StatelessWidget {
+class _ChosungGuideScreenState extends State<ChosungGuideScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration(seconds: 10), () async {
+      final result = await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => chosungTest()),
+      );
+      Navigator.pop(context, result);
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    Future.delayed(Duration(seconds: 5), () {
-      Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (_) => chosungTest(),
-      ));
-    });
-
     return Scaffold(
       body: Stack(
         children: [
