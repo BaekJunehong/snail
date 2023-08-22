@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:snail/tests/result/loadingresult.dart';
 import 'package:snail/tests/tests/story_test/chat_bubble.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'dart:html' as html;
 import 'package:snail/tests/tests/story_test/Answer_check.dart';
+import 'package:snail/tests/eyetracking.dart';
+import 'package:camera/camera.dart';
 
 class StoryTestScreen extends StatefulWidget {
   final int videoNum; // 실행된 비디오 index
@@ -20,6 +21,8 @@ class _StoryTestScreenState extends State<StoryTestScreen> {
   int answeredBubbleCount = 0;
   String userInput = '';
   final _speech = stt.SpeechToText();
+  late CameraController _controller;
+  late var imgSender;
 
   //정답
   List<String> Answer = [''];
@@ -48,16 +51,25 @@ class _StoryTestScreenState extends State<StoryTestScreen> {
   @override
   void initState() {
     super.initState();
-    print(checkAnswers(['빨강', '핑크', '옷', '냄새', '오리'], 1));
-    _showBubblesStart();
-    _speech.initialize();
-    startQuestionSequence();
+    openCamera();
+    _showBubblesStart().then((_) {
+      _speech.initialize();
+      startQuestionSequence();
+    });
+  }
+
+  Future<void> openCamera() async {
+    _controller = await initializeCamera();
+
+    imgSender = FaceImgSender(_controller);
+    imgSender.startSending();
   }
 
   List<String> temp = [];
   int correctNum = 0;
 
   void startQuestionSequence() async {
+    print(Answer);
     if (answeredBubbleCount < Question[widget.videoNum].length) {
       _showBubbleQuestion();
       _onAnswerBubbleSubmitted();
@@ -69,19 +81,20 @@ class _StoryTestScreenState extends State<StoryTestScreen> {
       correctNum = await checkAnswers(temp, widget.videoNum);
       _showBubbleLast();
     }
-    print(temp);
   }
 
-  void _showBubblesStart() async {
-    await Future.delayed(Duration(milliseconds: 2000), () {
+  Future<void> _showBubblesStart() async {
+    await Future.delayed(Duration(milliseconds: 1000), () {
       setState(() {
         showGreetBubble = true;
       });
     });
+    await Future.delayed(Duration(seconds: 10));
   }
 
   //문제 생성
   void _showBubbleQuestion() async {
+    userInput = '';
     await Future.delayed(Duration(milliseconds: 2000), () {
       setState(() {
         showQuestionBubble = true;
@@ -117,32 +130,41 @@ class _StoryTestScreenState extends State<StoryTestScreen> {
     );
   }
 
-  void getNextQuestion() async {
+void getNextQuestion() async {
     await html.window.navigator.mediaDevices?.getUserMedia({'audio': true});
     if (!_speech.isListening) {
       _speech.listen(
-        listenFor: Duration(seconds: 7),
-        pauseFor: Duration(seconds: 10),
+        listenFor: Duration(seconds: 14),
+        pauseFor: Duration(seconds: 30),
         cancelOnError: true,
-        partialResults: false,
+        partialResults: true,
         listenMode: stt.ListenMode.dictation,
         onResult: (result) async {
-          // _speech.stop();
           userInput = result.recognizedWords;
           if (result.finalResult) {
             Answer.add(userInput);
-            // _showBubbleQuestion();
             startQuestionSequence();
           }
         },
       );
     }
+    Future.delayed(Duration(seconds: 16), () {
+      if (!_speech.isListening && userInput == '') {
+        userInput = '정답이 입력되지 않았어요.';
+        Answer.add(userInput);
+        startQuestionSequence();
+      }
+    });
   }
 
-  void _showBubbleLast() {
+  void _showBubbleLast() async {
     setState(() {
       showEndBubble = true;
     });
+    await Future.delayed(Duration(seconds: 10));
+    
+    int etCount = imgSender.stopSending();
+    Navigator.pop(context, [correctNum, etCount]);
   }
 
   void _onAnswerBubbleSubmitted() {
@@ -159,8 +181,6 @@ class _StoryTestScreenState extends State<StoryTestScreen> {
 
   @override
   Widget build(BuildContext context) {
-    bool isButtonEnabled = showEndBubble; // showEndBubble에 따라 버튼 활성화
-
     return Scaffold(
       body: Stack(
         children: [
@@ -196,35 +216,6 @@ class _StoryTestScreenState extends State<StoryTestScreen> {
                     curve: Curves.easeInOut,
                     height: showEndBubble ? null : 0,
                     child: EndBubbleFromService(),
-                  ),
-                  SizedBox(height: 100),
-                  ElevatedButton(
-                    onPressed: isButtonEnabled
-                        ? () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => LoadingResultScreen(),
-                              ),
-                            );
-                          }
-                        : null,
-                    child: Text(
-                      '종료하기',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      primary: isButtonEnabled
-                          ? Color(0xFFffcb39)
-                          : Color(0xFFd9d9d9),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      fixedSize: Size(165, 48),
-                    ),
                   ),
                 ],
               ),

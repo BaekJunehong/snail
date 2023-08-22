@@ -108,12 +108,13 @@ class _StoryTestState extends State<StoryTest> {
                 SizedBox(height: 25),
                 ElevatedButton(
                   onPressed: _isVideoCompleted
-                      ? () {
-                          Navigator.push(
+                      ? () async {
+                          final result = await Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => (StoryTestScreen(
                                       videoNum: videoNumber))));
+                          Navigator.pop(context, result);
                         }
                       : null,
                   child: Text(
