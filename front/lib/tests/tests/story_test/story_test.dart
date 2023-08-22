@@ -23,13 +23,9 @@ class _StoryTestScreenState extends State<StoryTestScreen> {
 
   //정답
   List<String> Answer = [''];
+
   //정답 체크
   List<bool> checkAnswerAtBack = [];
-  int trueCountNum = 0;
-
-  //정답처리 관련 변수
-  bool isCorrected = false;
-  int correctCount = 0;
 
   //1. 우리끼리 가자 2. 내 꿈은 무슨 색일까
   List<List> Question = [
@@ -52,33 +48,28 @@ class _StoryTestScreenState extends State<StoryTestScreen> {
   @override
   void initState() {
     super.initState();
+    print(checkAnswers(['빨강', '핑크', '옷', '냄새', '오리'], 1));
     _showBubblesStart();
     _speech.initialize();
     startQuestionSequence();
   }
 
   List<String> temp = [];
+  int correctNum = 0;
 
-  void startQuestionSequence() {
+  void startQuestionSequence() async {
     if (answeredBubbleCount < Question[widget.videoNum].length) {
       _showBubbleQuestion();
       _onAnswerBubbleSubmitted();
     } else {
       setState(() {
-        temp = Answer; //넘겨주는 data는 Answer의 0 index 삭제
+        temp = List.from(Answer); //넘겨주는 data는 Answer의 0 index 삭제
       });
       temp.removeAt(0);
-      print(temp);
-      checkAnswerAtBack = checkAnswers(temp, widget.videoNum) as List<bool>;
-      trueCountNum = trueCount(checkAnswerAtBack);
+      correctNum = await checkAnswers(temp, widget.videoNum);
       _showBubbleLast();
     }
     print(temp);
-  }
-
-  int trueCount(List<bool> boolList) {
-    int trueCount = boolList.where((element) => element).length;
-    return trueCount;
   }
 
   void _showBubblesStart() async {
@@ -178,7 +169,7 @@ class _StoryTestScreenState extends State<StoryTestScreen> {
             height: double.infinity,
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/background/background_video.png'),
+                image: AssetImage('assets/background_story.png'),
                 fit: BoxFit.fill,
               ),
             ),
