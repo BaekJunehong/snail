@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:snail/tests/tests/chosung_test.dart';
+import 'package:just_audio/just_audio.dart';
 
 class ChosungGuideScreen extends StatefulWidget {
   @override
@@ -8,9 +9,11 @@ class ChosungGuideScreen extends StatefulWidget {
 }
 
 class _ChosungGuideScreenState extends State<ChosungGuideScreen> {
+  final player = AudioPlayer();
   @override
   void initState() {
     super.initState();
+    guideVoice();
     Future.delayed(Duration(seconds: 10), () async {
       final result = await Navigator.push(
         context,
@@ -18,6 +21,11 @@ class _ChosungGuideScreenState extends State<ChosungGuideScreen> {
       );
       Navigator.pop(context, result);
     });
+  }
+
+  Future<void> guideVoice() async {
+    await player.setAsset('assets/sounds/guide/chosung.wav');
+    await player.play();
   }
 
   @override

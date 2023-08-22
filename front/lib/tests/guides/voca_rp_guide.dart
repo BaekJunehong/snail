@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:snail/tests/tests/follow_the_words.dart';
+import 'package:just_audio/just_audio.dart';
 
 class VocaRepeatGuideScreen extends StatefulWidget {
   @override
@@ -8,9 +9,11 @@ class VocaRepeatGuideScreen extends StatefulWidget {
 }
 
 class _VocaRepeatGuideScreenState extends State<VocaRepeatGuideScreen> {
+  final player = AudioPlayer();
   @override
   void initState() {
     super.initState();
+    guideVoice();
     Future.delayed(Duration(seconds: 10), () async {
       final result = await Navigator.push(
         context,
@@ -18,6 +21,11 @@ class _VocaRepeatGuideScreenState extends State<VocaRepeatGuideScreen> {
       );
       Navigator.pop(context, result);
     });
+  }
+
+  Future<void> guideVoice() async {
+    await player.setAsset('assets/sounds/guide/repeat.wav');
+    await player.play();
   }
 
   @override

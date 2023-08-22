@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:snail/tests/guides/backspace_guide.dart';
 import 'package:snail/tests/tests/story_test/story_video.dart';
+import 'package:just_audio/just_audio.dart';
 
 class StoryGuideScreen extends StatefulWidget {
   @override
@@ -8,6 +9,7 @@ class StoryGuideScreen extends StatefulWidget {
 }
 
 class _StoryGuideScreenState extends State<StoryGuideScreen> {
+  final player = AudioPlayer();
   @override
   void initState() {
     super.initState();
@@ -19,6 +21,12 @@ class _StoryGuideScreenState extends State<StoryGuideScreen> {
       Navigator.pop(context, result);
     });
   }
+
+  Future<void> guideVoice() async {
+    await player.setAsset('assets/sounds/guide/story.wav');
+    await player.play();
+  }
+
   @override
   void dispose() {
     super.dispose();
