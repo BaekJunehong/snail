@@ -1,6 +1,8 @@
 // ftp로 ec2 서버에 현재 index.js를 옮긴 후
 // putty를 사용해 node index.js 실행 후 사용가능
 
+const fs = require('fs')
+const https = require('https');
 const express = require('express'); //express import
 const mysql = require('mysql'); // mysql import
 const dbconfig = require('./config/database.js'); //master 연결 정보
@@ -16,6 +18,18 @@ app.use(bodyParser.urlencoded({ extended: false }));
 const cors = require('cors');
 const { log } = require('console');
 app.use(cors());  // 모든 origin 요청 허용
+
+const privateKey = fs.readFileSync('/etc/letsencrypt/live/server-snail.kro.kr/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('/etc/letsencrypt/live/server-snail.kro.kr/cert.pem', 'utf8');
+const ca = fs.readFileSync('/etc/letsencrypt/live/server-snail.kro.kr/chain.pem', 'utf8');
+
+const credentials = {
+	key: privateKey,
+	cert: certificate,
+	ca: ca
+};
+
+const httpsServer = https.createServer(credentials, app);
 
 //-------------------------------------------------------------------------------------
 // Query
@@ -83,6 +97,7 @@ app.post('/saveChildInfo', (req, res) => {
 
 // 로그인 정보 확인
 app.post('/login', (req, res) => {
+  console.log(11);
   const user_id = req.body.USER_ID;
   const password = req.body.USER_PW;
   console.log('success');
@@ -131,7 +146,6 @@ app.post('/KoreanAPI', (req, res) => {
 
   const https = require('https');
 
-  console.log('success');
   https.get(url, (response) => {
     let data = '';
 
@@ -152,6 +166,6 @@ app.post('/KoreanAPI', (req, res) => {
 
 //-------------------------------------------------------------------------------------
 // listener
-app.listen(app.get('port'), () => {
-  console.log(`Server is running on port ${app.get('port')}`);
+httpsServer.listen(443, () => {
+	console.log('HTTPS Server running on port 443');
 });
