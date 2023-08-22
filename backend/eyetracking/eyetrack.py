@@ -1,6 +1,7 @@
 import cv2
 import dlib
 import numpy as np
+import math
 
 def eyetract(byteImg):
 
@@ -16,9 +17,9 @@ def eyetract(byteImg):
     # 얼굴 인식
     faces = detector(img)
 
-    # 인식이 되지 않은 경우
-    if len(faces) == 0:
-        return -1
+    # 인식이 되지 않은 경우 or 두명이상 인식
+    if len(faces) != 1:
+        return 0
 
     for face in faces:
         # 얼굴 특징점 추출
@@ -56,7 +57,9 @@ def eyetract(byteImg):
         contours_right_eye, _ = cv2.findContours(threshold_right_eye, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         contours_right_eye = sorted(contours_right_eye, key=lambda x: cv2.contourArea(x), reverse=True)
 
-        etCount = 0
+        #etCount = 0
+        distance_left = 3
+        distance_right = 3
 
         # 왼쪽 눈동자 위치 찾기 및 컨투어 그리기
         if len(contours_left_eye) > 0:
@@ -65,6 +68,10 @@ def eyetract(byteImg):
             pupil_center_x1 = x1 + w1 // 2 + left_eye_x
             pupil_center_y1 = y1 + h1 // 2 + left_eye_y
 
+            # 왼쪽 눈동자와 중앙 사이의 거리
+            distance_left = math.sqrt((pupil_center_x1 - (left_eye_x + left_eye_w // 2))**2 + (pupil_center_y1 - (left_eye_y + left_eye_h // 2))**2)
+
+            '''
             if pupil_center_y1 < left_eye_y + left_eye_h // 2:
                 print("왼쪽 눈이 위를 보고 있습니다.")
                 etCount += 1
@@ -78,6 +85,7 @@ def eyetract(byteImg):
             elif pupil_center_x1 > left_eye_x + left_eye_w // 2:
                 print("왼쪽 눈이 오른쪽을 보고 있습니다.")
                 etCount += 1
+            '''
 
         # 오른쪽 눈동자 위치 찾기 및 컨투어 그리기
         if len(contours_right_eye) > 0:
@@ -86,6 +94,10 @@ def eyetract(byteImg):
             pupil_center_x2 = x2 + w2 // 2 + right_eye_x
             pupil_center_y2 = y2 + h2 // 2 + right_eye_y
 
+            # 오른쪽 눈동자와 중앙 사이의 거리
+            distance_right = math.sqrt((pupil_center_x2 - (right_eye_x + right_eye_w // 2))**2 + (pupil_center_y2 - (right_eye_y + right_eye_h // 2))**2)
+
+            '''
             if pupil_center_y2 < right_eye_y + right_eye_h // 2:
                 print("오른쪽 눈이 위를 보고 있습니다.")
                 etCount += 1
@@ -99,8 +111,12 @@ def eyetract(byteImg):
             elif pupil_center_x2 > right_eye_x + right_eye_w // 2:
                 print("오른쪽 눈이 오른쪽을 보고 있습니다.")
                 etCount += 1
+            '''
 
-    return etCount
+        if distance_left + distance_right < 5:
+            return 1
+        else:
+            return 0
 
 if __name__ == '__main__':
     eyetract()

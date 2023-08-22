@@ -1,7 +1,10 @@
+import 'dart:js_interop';
+
 import 'package:camera/camera.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 import 'package:http_parser/http_parser.dart';
+import 'dart:convert';
 
 class FaceImgSender {
   CameraController controller;
@@ -39,10 +42,13 @@ class FaceImgSender {
       ));
       var response = await request.send();
 
-      response.stream.listen((value) {
-        print(value);
-      });
+      var resultBytes = await response.stream.toBytes();
+      var result = String.fromCharCodes(resultBytes);
 
+      if (result.compareTo('1') == 1) { 
+        _count += 1;
+        print(_count);
+      }
       sendFaceImg();
     });
   }

@@ -25,20 +25,17 @@ def faceRecognize():
     imagefile = request.files['image']
     byteImg = imagefile.read()
 
-    etCount = eyetrack.eyetract(byteImg)
-    return str(etCount)
+    etScore = eyetrack.eyetract(byteImg)
+    return jsonify(etScore)
 
-# 정답 처리
+# 이야기 이해 검사 정답 처리
 @app.route('/checkAnswer', methods=['POST'])
 def checkAnswer():
-    print('connect')
     data = request.get_json()
-    print(data)
     answers = data['answers']
     videoNum = data['videoNum']
 
     result = check_answers(answers, videoNum)
-    print(result)
     return jsonify(result)
 
 if __name__ == '__main__':
