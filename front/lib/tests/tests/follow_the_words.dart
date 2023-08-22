@@ -4,6 +4,7 @@ import 'package:snail/tests/count_down.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:snail/tests/eyetracking.dart';
 import 'package:camera/camera.dart';
+import 'package:just_audio/just_audio.dart';
 import 'dart:async';
 import 'dart:math';
 import 'dart:html' as html;
@@ -43,6 +44,7 @@ class _followeTestState extends State<followTest> {
   int time = 0; // 시행 횟수
   int wordNumber = 2; //단어 개수
   int numb = 0; // 단어 개수 별 시행 횟수
+  bool isListened = false;
 
   // int countdownTime = 3;
   int countdownSeconds = 3; // Countdown seconds
@@ -56,6 +58,7 @@ class _followeTestState extends State<followTest> {
   List<String> UserInput = [];
   List<int> availableIndices = [];
 
+  final player = AudioPlayer();
   final _speech = stt.SpeechToText();
   late CameraController _controller;
   late var imgSender;
@@ -102,14 +105,12 @@ class _followeTestState extends State<followTest> {
   List<bool> correct = [];
   int correctCount = 0;
 
-  void checkAnswer(correctAnswer) {
+  void checkAnswer(correctAnswer) async {
     String userAnswer = user_input;
 
-    print(userAnswer);
-    print(correctAnswer);
-    print(userAnswer == correctAnswer);
     //await Future.delayed(Duration(seconds: 1));
     user_input = '';
+    isListened = false;
     if (userAnswer == correctAnswer) {
       setState(() {
         correct.add(true);
@@ -120,6 +121,7 @@ class _followeTestState extends State<followTest> {
         correct.add(false);
       });
     }
+    await Future.delayed(Duration(seconds: 2));
     getNextTest();
   }
 
@@ -149,9 +151,16 @@ class _followeTestState extends State<followTest> {
         // 이미 선택한 인덱스를 제거하여 중복 선택 방지
         availableIndices.removeAt(randomIndex);
       }
-      print(Answer);
     });
-    // await 음성 들려주기
+    // 음성 들려주기
+    for (var sound in Answer) {
+      await player.setAsset('assets/sounds/repeat_test/$sound.wav');
+      await player.play();
+      await Future.delayed(Duration(seconds: 2));
+    }
+    setState(() {
+      isListened = true;
+    });
     _listen();
   }
 
@@ -164,7 +173,6 @@ class _followeTestState extends State<followTest> {
         partialResults: true,
         listenMode: stt.ListenMode.dictation,
         onResult: (result) {
-          print(result.recognizedWords);
           setState(() {
             _speech.stop();
             if (result.finalResult) {
@@ -228,9 +236,7 @@ class _followeTestState extends State<followTest> {
                       // 초성
                       Container(
                         width: 800,
-
                         height: 300,
-
                         padding: EdgeInsets.all(20),
                         // margin: EdgeInsets.fromLTRB(0, 50, 0, 0),
                         child: Center(
@@ -269,7 +275,7 @@ class _followeTestState extends State<followTest> {
                       const SizedBox(height: 50),
                       // 확인 버튼
                       ElevatedButton(
-                        onPressed: (user_input == '')
+                        onPressed: (!isListened)
                             ? null
                             : () {
                                 // 체크 로직
@@ -281,7 +287,7 @@ class _followeTestState extends State<followTest> {
                               color: Colors.black, fontWeight: FontWeight.w700),
                         ),
                         style: ElevatedButton.styleFrom(
-                          primary: (user_input == '')
+                          primary: (!isListened)
                               ? Color(0xFFd9d9d9)
                               : Color(0xFFffcb39),
                           shape: RoundedRectangleBorder(
