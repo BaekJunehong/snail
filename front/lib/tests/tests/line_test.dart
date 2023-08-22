@@ -162,92 +162,103 @@ class _LineTestState extends State<LineTest> {
   Widget build(BuildContext context) {
     print(_selectedIndices);
     return Scaffold(
-      body: Center(
-        child: Container(
-          width: 862,
-          height: 554,
-          child: Stack(
-            children: [
-              if (_selectedIndices.length >= 2)
-                ...List.generate(
-                  _selectedIndices.length - 1,
-                  (index) => Positioned.fill(
-                    child: CustomPaint(
-                      painter: LinePainter(
-                        start: _positions[_selectedIndices[index]] +
-                            Offset(50, 50), // Adjusted for circle size
-                        end: _positions[_selectedIndices[index + 1]] +
-                            Offset(50, 50), // Adjusted for circle size
+      body: Stack(
+        children: [
+          Image.asset(
+            'assets/background/background_line.png', // 배경 이미지 파일 경로
+            fit: BoxFit.fill,
+            width: double.infinity, // 너비를 전체 화면으로 설정
+            // height: double.infinity,
+          ),
+          Center(
+            child: Container(
+              width: 862,
+              height: 554,
+              child: Stack(
+                children: [
+                  if (_selectedIndices.length >= 2)
+                    ...List.generate(
+                      _selectedIndices.length - 1,
+                      (index) => Positioned.fill(
+                        child: CustomPaint(
+                          painter: LinePainter(
+                            start: _positions[_selectedIndices[index]] +
+                                Offset(50, 50), // Adjusted for circle size
+                            end: _positions[_selectedIndices[index + 1]] +
+                                Offset(50, 50), // Adjusted for circle size
+                          ),
+                        ),
+                      ),
+                    ),
+                  ...List.generate(
+                    7,
+                    (index) => Positioned(
+                      left: _positions[index].dx,
+                      top: _positions[index].dy,
+                      child: MouseRegion(
+                        onHover: (_) {
+                          // print(33);
+                          // print(!_selectedIndices.contains(index));
+                          // print(MousePressed);
+                          MousePressed = true;
+                        },
+                        child: GestureDetector(
+                          onTap: () {
+                            if (MousePressed &&
+                                !_selectedIndices.contains(index)) {
+                              setState(() {
+                                print(11);
+                                _circleColors[index] = Color(0xFFffcb39);
+                                MousePressed = false;
+                                _selectedIndices.add(index);
+                                if (_selectedIndices.length == 7) {
+                                  CheckAnswer(_selectedIndices);
+                                }
+                              });
+                            }
+                          },
+                          child: isVisible
+                              ? null
+                              : Container(
+                                  width: 100,
+                                  height: 100,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: _circleColors[index],
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      (index + 1).toString(),
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ...List.generate(
-                7,
-                (index) => Positioned(
-                  left: _positions[index].dx,
-                  top: _positions[index].dy,
-                  child: MouseRegion(
-                    onHover: (_) {
-                      // print(33);
-                      // print(!_selectedIndices.contains(index));
-                      // print(MousePressed);
-                      MousePressed = true;
-                    },
-                    child: GestureDetector(
-                      onTap: () {
-                        if (MousePressed && !_selectedIndices.contains(index)) {
-                          setState(() {
-                            print(11);
-                            _circleColors[index] = Color(0xFFffcb39);
-                            MousePressed = false;
-                            _selectedIndices.add(index);
-                            if (_selectedIndices.length == 7) {
-                              CheckAnswer(_selectedIndices);
-                            }
-                          });
-                        }
-                      },
-                      child: isVisible
-                          ? null
-                          : Container(
-                              width: 100,
-                              height: 100,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: _circleColors[index],
-                              ),
-                              child: Center(
-                                child: Text(
-                                  (index + 1).toString(),
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
+                  Positioned(
+                    child: Visibility(
+                        visible: isVisible,
+                        child: Center(
+                          child: CountdownTimer(seconds: 3),
+                        )),
+                  ),
+                  if (_selectedIndices.length == 7 && isCorrected)
+                    Positioned(
+                      child: Center(
+                        child: correctSign(),
+                      ),
                     ),
-                  ),
-                ),
+                ],
               ),
-              Positioned(
-                child: Visibility(
-                    visible: isVisible,
-                    child: Center(
-                      child: CountdownTimer(seconds: 3),
-                    )),
-              ),
-              if (_selectedIndices.length == 7 && isCorrected)
-                Positioned(
-                  child: Center(
-                    child: correctSign(),
-                  ),
-                ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

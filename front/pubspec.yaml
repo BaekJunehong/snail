@@ -108,8 +108,21 @@ flutter:
     - assets/snail.png
     - assets/snail_rainbow.png
     - assets/loading.gif
+
     - assets/story_sample.mp4
     - assets/story_sample.png
+    - assets/background/background_story.png
+    - assets/background/background_stroop.png
+    - assets/background/background_voca_rp.png
+    - assets/background/background_line.png
+    - assets/background/background_chosung.png
+    - assets/background/background_video.png
+    # - assets/background_story.png
+
+    - assets/background_story.png
+    - assets/go_with_me.png
+    - assets/what_is_my_dream_color.png
+
     # - assets/child_voice.mp3
     # - assets/chosung_guide_voice.mp3
 
