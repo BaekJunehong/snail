@@ -37,7 +37,6 @@ class _followeTestState extends State<followTest> {
     '오리',
     '과자'
   ];
-  int test_set_time = 10; // 테스트 세트별 시간
 
   Timer? timer; // 타이머
   int seconds = 0; // 경과 초
@@ -186,6 +185,7 @@ class _followeTestState extends State<followTest> {
   void dispose() {
     super.dispose();
     // 화면이 제거될 때 타이머 해제
+    _speech.cancel();
     timer?.cancel();
     countdownTimer?.cancel();
   }

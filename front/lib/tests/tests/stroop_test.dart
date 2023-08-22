@@ -81,10 +81,10 @@ class _StroopTestState extends State<StroopTest> {
 
   @override
   void dispose() {
-    countdownTimer?.cancel(); // Cancel the countdown timer
-    timer?.cancel(); // Cancel the test timer
-    _speech.stop(); // Stop the speech recognition
     super.dispose();
+    _speech.cancel(); // Stop the speech recognition
+    timer?.cancel(); // Cancel the test timer
+    countdownTimer?.cancel(); // Cancel the countdown timer
   }
 
   void startTestTimer() {
