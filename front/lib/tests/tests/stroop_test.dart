@@ -38,7 +38,7 @@ class _StroopTestState extends State<StroopTest> {
   int seconds = 0; // 경과 초
   int time = 0; // 시행 횟수
 
-  int test_total_time = 10; // 테스트 총 시간
+  int test_total_time = 120; // 테스트 총 시간
 
   final _speech = stt.SpeechToText();
   late CameraController _controller;
@@ -96,7 +96,8 @@ class _StroopTestState extends State<StroopTest> {
         countdownSeconds = 3;
         // isVisible = true;
         if (time == test_total_time) {
-          Navigator.pop(context, correctCount);
+          int etCount = imgSender.stopSending();
+          Navigator.pop(context, [correctCount, etCount]);
         }
       });
     });

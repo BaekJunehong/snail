@@ -119,20 +119,37 @@ class _ProfileSelectionScreenState extends State<ProfileSelectionScreen> {
   }
 }
 
-class ProfileCard extends StatelessWidget {
+class ProfileCard extends StatefulWidget {
   final Map<String, dynamic>? child_info;
   final VoidCallback? onRefresh;
 
   ProfileCard({this.child_info, this.onRefresh});
 
   @override
+  _ProfileCardState createState() => _ProfileCardState();
+}
+
+class _ProfileCardState extends State<ProfileCard> {
+  String child_name = '';
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.child_info != null) {
+      child_name = widget.child_info!['NAME'];
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    print(child_name);
+
     return OutlinedButton(
       onPressed: () async {
-        if (child_info != null) {
+        if (widget.child_info != null) {
           // 캐릭터가 있을 경우 starttest.dart 페이지로 이동
-          await storage.write(key: 'CHILD_ID', value: child_info!['CHILD_ID']);
-          await storage.write(key: 'CHILD_NAME', value: child_info!['NAME']);
+          await storage.write(key: 'CHILD_ID', value: widget.child_info!['CHILD_ID']);
+          await storage.write(key: 'CHILD_NAME', value: widget.child_info!['NAME']);
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => StartTestScreen()),
@@ -143,7 +160,7 @@ class ProfileCard extends StatelessWidget {
             context,
             MaterialPageRoute(builder: (context) => ChildInfoInputScreen()),
           ).then((value) {
-            if (onRefresh != null) onRefresh!();
+            if (widget.onRefresh != null) widget.onRefresh!();
           });
         }
       },
@@ -161,7 +178,7 @@ class ProfileCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(50),
             ),
             child: Center(
-              child: (child_info != null)
+              child: (widget.child_info != null)
                   ? Image.asset('assets/profile.png') // 캐릭터가 있을 경우 다른 이미지 표시
                   : Icon(Icons.add, size: 40, color: Colors.white),
             ),
@@ -169,7 +186,7 @@ class ProfileCard extends StatelessWidget {
           SizedBox(height: 10),
           //자녀 이름 입력하기!
           Text(
-            '자녀 이름',
+            child_name,
             style: TextStyle(
               fontSize: 18,
               color: Colors.black,
