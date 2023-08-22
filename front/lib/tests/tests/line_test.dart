@@ -31,7 +31,7 @@ class _LineTestState extends State<LineTest> {
   int seconds = 0; // 경과 초
   int time = 0; // 시행 횟수
 
-  int test_total_time = 180; // 테스트 총 시간
+  int test_total_time = 120; // 테스트 총 시간
 
   int correctCount = 0;
 

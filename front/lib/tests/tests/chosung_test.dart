@@ -21,8 +21,8 @@ class _chosungTestState extends State<chosungTest> {
   String userInput = "";
   List<String> chosungs = ['ㄱ', 'ㅅ', 'ㅇ'];
   int SearchNum = 0; //특정 단어로 검색한 갯수
-  int test_set_time = 20; // 테스트 세트별 시간
-  int test_total_time = 180; // 테스트 총 시간
+  int test_set_time = 30; // 테스트 세트별 시간
+  int test_total_time = 90; // 테스트 총 시간
 
   Timer? timer; // 타이머
   int seconds = 0; // 경과 초
