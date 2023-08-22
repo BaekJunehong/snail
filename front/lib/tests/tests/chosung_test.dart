@@ -135,8 +135,8 @@ class _chosungTestState extends State<chosungTest> {
 
   //검색의 결과가 나왔는가? -> 검색 결과 개수 초기화 함수
   Future<void> KoreanAPI(String userInput) async {
-    var url = Uri.http(
-        'ec2-43-202-125-41.ap-northeast-2.compute.amazonaws.com:3000',
+    var url = Uri.https(
+        'server-snail.kro.kr:3443',
         '/KoreanAPI');
 
     try {
@@ -241,6 +241,7 @@ class _chosungTestState extends State<chosungTest> {
   void dispose() {
     super.dispose();
     // 화면이 제거될 때 타이머 해제
+    _speech.cancel();
     timer?.cancel();
     countdownTimer?.cancel();
   }

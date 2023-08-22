@@ -24,7 +24,6 @@ class _LineTestState extends State<LineTest> {
   bool isVisible = true;
   int countdownSeconds = 3; // Countdown seconds
   Timer? countdownTimer; // Countdown timer
-  bool _isRunning = true; //true일때 countdown
 
   //game time
   Timer? timer; // 타이머
@@ -58,8 +57,7 @@ class _LineTestState extends State<LineTest> {
         } else {
           // 카운트다운이 끝나면 시작
           countdownTimer?.cancel(); // Cancel the countdown timer
-          _isRunning = true;
-          //startTestTimer();
+          startTestTimer();
         }
       });
     });
@@ -69,22 +67,12 @@ class _LineTestState extends State<LineTest> {
     // 1초마다 타이머 콜백
     timer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
-        if (_isRunning) {
-          seconds++; // 경과 시간(초) 갱신
-          time += 1;
-          countdownSeconds = 3;
-          // isVisible = true;
-          _isRunning = false;
-          if (time == test_total_time) {
-            Navigator.pop(context, [correctCount, -1]); // 선로잇기는 etcount 없음
-          }
-        } else {
-          if (countdownSeconds > 1) {
-            countdownSeconds--;
-          } else {
-            // isVisible = false;
-            _isRunning = true;
-          }
+        print(seconds);
+        seconds++; // 경과 시간(초) 갱신
+        time += 1;
+        // isVisible = true;
+        if (time == test_total_time) {
+          Navigator.pop(context, [correctCount, -1]); // 선로잇기는 etcount 없음
         }
       });
     });
