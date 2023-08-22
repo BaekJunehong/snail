@@ -93,7 +93,7 @@ class _StartTestScreenState extends State<StartTestScreen> {
                       'SCORE_CHOSUNG': score_chosung.toString(),
                       'SCORE_REPEAT': score_repeat.toString(),
                       'SCORE_STORY' : score_story.toString(),
-                      'SCORE_EYETRACK': score_eyetrack,
+                      'SCORE_EYETRACK': score_eyetrack.toString(),
                       'CHILD_ID': child_id
                       });
                   }
