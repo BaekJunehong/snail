@@ -121,7 +121,9 @@ class _followeTestState extends State<followTest> {
         correct.add(false);
       });
     }
-    await Future.delayed(Duration(seconds: 2));
+    if (numb <= 5) {
+      await Future.delayed(Duration(seconds: 2));
+    }
     getNextTest();
   }
 

@@ -13,7 +13,7 @@ class _LoadingResultScreenState extends State<LoadingResultScreen> {
   void initState() {
     super.initState();
     // 10초 후에 버튼을 보여주고 텍스트 변경
-    Future.delayed(Duration(seconds: 10), () {
+    Future.delayed(Duration(seconds: 5), () {
       setState(() {
         _showButton = true;
         _displayText = '게임 결과를 저장했어요!'; // 텍스트 변경
