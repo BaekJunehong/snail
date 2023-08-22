@@ -112,6 +112,7 @@ class _chosungTestState extends State<chosungTest> {
           if (seconds % test_set_time == 0) {
             // n초 마다 초성 바꾸기
             order += 1;
+            userInput = '';
             countdownSeconds = 3;
             isVisible = true;
             _isRunning = false;
@@ -179,7 +180,7 @@ class _chosungTestState extends State<chosungTest> {
 
   // user의 input 값을 받아 해당 단어가 존재하는지 검색
   // 있다면 개수가 0이 아닐 것.
-  void checkAnswer(String userInput) async {
+  void checkAnswer() async {
     await KoreanAPI(userInput); // 사전 api 필요
 
     print('$userInput API search number $SearchNum');
@@ -189,16 +190,10 @@ class _chosungTestState extends State<chosungTest> {
     extractConsonant = convertArchaicToModernJamo(extractConsonant);
     String cho = chosungs[order];
 
-    print('초성$cho');
-    print('초성$extractConsonant');
-    print(extractConsonant == cho);
     if (SearchNum > 0 && extractConsonant == cho) {
-      print(00);
-      setState(() {
-        isCorrected = true;
-
-        correctCount++;
-      });
+      isCorrected = true;
+      correctCount++;
+      setState(() {});
       await Future.delayed(Duration(seconds: 1));
       setState(() {
         isCorrected = false;
@@ -207,7 +202,6 @@ class _chosungTestState extends State<chosungTest> {
     } else {
       setState(() {
         isCorrected = false;
-        // 틀린거로 바꾸면 ㄱㅊ
       });
       await Future.delayed(Duration(seconds: 1));
       setState(() {
@@ -218,22 +212,24 @@ class _chosungTestState extends State<chosungTest> {
   }
 
   void getAudio() async {
-    await html.window.navigator.mediaDevices?.getUserMedia({'audio': true});
-    if (!_speech.isListening) {
-      _speech.listen(
-        listenFor: Duration(seconds: 1000),
-        pauseFor: Duration(seconds: 1000),
-        cancelOnError: true,
-        partialResults: true,
-        listenMode: stt.ListenMode.dictation,
-        onResult: (result) async {
-          _speech.stop();
-          userInput = result.recognizedWords;
-          if (result.finalResult) {
-            checkAnswer(userInput);
-          }
-        },
-      );
+    if (_isRunning) {
+      await html.window.navigator.mediaDevices?.getUserMedia({'audio': true});
+      if (!_speech.isListening) {
+        _speech.listen(
+          listenFor: Duration(seconds: 1000),
+          pauseFor: Duration(seconds: 1000),
+          cancelOnError: true,
+          partialResults: true,
+          listenMode: stt.ListenMode.dictation,
+          onResult: (result) async {
+            _speech.stop();
+            userInput = result.recognizedWords;
+            if (result.finalResult) {
+              checkAnswer();
+            }
+          },
+        );
+      }
     }
   }
 
