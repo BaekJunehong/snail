@@ -75,7 +75,7 @@ class _StoryTestState extends State<StoryTest> {
             // height: double.infinity, // 컨테이너를 화면 높이에 맞게 설정
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/background/background_video.png'),
+                image: AssetImage('assets/background_video.png'),
                 fit: BoxFit.fill, // 이미지를 컨테이너에 꽉 채우도록 설정
               ),
             ),

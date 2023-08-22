@@ -111,7 +111,7 @@ flutter:
 
     - assets/story_sample.mp4
     - assets/story_sample.png
-    - assets/background/background_story.png
+    - assets/background_story.png
     - assets/background/background_stroop.png
     - assets/background/background_voca_rp.png
     - assets/background/background_line.png
