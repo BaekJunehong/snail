@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:snail/tests/tests/story_test/chat_bubble.dart';
+import 'package:snail/tests/tests/story_test/story_video.dart';
 import 'package:snail/login.dart';
 
 void main() {
@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
       ),
       title: 'SNaiL',
       home: Scaffold(
-        body: LoginScreen(),
+        body: StoryTest(),
       ), //처음 접하는 화면을 SplashScreen으로 설정.
     );
   }

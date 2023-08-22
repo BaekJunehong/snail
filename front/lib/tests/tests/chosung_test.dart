@@ -261,7 +261,7 @@ class _chosungTestState extends State<chosungTest> {
       body: Stack(
         children: [
           Image.asset(
-            'assets/background/background_chosung.png', // 배경 이미지 파일 경로
+            'assets/background/background_story.png', // 배경 이미지 파일 경로
             fit: BoxFit.fill,
             width: double.infinity, // 너비를 전체 화면으로 설정
             // height: double.infinity,

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:snail/tests/result/loadingresult.dart';
 import 'package:snail/tests/tests/story_test/chat_bubble.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
-import 'package:snail/tests/eyetracking.dart';
-import 'package:camera/camera.dart';
 import 'dart:html' as html;
+import 'package:snail/tests/tests/story_test/Answer_check.dart';
 
 class StoryTestScreen extends StatefulWidget {
   final int videoNum; // 실행된 비디오 index
@@ -20,6 +20,12 @@ class _StoryTestScreenState extends State<StoryTestScreen> {
   int answeredBubbleCount = 0;
   String userInput = '';
   final _speech = stt.SpeechToText();
+
+  //정답
+  List<String> Answer = [''];
+  //정답 체크
+  List<bool> checkAnswerAtBack = [];
+  int trueCountNum = 0;
 
   //정답처리 관련 변수
   bool isCorrected = false;
@@ -42,35 +48,37 @@ class _StoryTestScreenState extends State<StoryTestScreen> {
       '할머니께서는 오색 색동옷을 입으면 옷을 입은 사람에게 무슨 일이 일어난다고 하셨나요?'
     ]
   ];
-  List<String> Answer = [''];
-  late CameraController _controller;
-  late var imgSender;
 
   @override
   void initState() {
     super.initState();
-    openCamera();
     _showBubblesStart();
     _speech.initialize();
     startQuestionSequence();
   }
 
-  Future<void> openCamera() async {
-    _controller = await initializeCamera();
-
-    imgSender = FaceImgSender(_controller);
-    imgSender.startSending();
-  }
+  List<String> temp = [];
 
   void startQuestionSequence() {
     if (answeredBubbleCount < Question[widget.videoNum].length) {
       _showBubbleQuestion();
-      print(answeredBubbleCount);
       _onAnswerBubbleSubmitted();
-      print(answeredBubbleCount);
     } else {
+      setState(() {
+        temp = Answer; //넘겨주는 data는 Answer의 0 index 삭제
+      });
+      temp.removeAt(0);
+      print(temp);
+      checkAnswerAtBack = checkAnswers(temp, widget.videoNum) as List<bool>;
+      trueCountNum = trueCount(checkAnswerAtBack);
       _showBubbleLast();
     }
+    print(temp);
+  }
+
+  int trueCount(List<bool> boolList) {
+    int trueCount = boolList.where((element) => element).length;
+    return trueCount;
   }
 
   void _showBubblesStart() async {
@@ -84,15 +92,12 @@ class _StoryTestScreenState extends State<StoryTestScreen> {
   //문제 생성
   void _showBubbleQuestion() async {
     await Future.delayed(Duration(milliseconds: 2000), () {
-      print('QuestionBubble = $answeredBubbleCount');
       setState(() {
         showQuestionBubble = true;
       });
     });
     await Future.delayed(Duration(milliseconds: 2000), () {
       setState(() {
-        print('AnswerBubble = $Answer');
-        print(showEndBubble);
         showAnswerBubble = true; // 응답 말풍선을 표시
       });
     });
@@ -122,17 +127,16 @@ class _StoryTestScreenState extends State<StoryTestScreen> {
   }
 
   void getNextQuestion() async {
-    print('getNextQuestion $answeredBubbleCount');
     await html.window.navigator.mediaDevices?.getUserMedia({'audio': true});
     if (!_speech.isListening) {
       _speech.listen(
-        listenFor: Duration(seconds: 1000),
-        pauseFor: Duration(seconds: 1000),
+        listenFor: Duration(seconds: 7),
+        pauseFor: Duration(seconds: 10),
         cancelOnError: true,
-        partialResults: true,
+        partialResults: false,
         listenMode: stt.ListenMode.dictation,
         onResult: (result) async {
-          _speech.stop();
+          // _speech.stop();
           userInput = result.recognizedWords;
           if (result.finalResult) {
             Answer.add(userInput);
@@ -145,8 +149,6 @@ class _StoryTestScreenState extends State<StoryTestScreen> {
   }
 
   void _showBubbleLast() {
-    print('showBubbleLast = $answeredBubbleCount');
-    print('showEndBubble = $showEndBubble');
     setState(() {
       showEndBubble = true;
     });
@@ -184,7 +186,7 @@ class _StoryTestScreenState extends State<StoryTestScreen> {
           SingleChildScrollView(
             child: Padding(
               //좌우: 200, 상하: 50
-              padding: EdgeInsets.fromLTRB(200, 50, 200, 50),
+              padding: EdgeInsets.fromLTRB(150, 50, 150, 50),
               child: Column(
                 children: [
                   AnimatedContainer(
@@ -208,8 +210,12 @@ class _StoryTestScreenState extends State<StoryTestScreen> {
                   ElevatedButton(
                     onPressed: isButtonEnabled
                         ? () {
-                            int etCount = imgSender.stopSending();
-                            Navigator.pop(context, [correctCount, etCount]);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => LoadingResultScreen(),
+                              ),
+                            );
                           }
                         : null,
                     child: Text(
