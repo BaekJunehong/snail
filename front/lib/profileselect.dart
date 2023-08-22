@@ -142,8 +142,6 @@ class _ProfileCardState extends State<ProfileCard> {
 
   @override
   Widget build(BuildContext context) {
-    print(child_name);
-
     return OutlinedButton(
       onPressed: () async {
         if (widget.child_info != null) {

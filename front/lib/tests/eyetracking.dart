@@ -47,7 +47,6 @@ class FaceImgSender {
 
       if (result.compareTo('1') == 1) { 
         _count += 1;
-        print(_count);
       }
       sendFaceImg();
     });
