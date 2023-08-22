@@ -10,24 +10,24 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-void main() => runApp(Audio2Text(gameTime: 5,));
+String text = '';
+Function(String)? onTextChanged;
 
 class AudioRecorder extends StatefulWidget {
-  final void Function(String path) onRecordDone;
-  final int gameTime;
-  const AudioRecorder({Key? key, required this.onRecordDone, required this.gameTime}) : super(key: key);
-
+  bool isRecordable;
+  int testTime;
+  AudioRecorder({Key? key, required this.isRecordable, required this.testTime}) : super(key: key);
+  
   @override
-  State<AudioRecorder> createState() => _AudioRecorderState(onRecordDone, gameTime);
+  State<AudioRecorder> createState() => _AudioRecorderState(isRecordable, testTime);
 }
 
 class _AudioRecorderState extends State<AudioRecorder> {
   final _audioRecorder = Record();
-  final void Function(String path) onRecordDone;
-  bool _isRecording = false;
-  final int gameTime;
+  bool isRecordable;
+  int testTime;
 
-  _AudioRecorderState(this.onRecordDone, this.gameTime);
+  _AudioRecorderState(this.isRecordable, this.testTime);
 
   @override
   void initState() {
@@ -56,32 +56,28 @@ class _AudioRecorderState extends State<AudioRecorder> {
     var _speech = stt.SpeechToText();
     void _listen() async {
       await _speech.initialize();
-      if (!_isRecording) {
-        await _recordstart();
-      }
+      await _recordstart();
       await _speech.listen(
-        listenFor: Duration(seconds: 10),
-        pauseFor: Duration(seconds: 2),
+        listenFor: Duration(seconds: 1000),
+        pauseFor: Duration(seconds: 1000),
         cancelOnError: false,
         partialResults: true,
         onResult: (result) async {
-          //print(result);
+          print(result);
           if (result.finalResult) {
             await _recordstop();
           }
         },
       );
     }
+    _listen();
+
     int popTime = 0;
-    Timer.periodic(Duration(seconds: 1), (timer) async {
+    Timer.periodic(Duration(seconds: 1), (timer) async{ 
       popTime++;
-      if (popTime >= gameTime) {
+      if (popTime >= testTime) {
         timer.cancel();
-        Navigator.pop(context);
-      }
-      else if (!_speech.isListening) {
-        _recordstop();
-        _listen();
+        await _recordstop();
       }
     });
   }
@@ -89,40 +85,21 @@ class _AudioRecorderState extends State<AudioRecorder> {
   // 녹음 시작
   Future<void> _recordstart() async {
     await _audioRecorder.start();
-    setState(() => _isRecording = true);
+    setState(() {});
   }
 
   // 녹음 중지
   Future<void> _recordstop() async {
     final path = await _audioRecorder.stop();
-    setState(() => _isRecording = false);
+    setState(() {});
     if (path != null) {
-      onRecordDone(path);
+      _postAudio(path);
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(); // UI가 필요하지 않으므로 빈 컨테이너 반환
-  }
-
-  @override
-  void dispose() {
-    _audioRecorder.dispose();
-    super.dispose();
-  }
-}
-
-class Audio2Text extends StatelessWidget {
-  final int gameTime;
-  Audio2Text({required this.gameTime, Key? key}) : super(key: key);
-
-  final StreamController<String> _responseController = StreamController<String>();
-  
-  // 서버로 음성 데이터 전달 및 해당하는 텍스트 받아오기
   Future<void> _postAudio(String path) async {
     //print('Recorded file path: $path');
-    String text = '';
+
     var url = Uri.http('ec2-43-202-125-41.ap-northeast-2.compute.amazonaws.com:3033', '/audioRecognition');
 
     // 웹
@@ -141,8 +118,9 @@ class Audio2Text extends StatelessWidget {
           final encoded = base64Encode(buffer);
 
           var response = await http.post(url, body: {'audio': encoded});
-          _responseController.add(text);
           text = response.body;
+          print(text);
+          //onTextChanged!(text);
         });
       });
       request.send();
@@ -153,19 +131,13 @@ class Audio2Text extends StatelessWidget {
       var encoded = base64Encode(bytes);
 
       var response = await http.post(url, body: {'audio': encoded});
-      _responseController.add(text);
       text = response.body;
+      onTextChanged!(text);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        body: AudioRecorder(
-          onRecordDone: (path) => _postAudio(path), gameTime: gameTime
-        )
-      ),
-    );
+    return Container(); // UI가 필요하지 않으므로 빈 컨테이너 반환
   }
 }
