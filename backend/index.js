@@ -97,7 +97,6 @@ app.post('/saveChildInfo', (req, res) => {
 
 // 로그인 정보 확인
 app.post('/login', (req, res) => {
-  console.log(11);
   const user_id = req.body.USER_ID;
   const password = req.body.USER_PW;
   console.log('success');
