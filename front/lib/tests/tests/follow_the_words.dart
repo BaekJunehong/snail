@@ -131,7 +131,7 @@ class _followeTestState extends State<followTest> {
     listenCount = 0;
     if (numb >= 6) {
       int etCount = imgSender.stopSending();
-      Navigator.pop(context, correctCount);
+      Navigator.pop(context, [correctCount, etCount]);
     }
     setState(() {
       if (numb != 0 && numb % 2 == 0) {

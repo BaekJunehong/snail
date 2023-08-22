@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:snail/tests/result/loadingresult.dart';
 import 'package:snail/tests/tests/story_test/chat_bubble.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:snail/tests/eyetracking.dart';
+import 'package:camera/camera.dart';
 import 'dart:html' as html;
 
 class StoryTestScreen extends StatefulWidget {
@@ -42,13 +43,23 @@ class _StoryTestScreenState extends State<StoryTestScreen> {
     ]
   ];
   List<String> Answer = [''];
+  late CameraController _controller;
+  late var imgSender;
 
   @override
   void initState() {
     super.initState();
+    openCamera();
     _showBubblesStart();
     _speech.initialize();
     startQuestionSequence();
+  }
+
+  Future<void> openCamera() async {
+    _controller = await initializeCamera();
+
+    imgSender = FaceImgSender(_controller);
+    imgSender.startSending();
   }
 
   void startQuestionSequence() {
@@ -197,12 +208,8 @@ class _StoryTestScreenState extends State<StoryTestScreen> {
                   ElevatedButton(
                     onPressed: isButtonEnabled
                         ? () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => LoadingResultScreen(),
-                              ),
-                            );
+                            int etCount = imgSender.stopSending();
+                            Navigator.pop(context, [correctCount, etCount]);
                           }
                         : null,
                     child: Text(

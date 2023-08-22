@@ -96,7 +96,8 @@ class _StroopTestState extends State<StroopTest> {
         countdownSeconds = 3;
         // isVisible = true;
         if (time == test_total_time) {
-          Navigator.pop(context, correctCount);
+          int etCount = imgSender.stopSending();
+          Navigator.pop(context, [correctCount, etCount]);
         }
       });
     });
