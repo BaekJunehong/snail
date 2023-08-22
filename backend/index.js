@@ -138,6 +138,7 @@ app.post('/fetchChildData', (req, res) => {
   });
 });
 
+// 국어사전 api
 app.post('/KoreanAPI', (req, res) => {
   const word = req.body.word;
 
@@ -160,7 +161,6 @@ app.post('/KoreanAPI', (req, res) => {
     console.error(error);
     
   });
-
 })
 
 
