@@ -88,8 +88,8 @@ class _LoginScreenState extends State<LoginScreen> {
             ElevatedButton(
                 onPressed: () async {
                   //로그인 시 함수 입력
-                  var url = Uri.http(
-                      'ec2-43-202-125-41.ap-northeast-2.compute.amazonaws.com:3000',
+                  var url = Uri.https(
+                      'server-snail.kro.kr:3443',
                       '/login');
                   var response = await http
                       .post(url, body: {'USER_ID': _id, 'USER_PW': _pw});

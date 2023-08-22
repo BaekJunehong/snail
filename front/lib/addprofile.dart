@@ -212,8 +212,8 @@ class _ChildInfoInputScreenState extends State<ChildInfoInputScreen> {
 
                                 var _birth =
                                     '${_selectedYear.toString().padLeft(4, '0')}-${_selectedMonth.toString().padLeft(2, '0')}-${_selectedDay.toString().padLeft(2, '0')}';
-                                var url = Uri.http(
-                                    'ec2-43-202-128-142.ap-northeast-2.compute.amazonaws.com:3000',
+                                var url = Uri.https(
+                                    'server-snail.kro.kr:3443',
                                     '/saveChildInfo');
                                 var response = await http.post(url, body: {
                                   'PARENT': parent_id,

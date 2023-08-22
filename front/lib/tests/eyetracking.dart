@@ -30,7 +30,7 @@ class FaceImgSender {
       final byteData = await convertImageToJpeg(image);
 
       // 서버로 이미지 전송
-      var request = http.MultipartRequest('POST', Uri.http('ec2-43-202-125-41.ap-northeast-2.compute.amazonaws.com:3033', 'faceRecognize'));
+      var request = http.MultipartRequest('POST', Uri.https('server-snail.kro.kr:3444', 'faceRecognize'));
       request.files.add(http.MultipartFile.fromBytes(
         'image', 
         byteData, 

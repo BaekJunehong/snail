@@ -18,8 +18,8 @@ class _ProfileSelectionScreenState extends State<ProfileSelectionScreen> {
 
   Future<List<Map<String, dynamic>>> _fetchChildData() async {
     final parent_id = await storage.read(key: 'USER_ID');
-    final url = Uri.http(
-        'ec2-43-202-125-41.ap-northeast-2.compute.amazonaws.com:3000',
+    final url = Uri.https(
+        'server-snail.kro.kr:3443',
         '/fetchChildData');
     final response = await http.post(url, body: {'USER_ID': parent_id});
 

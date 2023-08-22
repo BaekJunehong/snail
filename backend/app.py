@@ -28,4 +28,10 @@ def faceRecognize():
     return str(etCount)
 
 if __name__ == '__main__':
-    app.run(host='172.31.3.182', port=3033)
+    app.run(host='172.31.3.182', port=3444, ssl_context=('/etc/letsencrypt/live/server-snail.kro.kr/cert.pem', '/etc/letsencrypt/live/server-snail.kro.kr/privkey.pem'))
+
+'''
+    const privateKey = fs.readFileSync('/etc/letsencrypt/live/server-snail.kro.kr/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('/etc/letsencrypt/live/server-snail.kro.kr/cert.pem', 'utf8');
+const ca = fs.readFileSync('/etc/letsencrypt/live/server-snail.kro.kr/chain.pem', 'utf8');
+'''

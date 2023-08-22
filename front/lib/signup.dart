@@ -111,7 +111,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     _showPasswordMismatchSnackBar();
                   } else {
                     // 아이디 중복 확인
-                    var url = Uri.http('ec2-43-202-125-41.ap-northeast-2.compute.amazonaws.com:3000', '/checkDuplicatedID');
+                    var url = Uri.https('server-snail.kro.kr:3443', '/checkDuplicatedID');
                     var response = await http.post(url, body: {'USER_ID': _id});
                     print(response.statusCode);
                     if (response.statusCode != 500) {
@@ -121,7 +121,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
                       // 중복이 아닌경우 정보 저장
                       if (exist != 1){
-                        var url = Uri.http('ec2-43-202-125-41.ap-northeast-2.compute.amazonaws.com:3000', '/saveUserInfo');
+                        var url = Uri.https('server-snail.kro.kr:3443', '/saveUserInfo');
                         var response = await http.post(url, body: {'USER_ID': _id, 'USER_PW': _pw});
                         print('Response status: ${response.statusCode}');
 
