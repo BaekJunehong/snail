@@ -7,7 +7,9 @@ import 'package:snail/tests/guides/line_guide.dart';
 import 'package:snail/tests/guides/voca_rp_guide.dart';
 import 'package:snail/tests/guides/story_guide.dart';
 import 'package:snail/tests/result/parentdashboard.dart';
+import 'package:snail/tests/result/loadingresult.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
 
 class StartTestScreen extends StatefulWidget {
   @override
@@ -17,17 +19,29 @@ class StartTestScreen extends StatefulWidget {
 class _StartTestScreenState extends State<StartTestScreen> {
   // 검사 가이드 리스트
   final List<Widget Function()> screens = [
+    // 검사 전
     () => BeforeTestGuideScreen(),
     () => FaceRecognitionScreen(),
+    // 검사
     () => StroopGuideScreen(),
     () => ChosungGuideScreen(),
     () => VocaRepeatGuideScreen(),
     () => LineGuideScreen(),
     () => StoryGuideScreen(),
+    // 결과(로딩)
+    () => LoadingResultScreen(),
   ];
 
-  late int result;
+  num score_stroop = 0;
+  num score_line = 0;
+  num score_chosung = 0;
+  num score_repeat = 0;
+  num score_story = 0;
+  num score_eyetrack = 0;
+
   final storage = const FlutterSecureStorage();
+  String? user_id;
+  String? child_id;
   String? child_name;
 
   @override
@@ -37,8 +51,8 @@ class _StartTestScreenState extends State<StartTestScreen> {
   }
 
   void readChildInfo() async {
-    var user_id = await storage.read(key: 'USER_ID');
-    var child_id = await storage.read(key: 'CHILD_ID');
+    user_id = await storage.read(key: 'USER_ID');
+    child_id = await storage.read(key: 'CHILD_ID');
     child_name = await storage.read(key: 'CHILD_NAME');
 
     // 검사 종료 후 test 데이터 저장 후
@@ -70,13 +84,43 @@ class _StartTestScreenState extends State<StartTestScreen> {
             ElevatedButton(
               onPressed: () async {
                 // 검사 전 가이드로 이동.
-                late int result;
-                for (var screen in screens) {
-                  result = await Navigator.push(
+                for (var screen in screens) {        
+                  if (screen().runtimeType == LoadingResultScreen) {
+                    var url = Uri.https('server-snail.kro.kr:3443', '/saveTestScore');
+                    var response = await http.post(url, body: {
+                      'SCORE_STROOP': score_stroop.toString(), 
+                      'SCORE_LINE': score_line.toString(),
+                      'SCORE_CHOSUNG': score_chosung.toString(),
+                      'SCORE_REPEAT': score_repeat.toString(),
+                      'SCORE_STORY' : score_story.toString(),
+                      'SCORE_EYETRACK': score_eyetrack,
+                      'CHILD_ID': child_id
+                      });
+                  }
+                  var result = await Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => screen()),
                   );
-                  print(result);
+                  // 유연성, 처리능력, 기억력, 언어능력, 주의력
+                  if (screen().runtimeType == StroopGuideScreen) {
+                    score_stroop += result[0];
+                    score_eyetrack += result[1];
+                  }
+                  else if (screen().runtimeType == LineGuideScreen) {
+                    score_line += result[0];
+                  }
+                  else if (screen().runtimeType == ChosungGuideScreen) {
+                    score_chosung += result[0];
+                    score_eyetrack += result[1];
+                  }
+                  else if (screen().runtimeType == VocaRepeatGuideScreen) {
+                    score_repeat += result[0];
+                    score_eyetrack += result[1];
+                  }
+                  else if (screen().runtimeType == StoryGuideScreen) {
+                    score_story += result[0];
+                    score_eyetrack += result[1];
+                  }
                 }
               },
               child: Text(

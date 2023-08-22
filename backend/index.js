@@ -99,7 +99,7 @@ app.post('/saveChildInfo', (req, res) => {
 app.post('/login', (req, res) => {
   const user_id = req.body.USER_ID;
   const password = req.body.USER_PW;
-  console.log('success');
+
   const query = 'SELECT EXISTS(SELECT 1 FROM PARENT WHERE USER_ID = ? and USER_PW = ?) as exist';
 
   connection.query(query, [user_id, password], (err, rows) => {
@@ -158,9 +158,33 @@ app.post('/KoreanAPI', (req, res) => {
     });
   }).on('error', (error) => {
     console.error(error);
-    
   });
 })
+
+// 검사 결과 저장
+app.post('/saveTestScore', (req, res) => {
+  const score_stroop = req.body.SCORE_STROOP;
+  const score_line = req.body.SCORE_LINE;
+  const score_chosung = req.body.CHOSUNG;
+  const score_repeat = req.body.SCORE_REPEAT;
+  const score_story = req.body.SCORE_STORY;
+  const score_eyetrack = req.body.SCORE_EYETRACK;
+  const child_id = req.body.CHILD_ID;
+
+  console.log([score_eyetrack, score_stroop, score_story, score_repeat, score_line, score_chosung, child_id]);
+
+  const query = `INSERT INTO RESULT (RESULT_ID, TEST_DATE, EYETRACT, STROOP, STORY, VOCA_RP, LINE, CHOSUNG, FEEDBACK, CHILD_ID)
+                (SELECT CONCAT(COALESCE(MAX(RESULT), 0) + 1, ''), NOW(), ?, ?, ?, ?, ?, ?, ?, ?) FROM RESULT`;
+
+connection.query(query, [score_eyetrack, score_stroop, score_story, score_repeat, score_line, score_chosung, child_id], (err, result) => {
+    if (err) {
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+
+    res.status(200).send('Saved');
+  });
+});
 
 
 //-------------------------------------------------------------------------------------
