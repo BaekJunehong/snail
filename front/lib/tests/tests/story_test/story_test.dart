@@ -5,6 +5,7 @@ import 'dart:html' as html;
 import 'package:snail/tests/tests/story_test/Answer_check.dart';
 import 'package:snail/tests/eyetracking.dart';
 import 'package:camera/camera.dart';
+import 'package:just_audio/just_audio.dart';
 
 class StoryTestScreen extends StatefulWidget {
   final int videoNum; // 실행된 비디오 index
@@ -20,6 +21,8 @@ class _StoryTestScreenState extends State<StoryTestScreen> {
   bool showEndBubble = false;
   int answeredBubbleCount = 0;
   String userInput = '';
+
+  final player = AudioPlayer();
   final _speech = stt.SpeechToText();
   late CameraController _controller;
   late var imgSender;
@@ -89,7 +92,20 @@ class _StoryTestScreenState extends State<StoryTestScreen> {
         showGreetBubble = true;
       });
     });
-    await Future.delayed(Duration(seconds: 10));
+    await player.setAsset('assets/sounds/story_test/startbubble01.wav');
+    await player.play();
+
+    await player.processingStateStream.firstWhere((state) => state == ProcessingState.completed);
+
+    await player.setAsset('assets/sounds/story_test/startbubble02.wav');
+    await player.play();
+    
+    await player.processingStateStream.firstWhere((state) => state == ProcessingState.completed);
+
+    await player.setAsset('assets/sounds/story_test/startbubble03.wav');
+    await player.play();
+
+    await Future.delayed(Duration(seconds: 5));
   }
 
   //문제 생성
@@ -98,37 +114,50 @@ class _StoryTestScreenState extends State<StoryTestScreen> {
     await Future.delayed(Duration(milliseconds: 2000), () {
       setState(() {
         showQuestionBubble = true;
-      });
-    });
-    await Future.delayed(Duration(milliseconds: 2000), () {
-      setState(() {
         showAnswerBubble = true; // 응답 말풍선을 표시
       });
     });
     getNextQuestion();
   }
 
-  Widget _questionAndAnswer(int questionIndex) {
-    return Container(
-      child: Column(children: [
+Widget _questionAndAnswer(int questionIndex) {
+    return Column(children: [
         AnimatedContainer(
-          duration: Duration(seconds: 30),
-          curve: Curves.easeInOut,
-          height: showQuestionBubble ? null : 0,
-          child: QuestionBubbleFromService(
-              text: Question[widget.videoNum][questionIndex]),
+            duration: Duration(seconds: 30),
+            curve: Curves.easeInOut,
+            height: showQuestionBubble ? null : 0,
+            child: QuestionBubbleFromService(
+                text: Question[widget.videoNum][questionIndex]),
         ),
-        AnimatedContainer(
-          duration: Duration(seconds: 30),
-          curve: Curves.easeInOut,
-          height: showAnswerBubble ? null : 0,
-          child: questionIndex >= Answer.length - 1
-              ? BubbleFromChildBefore()
-              : BubbleFromChildAfter(Answer: Answer[questionIndex + 1]),
-        ),
-      ]),
-    );
-  }
+        if (answeredBubbleCount == questionIndex + 1)
+            FutureBuilder(
+                future: Future.delayed(Duration(seconds: 2)), // 질문 후 정답 버블이 나오는 시간
+                builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Container();
+                    } else {
+                        return AnimatedContainer(
+                            duration: Duration(seconds: 30),
+                            curve: Curves.easeInOut,
+                            height: showAnswerBubble ? null : 0,
+                            child: questionIndex >= Answer.length - 1
+                                ? BubbleFromChildBefore()
+                                : BubbleFromChildAfter(Answer: Answer[questionIndex + 1]),
+                        );
+                    }
+                }
+            ),
+        if (answeredBubbleCount != questionIndex + 1)
+            AnimatedContainer(
+                duration: Duration(seconds: 30),
+                curve: Curves.easeInOut,
+                height: showAnswerBubble ? null : 0,
+                child: questionIndex >= Answer.length - 1
+                    ? BubbleFromChildBefore()
+                    : BubbleFromChildAfter(Answer: Answer[questionIndex + 1]),
+            ),
+    ]);
+}
 
 void getNextQuestion() async {
     await html.window.navigator.mediaDevices?.getUserMedia({'audio': true});
@@ -161,7 +190,18 @@ void getNextQuestion() async {
     setState(() {
       showEndBubble = true;
     });
-    await Future.delayed(Duration(seconds: 10));
+
+    await player.setAsset('assets/sounds/story_test/endbubble01.wav');
+    await player.play();
+
+    await player.processingStateStream.firstWhere((state) => state == ProcessingState.completed);
+
+    await player.setAsset('assets/sounds/story_test/endbubble02.wav');
+    await player.play();
+
+    await player.processingStateStream.firstWhere((state) => state == ProcessingState.completed);
+
+    await Future.delayed(Duration(seconds: 2));
     
     int etCount = imgSender.stopSending();
     Navigator.pop(context, [correctNum, etCount]);
