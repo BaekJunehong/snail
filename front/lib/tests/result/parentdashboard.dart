@@ -1,13 +1,74 @@
 import 'package:flutter/material.dart';
 import 'package:snail/tests/result/dashboard/linechart.dart';
 import 'package:snail/tests/result/dashboard/chartbox.dart';
-//버튼 누르면 이동할 페이지
 import 'package:snail/tests/result/parentnote.dart';
-import 'package:snail/starttest.dart';
+import 'package:snail/tests/result/noresults.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class ParentMonthlyDashboardScreen extends StatelessWidget {
-  final List<double> currentData = [0.3, 0.5, 0.9, 0.4, 0.8]; //최근 검사 점수
-  final List<double> lastMonthData = [0.1, 0.4, 0.5, 0.7, 0.9]; //지난 달 점수
+class ParentMonthlyDashboardScreen extends StatefulWidget {
+  @override
+  _ParentMonthlyDashboardScreenState createState() => _ParentMonthlyDashboardScreenState();
+}
+
+class _ParentMonthlyDashboardScreenState extends State<ParentMonthlyDashboardScreen> {
+  List<double> currentData = [0.3, 0.5, 0.9, 0.4, 0.8]; //최근 검사 점수
+  List<double> lastMonthData = [0.0, 0.0, 0.0, 0.0, 0.0]; //지난 달 점수
+
+  final storage = const FlutterSecureStorage();
+    void getLastScore () async {
+      final child_id = await storage.read(key: 'CHILD_ID');
+
+      var url = Uri.https('server-snail.kro.kr:3443', '/getLastResultID');
+      var request = await http.post(url, body: {'CHILD_ID': child_id});
+      if (jsonDecode(request.body).isEmpty) {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => NoResultScreen()),
+        );
+        Navigator.pop(context);
+      }
+      else {
+        var record = jsonDecode(request.body)[0];
+        final result_id = record['RESULT_ID'].toString();
+
+        var lastUrl = Uri.https('server-snail.kro.kr:3443', '/getScores');
+        var lastRequest = await http.post(lastUrl, body: {'RESULT_ID': result_id});
+        var lastRecord = jsonDecode(lastRequest.body)[0];
+        
+        currentData[0] = lastRecord['EYETRACK_PERC'] / 100;
+        currentData[1] = lastRecord['VOCA_RP_PERC'] / 100;
+        currentData[2] = lastRecord['CHOSUNG_PERC'] / 100;
+        currentData[3] = lastRecord['STORY_PERC'] / 100;
+        currentData[4] = (lastRecord['STROOP_PERC'] + lastRecord['LINE_PERC']) / 200;
+
+        setState(() {});
+      }
+    }
+
+  void getLastMonthScore () async {
+      final child_id = await storage.read(key: 'CHILD_ID');
+
+      var url = Uri.https('server-snail.kro.kr:3443', '/getLastMonthResultID');
+      var request = await http.post(url, body: {'CHILD_ID': child_id});
+      if (jsonDecode(request.body).isNotEmpty) {
+        var record = jsonDecode(request.body)[0];
+        final result_id = record['RESULT_ID'].toString();
+
+        var monthUrl = Uri.https('server-snail.kro.kr:3443', '/getScores');
+        var monthRequest = await http.post(monthUrl, body: {'RESULT_ID': result_id});
+        var monthRecord = jsonDecode(monthRequest.body)[0];
+        
+        lastMonthData[0] = monthRecord['EYETRACK_PERC'] / 100;
+        lastMonthData[1] = monthRecord['VOCA_RP_PERC'] / 100;
+        lastMonthData[2] = monthRecord['CHOSUNG_PERC'] / 100;
+        lastMonthData[3] = monthRecord['STORY_PERC'] / 100;
+        lastMonthData[4] = (monthRecord['STROOP_PERC'] + monthRecord['LINE_PERC']) / 200;
+
+        setState(() {});
+      }
+    }
 
   //역량 이름
   List<String> titleList = [
@@ -25,6 +86,13 @@ class ParentMonthlyDashboardScreen extends StatelessWidget {
     '사회의 구성원으로서 사회에서 사용되는 언어를 자연스럽게 사용하는 능력이에요. 일상에서 상대에게 이야기하고 싶은 내용을 잘 전달할 수 있어요.',
     '유연성은 습관화된 반응이나 사고를 극복하고 새로운 상황에 적응하는 능력이에요. 물체, 생각 또는 상황을 동시에 고려할 때 필요한 능력이에요.'
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    getLastScore();
+    getLastMonthScore();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -134,14 +202,16 @@ class ParentMonthlyDashboardScreen extends StatelessWidget {
                   //핵심역량 ChartBox 렌더링
                   ...corevaluelist,
                   SizedBox(height: 100),
-                  Container(
-                    width: 1300,
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      '이 역량은 조금만 지켜봐주세요!',
-                      style: TextStyle(fontSize: 24),
-                    ),
-                  ),
+                  weakvaluelist.isEmpty
+                    ? Container()  // weakvaluelist가 비어있을 때 빈 컨테이너를 반환합니다.
+                    : Container(
+                        width: 1300,
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          '이 역량은 조금만 지켜봐주세요!',
+                          style: TextStyle(fontSize: 24),
+                        ),
+                      ),
                   SizedBox(height: 20),
                   //취약역량 ChartBox 렌더링
                   ...weakvaluelist,
@@ -149,11 +219,12 @@ class ParentMonthlyDashboardScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => (ParentNoteScreen())));
+                        onPressed: () async {
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => ParentNoteScreen()),
+                          );
+                          Navigator.pop(context);
                         },
                         child: Text(
                           '최근 검사',
@@ -172,11 +243,9 @@ class ParentMonthlyDashboardScreen extends StatelessWidget {
                       ),
                       SizedBox(width: 120),
                       ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => (StartTestScreen())));
+                        onPressed: () async {
+                          //await storage.delete(key: 'RESULT_ID');
+                          Navigator.pop(context);
                         },
                         child: Text(
                           '돌아가기',
