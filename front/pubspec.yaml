@@ -97,8 +97,11 @@ flutter:
   assets:
     - assets/
     - assets/background/
+    - assets/sounds/
     - assets/sounds/guide/
     - assets/sounds/repeat_test/
+    - assets/sounds/story_test/
+    - assets/sounds/test_name/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

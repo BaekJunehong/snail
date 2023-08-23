@@ -174,7 +174,7 @@ app.post('/saveTestScore', (req, res) => {
   const query = `INSERT INTO RESULT (RESULT_ID, TEST_DATE, EYETRACK, STROOP, STORY, VOCA_RP, LINE, CHOSUNG, CHILD_ID)
                 SELECT CONCAT(COALESCE(MAX(RESULT_ID), 0) + 1, ''), NOW(), ?, ?, ?, ?, ?, ?, ? FROM RESULT`;
 
-connection.query(query, [score_eyetrack, score_stroop, score_story, score_repeat, score_line, score_chosung, child_id], (err, result) => {
+  connection.query(query, [score_eyetrack, score_stroop, score_story, score_repeat, score_line, score_chosung, child_id], (err, result) => {
     if (err) {
       res.status(500).send('Internal Server Error');
       return;
@@ -183,7 +183,6 @@ connection.query(query, [score_eyetrack, score_stroop, score_story, score_repeat
     res.status(200).send('Saved');
   });
 });
-
 
 //-------------------------------------------------------------------------------------
 // listener
