@@ -167,6 +167,7 @@ void getNextQuestion() async {
         pauseFor: Duration(seconds: 30),
         cancelOnError: true,
         partialResults: true,
+        localeId: 'ko-KR',
         listenMode: stt.ListenMode.dictation,
         onResult: (result) async {
           userInput = result.recognizedWords;
