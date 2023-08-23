@@ -277,6 +277,40 @@ app.post('/getLastResultID', (req, res) => {
   })
 });
 
+// 동년 매달의 점수 가져오기
+app.post('/getEveryMonthScores', (req, res) => {
+  const child_id = req.body.CHILD_ID;
+
+  const query = `SELECT 
+                  DATE_FORMAT(TEST_DATE, '%Y-%m') as Month,
+                  MIN(TEST_DATE) as FirstTestDate,
+                  EYETRACK_PERC,
+                  STROOP_PERC,
+                  STORY_PERC,
+                  VOCA_RP_PERC,
+                  LINE_PERC,
+                  CHOSUNG_PERC
+                FROM 
+                  RESULT
+                WHERE 
+                  CHILD_ID = ? AND
+                  YEAR(TEST_DATE) = YEAR(CURDATE())
+                GROUP BY 
+                  Month
+                ORDER BY 
+                  FirstTestDate;`
+  connection.query(query, child_id, (err, row) => {
+    if (err) {
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+    res.status(200).send(row);
+  })
+});
+
+
+
+
 //-------------------------------------------------------------------------------------
 // listener
 httpsServer.listen(3443, () => {
