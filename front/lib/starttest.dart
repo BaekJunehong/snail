@@ -10,6 +10,7 @@ import 'package:snail/tests/result/parentdashboard.dart';
 import 'package:snail/tests/result/loadingresult.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class StartTestScreen extends StatefulWidget {
   @override
@@ -87,15 +88,17 @@ class _StartTestScreenState extends State<StartTestScreen> {
                 for (var screen in screens) {        
                   if (screen().runtimeType == LoadingResultScreen) {
                     var url = Uri.https('server-snail.kro.kr:3443', '/saveTestScore');
-                    var response = await http.post(url, body: {
+                    var request = await http.post(url, body: {
                       'SCORE_STROOP': score_stroop.toString(), 
                       'SCORE_LINE': score_line.toString(),
                       'SCORE_CHOSUNG': score_chosung.toString(),
                       'SCORE_REPEAT': score_repeat.toString(),
                       'SCORE_STORY' : score_story.toString(),
                       'SCORE_EYETRACK': score_eyetrack.toString(),
-                      'CHILD_ID': child_id
-                      });
+                      'CHILD_ID': child_id,
+                    });
+                    var data = jsonDecode(request.body);
+                    //await storage.write(key: 'RESULT_ID', value: data['id'].toString());
                   }
                   var result = await Navigator.push(
                     context,

@@ -229,10 +229,12 @@ void getNextQuestion() async {
             width: double.infinity,
             height: double.infinity,
             decoration: BoxDecoration(
+              /*
               image: DecorationImage(
                 image: AssetImage('assets/background_story.png'),
                 fit: BoxFit.fill,
               ),
+              */
             ),
           ),
           SingleChildScrollView(
