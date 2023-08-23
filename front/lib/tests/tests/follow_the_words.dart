@@ -166,13 +166,14 @@ class _followeTestState extends State<followTest> {
     _listen();
   }
 
-  void _listen() {
+  void _listen() async {
     if (!_speech.isListening) {
       _speech.listen(
         listenFor: Duration(seconds: 1000),
         pauseFor: Duration(seconds: 1000),
         cancelOnError: true,
         partialResults: true,
+        localeId: 'ko-KR',
         listenMode: stt.ListenMode.dictation,
         onResult: (result) {
           setState(() {
@@ -193,11 +194,8 @@ class _followeTestState extends State<followTest> {
 
   @override
   void dispose() {
-    super.dispose();
-    // 화면이 제거될 때 타이머 해제
     _speech.cancel();
-    timer?.cancel();
-    countdownTimer?.cancel();
+    super.dispose();
   }
 
   @override

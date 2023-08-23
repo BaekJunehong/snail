@@ -111,6 +111,7 @@ class _chosungTestState extends State<chosungTest> {
           seconds++; // 경과 시간(초) 갱신
           if (seconds % test_set_time == 0) {
             // n초 마다 초성 바꾸기
+            _speech.cancel();
             order += 1;
             userInput = '';
             countdownSeconds = 3;
@@ -120,7 +121,6 @@ class _chosungTestState extends State<chosungTest> {
               int etCount = imgSender.stopSending();
               Navigator.pop(context, [correctCount, etCount]);
             }
-            getAudio();
           }
         } else {
           if (countdownSeconds > 1) {
@@ -128,6 +128,7 @@ class _chosungTestState extends State<chosungTest> {
           } else {
             isVisible = false;
             _isRunning = true;
+            getAudio();
           }
         }
       });
@@ -181,34 +182,40 @@ class _chosungTestState extends State<chosungTest> {
   // user의 input 값을 받아 해당 단어가 존재하는지 검색
   // 있다면 개수가 0이 아닐 것.
   void checkAnswer() async {
-    await KoreanAPI(userInput); // 사전 api 필요
+    try {
+      await KoreanAPI(userInput); // 사전 api 필요
 
-    print('$userInput API search number $SearchNum');
+      String extractConsonant =
+          extractConsonants(userInput).replaceAll(' ', '')[0].trim();
+      extractConsonant = convertArchaicToModernJamo(extractConsonant);
+      String cho = chosungs[order];
 
-    String extractConsonant =
-        extractConsonants(userInput).replaceAll(' ', '')[0].trim();
-    extractConsonant = convertArchaicToModernJamo(extractConsonant);
-    String cho = chosungs[order];
-
-    if (SearchNum > 0 && extractConsonant == cho) {
-      isCorrected = true;
-      correctCount++;
-      setState(() {});
-      await Future.delayed(Duration(seconds: 1));
-      setState(() {
-        isCorrected = false;
-        userInput = '';
-      });
-    } else {
-      setState(() {
-        isCorrected = false;
-      });
-      await Future.delayed(Duration(seconds: 1));
-      setState(() {
-        userInput = '';
-      });
+      if (SearchNum > 0 && extractConsonant == cho) {
+        isCorrected = true;
+        correctCount++;
+        setState(() {});
+        await Future.delayed(Duration(seconds: 1));
+        setState(() {
+          isCorrected = false;
+          userInput = '';
+        });
+      } else {
+        setState(() {
+          isCorrected = false;
+        });
+        await Future.delayed(Duration(seconds: 1));
+        setState(() {
+          userInput = '';
+        });
+      }
+      getAudio();
     }
-    getAudio();
+    catch (e) {
+      setState(() {
+          userInput = '';
+        });
+      getAudio();
+    }
   }
 
   void getAudio() async {
@@ -220,6 +227,7 @@ class _chosungTestState extends State<chosungTest> {
           pauseFor: Duration(seconds: 1000),
           cancelOnError: true,
           partialResults: true,
+          localeId: 'ko-KR',
           listenMode: stt.ListenMode.dictation,
           onResult: (result) async {
             _speech.stop();
@@ -235,21 +243,10 @@ class _chosungTestState extends State<chosungTest> {
 
   @override
   void dispose() {
-    super.dispose();
-    // 화면이 제거될 때 타이머 해제
     _speech.cancel();
-    timer?.cancel();
     countdownTimer?.cancel();
+    super.dispose();
   }
-
-  void start() {
-    _isRunning = true;
-  }
-
-  void pause() {
-    _isRunning = false;
-  }
-  //iscorrected = true 조건
 
   @override
   Widget build(BuildContext context) {
@@ -257,7 +254,7 @@ class _chosungTestState extends State<chosungTest> {
       body: Stack(
         children: [
           Image.asset(
-            'assets/background/background_story.png', // 배경 이미지 파일 경로
+            'assets/background/background_chosung.png', // 배경 이미지 파일 경로
             fit: BoxFit.fill,
             width: double.infinity, // 너비를 전체 화면으로 설정
             // height: double.infinity,
