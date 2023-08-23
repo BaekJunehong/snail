@@ -25,6 +25,12 @@ class _StroopGuideScreenState extends State<StroopGuideScreen> {
   }
 
   Future<void> guideVoice() async {
+    await player.setAsset('assets/sounds/test_name/stroop.wav');
+    await player.play();
+
+    await player.processingStateStream.firstWhere((state) => state == ProcessingState.completed);
+    await Future.delayed(Duration(seconds: 1));
+
     await player.setAsset('assets/sounds/guide/stroop.wav');
     await player.play();
   }

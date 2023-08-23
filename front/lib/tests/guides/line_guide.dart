@@ -24,6 +24,12 @@ class _LineGuideScreenState extends State<LineGuideScreen> {
   }
 
   Future<void> guideVoice() async {
+    await player.setAsset('assets/sounds/test_name/line.wav');
+    await player.play();
+
+    await player.processingStateStream.firstWhere((state) => state == ProcessingState.completed);
+    await Future.delayed(Duration(seconds: 1));
+
     await player.setAsset('assets/sounds/guide/line.wav');
     await player.play();
   }

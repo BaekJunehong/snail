@@ -13,6 +13,7 @@ class _StoryGuideScreenState extends State<StoryGuideScreen> {
   @override
   void initState() {
     super.initState();
+    guideVoice();
     Future.delayed(Duration(seconds: 10), () async {
       final result = await Navigator.push(
         context,
@@ -23,6 +24,12 @@ class _StoryGuideScreenState extends State<StoryGuideScreen> {
   }
 
   Future<void> guideVoice() async {
+    await player.setAsset('assets/sounds/test_name/story.wav');
+    await player.play();
+
+    await player.processingStateStream.firstWhere((state) => state == ProcessingState.completed);
+    await Future.delayed(Duration(seconds: 1));
+
     await player.setAsset('assets/sounds/guide/story.wav');
     await player.play();
   }
