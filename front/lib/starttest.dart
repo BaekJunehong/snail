@@ -101,7 +101,6 @@ class _StartTestScreenState extends State<StartTestScreen> {
                     context,
                     MaterialPageRoute(builder: (context) => screen()),
                   );
-                  print(result);
                   // 유연성, 처리능력, 기억력, 언어능력, 주의력
                   if (screen().runtimeType == StroopGuideScreen) {
                     score_stroop += result[0];
