@@ -171,16 +171,67 @@ app.post('/saveTestScore', (req, res) => {
   const score_eyetrack = req.body.SCORE_EYETRACK;
   const child_id = req.body.CHILD_ID;
 
-  const query = `INSERT INTO RESULT (RESULT_ID, TEST_DATE, EYETRACK, STROOP, STORY, VOCA_RP, LINE, CHOSUNG, CHILD_ID)
-                SELECT CONCAT(COALESCE(MAX(RESULT_ID), 0) + 1, ''), NOW(), ?, ?, ?, ?, ?, ?, ? FROM RESULT`;
-
-  connection.query(query, [score_eyetrack, score_stroop, score_story, score_repeat, score_line, score_chosung, child_id], (err, result) => {
+  connection.query('SELECT COALESCE(MAX(RESULT_ID), 0) + 1 as new_id FROM RESULT', (err, result) => {
     if (err) {
       res.status(500).send('Internal Server Error');
       return;
     }
+    const new_id = result[0].new_id;
+  
+    const query1 = `INSERT INTO RESULT (RESULT_ID, TEST_DATE, EYETRACK, STROOP, STORY, VOCA_RP, LINE, CHOSUNG, CHILD_ID)
+                    VALUES (?, NOW(), ?, ?, ?, ?, ?, ?, ?)`;
+    connection.query(query1, [new_id, score_eyetrack, score_stroop, score_story, score_repeat, score_line, score_chosung, child_id], (err, result) => {
+      if (err) {
+        res.status(500).send('Internal Server Error');
+        return;
+      }
 
-    res.status(200).send('Saved');
+      const query2 = 
+        `CREATE TEMPORARY TABLE latest_results AS
+        SELECT CHILD_ID, MAX(TEST_DATE) as MaxDate
+        FROM RESULT
+        GROUP BY CHILD_ID;` +
+        
+        ` CREATE TEMPORARY TABLE latest_scores AS
+        SELECT r.*
+        FROM latest_results lr
+        JOIN RESULT r ON r.CHILD_ID = lr.CHILD_ID AND r.TEST_DATE = lr.MaxDate;` +
+        
+        ` CREATE TEMPORARY TABLE percentiles AS
+        SELECT 
+          CHILD_ID,
+          TEST_DATE,
+          (SELECT COUNT(*) FROM latest_scores WHERE EYETRACK <= ls.EYETRACK) / (SELECT COUNT(*) FROM latest_scores) * 100 AS EYETRACK_PERC,
+          (SELECT COUNT(*) FROM latest_scores WHERE STROOP <= ls.STROOP) / (SELECT COUNT(*) FROM latest_scores) * 100 AS STROOP_PERC,
+          (SELECT COUNT(*) FROM latest_scores WHERE STORY <= ls.STORY) / (SELECT COUNT(*) FROM latest_scores) * 100 AS STORY_PERC,
+          (SELECT COUNT(*) FROM latest_scores WHERE VOCA_RP <= ls.VOCA_RP) / (SELECT COUNT(*) FROM latest_scores) * 100 AS VOCA_RP_PERC,
+          (SELECT COUNT(*) FROM latest_scores WHERE LINE <= ls.LINE) / (SELECT COUNT(*) FROM latest_scores) * 100 AS LINE_PERC,
+          (SELECT COUNT(*) FROM latest_scores WHERE CHOSUNG <= ls.CHOSUNG) / (SELECT COUNT(*) FROM latest_scores) * 100 AS CHOSUNG_PERC
+        FROM latest_scores ls;` +
+        
+        ` UPDATE RESULT r
+        JOIN percentiles p ON r.CHILD_ID = p.CHILD_ID AND r.TEST_DATE = p.TEST_DATE
+        SET 
+          r.EYETRACK_PERC = p.EYETRACK_PERC,
+          r.STROOP_PERC = p.STROOP_PERC,
+          r.STORY_PERC = p.STORY_PERC,
+          r.VOCA_RP_PERC = p.VOCA_RP_PERC,
+          r.LINE_PERC = p.LINE_PERC,
+          r.CHOSUNG_PERC = p.CHOSUNG_PERC
+        WHERE r.RESULT_ID = ?;` + 
+        
+        ` DROP TEMPORARY TABLE IF EXISTS latest_results;` +
+        ` DROP TEMPORARY TABLE IF EXISTS latest_scores;` +
+        ` DROP TEMPORARY TABLE IF EXISTS percentiles;`;
+
+      connection.query(query2, new_id, (err, result) => {
+        if (err) {
+          res.status(500).send('Internal Server Error');
+          return;
+        }
+        res.status(200).send({message: 'Saved', id: new_id});
+      });
+    });
   });
 });
 

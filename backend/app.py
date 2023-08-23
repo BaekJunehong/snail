@@ -38,5 +38,15 @@ def checkAnswer():
     result = check_answers(answers, videoNum)
     return jsonify(result)
 
+# AI 피드백 생성
+@app.route('/requestFeedback', methods=['POST'])
+def checkAnswer():
+    data = request.get_json()
+    answers = data['answers']
+    videoNum = data['videoNum']
+
+    result = check_answers(answers, videoNum)
+    return jsonify(result)
+
 if __name__ == '__main__':
     app.run(host='172.31.3.182', port=3444, ssl_context=('/etc/letsencrypt/live/server-snail.kro.kr/cert.pem', '/etc/letsencrypt/live/server-snail.kro.kr/privkey.pem'))
