@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:snail/tests/result/parentnote.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
+import 'package:xml2json/xml2json.dart' as xml2json;
+import 'dart:convert';
 
 class LoadingResultScreen extends StatefulWidget {
   @override
@@ -7,18 +11,67 @@ class LoadingResultScreen extends StatefulWidget {
 }
 
 class _LoadingResultScreenState extends State<LoadingResultScreen> {
+  final storage = const FlutterSecureStorage();
+
   bool _showButton = false;
   String _displayText = '게임 결과를 불러오고 있어요.\n잠시만 기다려주세요.'; // 줄바꿈 추가
 
   @override
   void initState() {
     super.initState();
-    // 10초 후에 버튼을 보여주고 텍스트 변경
-    Future.delayed(Duration(seconds: 5), () {
-      setState(() {
-        _showButton = true;
-        _displayText = '게임 결과를 저장했어요!'; // 텍스트 변경
-      });
+    getAiFeedback();
+  }
+
+  String getPercScore (double perc) {
+    if (perc > 0.75) {
+      return '좋음';
+    }
+    else if (perc < 0.25) {
+      return '나쁨';
+    }
+    else {
+      return '보통';
+    }
+  }
+
+  void getAiFeedback() async {
+    final child_name = await storage.read(key: 'CHILD_NAME');
+    final result_id = await storage.read(key: 'RESULT_ID');
+    await storage.delete(key: 'RESULT_ID'); 
+
+    var lastUrl = Uri.https('server-snail.kro.kr:3443', '/getScores');
+    var lastRequest = await http.post(lastUrl, body: {'RESULT_ID': result_id});
+    var lastRecord = jsonDecode(lastRequest.body)[0];
+
+    var param = {
+      'CHILD_NAME': child_name,
+      // 주의력
+      'score1': getPercScore(lastRecord['EYETRACK_PERC'] / 100),
+      // 기억력
+      'score2': getPercScore(lastRecord['VOCA_RP_PERC'] / 100),
+      // 처리능력
+      'score3': getPercScore(lastRecord['CHOSUNG_PERC']  / 100),
+      // 언어능력
+      'score4': getPercScore(lastRecord['STORY_PERC'] / 100),
+      // 유연성
+      'score5': getPercScore((lastRecord['STROOP_PERC'] + lastRecord['LINE_PERC']) / 200),
+    };
+
+    var fbUrl = Uri.https('server-snail.kro.kr:3444', '/requestFeedback');
+    var fbRequest = await http.post(
+      fbUrl, 
+      body: jsonEncode(param),
+      headers: {"Content-Type": "application/json"},
+    );
+    var feedbackText = jsonDecode(fbRequest.body);
+
+    var url = Uri.https('server-snail.kro.kr:3443', '/saveFeedback');
+    var request = await http.post(url, body: {'RESULT_ID': result_id.toString(), 'FEEDBACK': feedbackText});
+
+    // 피드백 저장 후 상태 변경
+    setState(() {
+      _showButton = true;
+      _displayText = '게임 결과를 저장했어요!'; // 텍스트 변경
     });
   }
 

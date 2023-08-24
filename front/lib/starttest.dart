@@ -97,7 +97,8 @@ class _StartTestScreenState extends State<StartTestScreen> {
                       'SCORE_EYETRACK': score_eyetrack.toString(),
                       'CHILD_ID': child_id,
                     });
-                    var data = jsonDecode(request.body);
+                    var result_id = jsonDecode(request.body)['id'];
+                    await storage.write(key: 'RESULT_ID', value: result_id.toString()); 
                     //await storage.write(key: 'RESULT_ID', value: data['id'].toString());
                   }
                   var result = await Navigator.push(
