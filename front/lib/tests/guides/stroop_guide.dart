@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:snail/tests/tests/stroop_test.dart';
+import 'package:just_audio/just_audio.dart';
+
 
 class StroopGuideScreen extends StatefulWidget {
   @override
@@ -8,9 +10,11 @@ class StroopGuideScreen extends StatefulWidget {
 }
 
 class _StroopGuideScreenState extends State<StroopGuideScreen> {
+  final player = AudioPlayer();
   @override
   void initState() {
     super.initState();
+    guideVoice();
     Future.delayed(Duration(seconds: 10), () async {
       final result = await Navigator.push(
         context,
@@ -18,6 +22,17 @@ class _StroopGuideScreenState extends State<StroopGuideScreen> {
       );
       Navigator.pop(context, result);
     });
+  }
+
+  Future<void> guideVoice() async {
+    await player.setAsset('assets/sounds/test_name/stroop.wav');
+    await player.play();
+
+    await player.processingStateStream.firstWhere((state) => state == ProcessingState.completed);
+    await Future.delayed(Duration(seconds: 1));
+
+    await player.setAsset('assets/sounds/guide/stroop.wav');
+    await player.play();
   }
 
   @override

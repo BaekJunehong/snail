@@ -31,6 +31,7 @@ class NoResultScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                /*
                 ElevatedButton(
                   onPressed: () {
                     Navigator.push(
@@ -51,12 +52,10 @@ class NoResultScreen extends StatelessWidget {
                   ),
                 ),
                 SizedBox(width: 70),
+                */
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => (StartTestScreen())));
+                    Navigator.pop(context);                    
                   },
                   child: Text('돌아가기',
                       style: TextStyle(

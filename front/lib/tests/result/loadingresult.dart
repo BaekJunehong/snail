@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:snail/tests/result/parentnote.dart';
 
 class LoadingResultScreen extends StatefulWidget {
   @override
@@ -13,7 +14,7 @@ class _LoadingResultScreenState extends State<LoadingResultScreen> {
   void initState() {
     super.initState();
     // 10초 후에 버튼을 보여주고 텍스트 변경
-    Future.delayed(Duration(seconds: 10), () {
+    Future.delayed(Duration(seconds: 5), () {
       setState(() {
         _showButton = true;
         _displayText = '게임 결과를 저장했어요!'; // 텍스트 변경
@@ -59,9 +60,13 @@ class _LoadingResultScreenState extends State<LoadingResultScreen> {
                     // 버튼을 보여주는지 여부에 따라 조건부로 보여줌
                     if (_showButton)
                       ElevatedButton(
-                          onPressed: () {
+                          onPressed: () async {
                             // 결과 보기 버튼을 누를 때 처리
-                            // 예를 들어 결과 페이지로 이동하거나 다른 동작 수행 가능
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => ParentNoteScreen()),
+                            );
+                            Navigator.pop(context);
                           },
                           child: Text(
                             '결과 보기',

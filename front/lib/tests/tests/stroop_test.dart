@@ -81,10 +81,10 @@ class _StroopTestState extends State<StroopTest> {
 
   @override
   void dispose() {
-    super.dispose();
     _speech.cancel(); // Stop the speech recognition
     timer?.cancel(); // Cancel the test timer
-    countdownTimer?.cancel(); // Cancel the countdown timer
+    countdownTimer?.cancel();
+    super.dispose();
   }
 
   void startTestTimer() {
@@ -155,16 +155,17 @@ class _StroopTestState extends State<StroopTest> {
 
   void getNextQuestion() async {
     await html.window.navigator.mediaDevices?.getUserMedia({'audio': true});
-    if (!_speech.isListening) {
+    if (!_speech.isListening) {;
       _speech.listen(
         listenFor: Duration(seconds: 1000),
         pauseFor: Duration(seconds: 1000),
         cancelOnError: true,
         partialResults: true,
+        localeId: 'ko-KR',
         listenMode: stt.ListenMode.dictation,
         onResult: (result) async {
           _speech.stop();
-          userInput = result.recognizedWords;
+          userInput = result.recognizedWords.length > 2 ? result.recognizedWords.substring(0, 2) : result.recognizedWords;
           if (result.finalResult) {
             checkAnswer();
           }

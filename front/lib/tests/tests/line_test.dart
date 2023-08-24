@@ -67,7 +67,6 @@ class _LineTestState extends State<LineTest> {
     // 1초마다 타이머 콜백
     timer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
-        print(seconds);
         seconds++; // 경과 시간(초) 갱신
         time += 1;
         // isVisible = true;
@@ -117,7 +116,6 @@ class _LineTestState extends State<LineTest> {
         });
       });
     }
-    print(correctCount);
   }
 
   void resetTest() {
@@ -133,8 +131,14 @@ class _LineTestState extends State<LineTest> {
   }
 
   @override
+  void dispose() {
+    countdownTimer?.cancel();
+    timer?.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    print(_selectedIndices);
     return Scaffold(
       body: Stack(
         children: [
@@ -181,7 +185,6 @@ class _LineTestState extends State<LineTest> {
                             if (MousePressed &&
                                 !_selectedIndices.contains(index)) {
                               setState(() {
-                                print(11);
                                 _circleColors[index] = Color(0xFFffcb39);
                                 MousePressed = false;
                                 _selectedIndices.add(index);

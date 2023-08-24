@@ -21,8 +21,6 @@ Future<int> checkAnswers(List<String> answers, int videoNum) async {
   // 응답 본문 디코딩
   List<bool> result = json.decode(response.body).cast<bool>();
 
-  print('결과 $result');
-  print('데이터 형식: ${result.runtimeType}');
   int count = 0;
   for (bool value in result) {
     if (value) {

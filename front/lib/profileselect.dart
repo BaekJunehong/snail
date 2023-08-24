@@ -142,13 +142,11 @@ class _ProfileCardState extends State<ProfileCard> {
 
   @override
   Widget build(BuildContext context) {
-    print(child_name);
-
     return OutlinedButton(
       onPressed: () async {
         if (widget.child_info != null) {
           // 캐릭터가 있을 경우 starttest.dart 페이지로 이동
-          await storage.write(key: 'CHILD_ID', value: widget.child_info!['CHILD_ID']);
+          await storage.write(key: 'CHILD_ID', value: widget.child_info!['CHILD_ID'].toString());
           await storage.write(key: 'CHILD_NAME', value: widget.child_info!['NAME']);
           Navigator.push(
             context,

@@ -1,5 +1,8 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class LineChartSample2 extends StatefulWidget {
   const LineChartSample2({Key? key}) : super(key: key);
@@ -11,22 +14,47 @@ class LineChartSample2 extends StatefulWidget {
 class _LineChartSample2State extends State<LineChartSample2> {
   bool showAvg = false;
 
+  final storage = const FlutterSecureStorage();
+  Future<void> getScore () async {
+    final child_id = await storage.read(key: 'CHILD_ID');
+
+    var url = Uri.https('server-snail.kro.kr:3443', '/getEveryMonthScores');
+    var request = await http.post(url, body: {'CHILD_ID': child_id});
+    var records = jsonDecode(request.body);
+    //final result_id = record['RESULT_ID'].toString();
+
+    for (var record in records) {
+      var month = DateTime.parse(record['FirstTestDate']).month;
+      monthlyData[month - 1] = [
+        record['EYETRACK_PERC'] / 100,
+        record['VOCA_RP_PERC'] / 100,
+        record['CHOSUNG_PERC'] / 100,
+        record['STORY_PERC'] / 100,
+        (record['STROOP_PERC'] + record['LINE_PERC']) / 200,
+      ];
+    }
+    setState(() {});
+  } 
+
   // 예시 데이터
   // 순서대로 1~12월 데이터라 생각해주세요!
+  List<List<double>> monthlyData = List.generate(12, (index) => [0, 0, 0, 0, 0]);
+  /*
   final List<List<double>> monthlyData = [
-    [0.5, 0.6, 0.8, 0.9, 1.0], //1월
-    [0.1, 0.4, 0.5, 0.7, 0.9], //2월
-    [0.3, 0.5, 0.9, 1.0, 0.8], //3월
-    [0.5, 0.6, 0.8, 0.9, 1.0], //4월
-    [0.6, 0.4, 0.5, 0.7, 0.2], //5월
-    [0.5, 0.6, 0.8, 0.9, 1.0], //6월
-    [0.1, 0.4, 0.5, 0.7, 0.9], //7월
-    [0.3, 0.5, 0.9, 1.0, 0.8], //8월
-    [0.5, 0.6, 0.8, 0.9, 1.0], //9월
-    [0.6, 0.4, 0.5, 0.7, 0.2], //10월
-    [0.5, 0.6, 0.8, 0.9, 1.0], //11월
-    [0.1, 0.4, 0.5, 0.7, 0.9], //12월
+    [0.0, 0.0, 0.0, 0.0, 0.0], //1월
+    [0.0, 0.0, 0.0, 0.0, 0.0], //2월
+    [0.0, 0.0, 0.0, 0.0, 0.0], //3월
+    [0.0, 0.0, 0.0, 0.0, 0.0], //4월
+    [0.0, 0.0, 0.0, 0.0, 0.0], //5월
+    [0.0, 0.0, 0.0, 0.0, 0.0], //6월
+    [0.0, 0.0, 0.0, 0.0, 0.0], //7월
+    [0.0, 0.0, 0.0, 0.0, 0.0], //8월
+    [0.0, 0.0, 0.0, 0.0, 0.0], //9월
+    [0.0, 0.0, 0.0, 0.0, 0.0], //10월
+    [0.0, 0.0, 0.0, 0.0, 0.0], //11월
+    [0.0, 0.0, 0.0, 0.0, 0.0], //12월
   ];
+  */
 
   //평균으로 변환하는 함수
   List<FlSpot> getMonthlyAverage(int month) {
@@ -40,6 +68,12 @@ class _LineChartSample2State extends State<LineChartSample2> {
   }
 
   @override
+  void initState () {
+    super.initState();
+    getScore();
+  }
+
+ @override
   Widget build(BuildContext context) {
     return Stack(
       children: <Widget>[
