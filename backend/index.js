@@ -235,6 +235,82 @@ app.post('/saveTestScore', (req, res) => {
   });
 });
 
+// 점수 가져오기 (result화면)
+app.post('/getScores', (req, res) => {
+  const result_id = req.body.RESULT_ID;
+
+  const query = 'SELECT EYETRACK_PERC, STROOP_PERC, STORY_PERC, VOCA_RP_PERC, LINE_PERC, CHOSUNG_PERC, FEEDBACK FROM RESULT WHERE RESULT_ID = ?';
+  connection.query(query, result_id, (err, row) => {
+    if (err) {
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+    res.status(200).send(row);
+  })
+});
+
+// 한달 전 검사 result_id 가져오기
+app.post('/getLastMonthResultID', (req, res) => {
+  const child_id = req.body.CHILD_ID;
+
+  const query = 'SELECT RESULT_ID FROM RESULT WHERE CHILD_ID = ? AND TEST_DATE <= DATE_SUB(CURDATE(), INTERVAL 1 MONTH) ORDER BY TEST_DATE DESC LIMIT 1;';
+  connection.query(query, child_id, (err, id) => {
+    if (err) {
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+    res.status(200).send(id);
+  })
+});
+
+// 최근 검사 result_id 가져오기
+app.post('/getLastResultID', (req, res) => {
+  const child_id = req.body.CHILD_ID;
+
+  const query = 'SELECT RESULT_ID FROM RESULT WHERE CHILD_ID = ? ORDER BY TEST_DATE DESC LIMIT 1;';
+  connection.query(query, child_id, (err, id) => {
+    if (err) {
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+    res.status(200).send(id);
+  })
+});
+
+// 동년 매달의 점수 가져오기
+app.post('/getEveryMonthScores', (req, res) => {
+  const child_id = req.body.CHILD_ID;
+
+  const query = `SELECT 
+                  DATE_FORMAT(TEST_DATE, '%Y-%m') as Month,
+                  MIN(TEST_DATE) as FirstTestDate,
+                  EYETRACK_PERC,
+                  STROOP_PERC,
+                  STORY_PERC,
+                  VOCA_RP_PERC,
+                  LINE_PERC,
+                  CHOSUNG_PERC
+                FROM 
+                  RESULT
+                WHERE 
+                  CHILD_ID = ? AND
+                  YEAR(TEST_DATE) = YEAR(CURDATE())
+                GROUP BY 
+                  Month
+                ORDER BY 
+                  FirstTestDate;`
+  connection.query(query, child_id, (err, row) => {
+    if (err) {
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+    res.status(200).send(row);
+  })
+});
+
+
+
+
 //-------------------------------------------------------------------------------------
 // listener
 httpsServer.listen(3443, () => {

@@ -1,17 +1,45 @@
 import 'package:flutter/material.dart';
-import 'package:snail/starttest.dart';
 import 'package:snail/tests/result/parentdashboard.dart';
 import 'package:snail/tests/result/dashboard/radarchart.dart'; //방사형 그래프 렌더링
 import 'package:snail/tests/result/dashboard/gptfeedbackbox.dart'; // gpt 피드백 입력란
 import 'package:snail/tests/result/dashboard/chartbox.dart'; // 역량 설명 및 막대 그래프 템플릿 렌더링
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class ParentNoteScreen extends StatelessWidget {
+class ParentNoteScreen extends StatefulWidget {
+  @override
+  _ParentNoteScreenState createState() => _ParentNoteScreenState();
+}
+
+class _ParentNoteScreenState extends State<ParentNoteScreen> {
   //레이더 차트에 렌더링되는 데이터
-  final List<double> data = [0.8, 0.6, 0.9, 0.4, 0.7]; //아이의 검사 결과 여기에 저장
+  List<double> data = [0.8, 0.6, 0.9, 0.4, 0.7]; //아이의 검사 결과 여기에 저장
   final List<double> avgData = [0.5, 0.5, 0.5, 0.5, 0.5]; //연령대 평균 점수 여기에 저장
   final int levels = 5;
   final int numberOfPolygons = 10;
 
+  final storage = const FlutterSecureStorage();
+  void getScore () async {
+    final child_id = await storage.read(key: 'CHILD_ID');
+
+    var url = Uri.https('server-snail.kro.kr:3443', '/getLastResultID');
+    var request = await http.post(url, body: {'CHILD_ID': child_id});
+    var record = jsonDecode(request.body)[0];
+    final result_id = record['RESULT_ID'].toString();
+
+    var lastUrl = Uri.https('server-snail.kro.kr:3443', '/getScores');
+    var lastRequest = await http.post(lastUrl, body: {'RESULT_ID': result_id});
+    var lastRecord = jsonDecode(lastRequest.body)[0];
+    
+    data[0] = lastRecord['EYETRACK_PERC'] / 100;
+    data[1] = lastRecord['VOCA_RP_PERC'] / 100;
+    data[2] = lastRecord['CHOSUNG_PERC'] / 100;
+    data[3] = lastRecord['STORY_PERC'] / 100;
+    data[4] = (lastRecord['STROOP_PERC'] + lastRecord['LINE_PERC']) / 200;
+
+    setState(() {});
+  }
   // A: 주의력, B: 기억력, C: 처리 능력, D: 언어 능력, E: 유연성
   // 매칭만 되면 되니 인덱스 순서는 백, 모델링 단에서 원하시는 대로 처리하시면 됩니다!
   final List<String> labels = ['A', 'B', 'C', 'D', 'E'];
@@ -19,6 +47,12 @@ class ParentNoteScreen extends StatelessWidget {
   //dataColor: 아이, avgColor: 연령대 평균
   final dataColor = Color(0XFFFFCB39);
   final avgColor = Color(0XFFD9D9D9);
+
+  @override
+  void initState() {
+    super.initState();
+    getScore();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -164,12 +198,12 @@ class ParentNoteScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        (ParentMonthlyDashboardScreen())));
+                          onPressed: () async {
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => ParentMonthlyDashboardScreen()),
+                            );
+                            Navigator.pop(context);
                           },
                           child: Text(
                             '대시보드',
@@ -188,11 +222,9 @@ class ParentNoteScreen extends StatelessWidget {
                         ),
                         SizedBox(width: 120),
                         ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => (StartTestScreen())));
+                          onPressed: () async {
+                            //await storage.delete(key: 'RESULT_ID');
+                            Navigator.pop(context);
                           },
                           child: Text(
                             '돌아가기',
