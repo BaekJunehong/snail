@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:snail/profileselect.dart';
+import 'package:http/http.dart' as http;
 
 class GPTFeedbackBox extends StatelessWidget {
   final double grayBoxWidth = 765;
