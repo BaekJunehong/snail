@@ -17,3 +17,6 @@ SNaiL은 **음성인식**, **시선추적**, **AI 피드백**의 AI 기술을 �
 
 **2. 시선추적**
 
+![KakaoTalk_20230824_114419686](https://github.com/home-gravity/snail/assets/137850633/b1d5fa9a-564e-46b7-8fa8-6e42e400ed1a)
+
+**3. AI feedback**
