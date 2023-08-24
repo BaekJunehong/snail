@@ -1,7 +1,7 @@
 import openai
 
 def generate_feedback(name, abilities):
-    openai.api_key = "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"
+    #openai.api_key = "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"
     
     short_name = name[:]  # 성 제거
 
