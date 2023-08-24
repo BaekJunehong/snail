@@ -308,8 +308,24 @@ app.post('/getEveryMonthScores', (req, res) => {
   })
 });
 
+// 피드백 저장
+app.post('/saveFeedback', (req, res) => {
+  // ResultID, feedback 받기  
+  const feedback = req.body.FEEDBACK;
+  const ResultID = req.body.RESULT_ID;
 
+  // DB저장
+  const query = "UPDATE RESULT SET FEEDBACK = ? WHERE RESULT_ID = ?";
 
+  connection.query(query, [feedback, ResultID], (err, result) => {
+    if (err) {
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+
+    res.status(200).send({ message: 'Feedback saved successfully' });
+  });
+})
 
 //-------------------------------------------------------------------------------------
 // listener

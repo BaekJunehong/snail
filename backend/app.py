@@ -2,8 +2,9 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import base64
 
-#from modeling import main
+#from whisper import main
 from eyetracking import eyetrack
+from ai_feedback import ai_feedback_code
 from story_modeling.Answer_check import check_answers #이건 맞아
 
 app = Flask(__name__)
@@ -40,13 +41,24 @@ def checkAnswer():
 
 # AI 피드백 생성
 @app.route('/requestFeedback', methods=['POST'])
-def checkAnswer():
-    data = request.get_json()
-    answers = data['answers']
-    videoNum = data['videoNum']
+def getAiFeedback():
+    param = request.get_json()
+    
+    child_name = param['CHILD_NAME']
+    abilities = {
+        "주의력": param['score1'],
+        "기억력": param['score2'],
+        "처리능력": param['score3'],
+        "언어능력": param['score4'],
+        "유연성": param['score5'],
+    }
+    print(child_name)
+    print(abilities)
+    
+    text = ai_feedback_code.generate_feedback(child_name, abilities)
+    print(text)
 
-    result = check_answers(answers, videoNum)
-    return jsonify(result)
+    return jsonify(text)
 
 if __name__ == '__main__':
     app.run(host='172.31.3.182', port=3444, ssl_context=('/etc/letsencrypt/live/server-snail.kro.kr/cert.pem', '/etc/letsencrypt/live/server-snail.kro.kr/privkey.pem'))
