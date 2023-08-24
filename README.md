@@ -17,6 +17,11 @@ SNaiL은 **음성인식**, **시선추적**, **AI 피드백**의 AI 기술을 �
 
 **2. 시선추적**
 
+인지능력 검사를 진행하는 동안 아동의 시선을 추적하여 집중력 또한 측정합니다.
 ![KakaoTalk_20230824_114419686](https://github.com/home-gravity/snail/assets/137850633/b1d5fa9a-564e-46b7-8fa8-6e42e400ed1a)
 
 **3. AI feedback**
+
+인지능력 검사가 끝난 뒤에 평가 결과를 **OpenAI**의 **chatGPT**를 이용하여 생성합니다.
+역량에 따른 결과를 일관되게 제공하고 마치 선생님께 직접 피드백을 받는듯한 느낌을 주도록 템플릿 텍스트를 작성했습니다.
+![ai feedback](https://github.com/home-gravity/snail/assets/137850633/6bf32c9f-1b2c-4f53-9861-39f07c7604bd)
