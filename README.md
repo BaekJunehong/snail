@@ -33,4 +33,4 @@ SNaiL은 **음성인식**, **시선추적**, **AI 피드백**의 AI 기술을 �
 
 ## 팀원 소개
 SNaiL은 다재다능한 7 달팽이가 모여 완성됐습니다. 🐌
-![비운의 팀소개](https://github.com/home-gravity/snail/assets/137850633/5c6d34ce-d11a-4e0d-a2dc-5b67bb442b6a)
+![팀 소개2](https://github.com/home-gravity/snail/assets/137850633/f29f9a16-f8fa-47ed-92eb-5ca45d70e0d4)
