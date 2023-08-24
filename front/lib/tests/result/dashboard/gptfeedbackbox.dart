@@ -10,28 +10,6 @@ class GPTFeedbackBox extends StatelessWidget {
   final double grayBoxHeight = 400;
   final double paddingValue = 60;
 
-  Future<List<Map<String, dynamic>>> _fetchChildData() async {
-    final parent_id = await storage.read(key: 'USER_ID');
-    final url = Uri.https('server-snail.kro.kr:3443', '/fetchChildData');
-    final response = await http.post(url, body: {'USER_ID': parent_id});
-
-    // parent_id가 가진 child 정보
-    var data = jsonDecode(response.body);
-
-    var rows;
-    for (int i = 0; i < data.length; i++) {
-      rows = '';
-    }
-    return rows;
-  }
-
-  // // 화면 갱신
-  // void refreshData() {
-  //   setState(() {
-  //     _fetchChildData();
-  //   });
-  // }
-
   @override
   Widget build(BuildContext context) {
     //날짜 가져오기

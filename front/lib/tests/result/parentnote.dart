@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:snail/audio.dart';
 import 'package:snail/tests/result/parentdashboard.dart';
 import 'package:snail/tests/result/dashboard/radarchart.dart'; //방사형 그래프 렌더링
 import 'package:snail/tests/result/dashboard/gptfeedbackbox.dart'; // gpt 피드백 입력란
@@ -18,9 +19,10 @@ class _ParentNoteScreenState extends State<ParentNoteScreen> {
   final List<double> avgData = [0.5, 0.5, 0.5, 0.5, 0.5]; //연령대 평균 점수 여기에 저장
   final int levels = 5;
   final int numberOfPolygons = 10;
+  String feedback = '';
 
   final storage = const FlutterSecureStorage();
-  void getScore () async {
+  void getScore() async {
     final child_id = await storage.read(key: 'CHILD_ID');
 
     var url = Uri.https('server-snail.kro.kr:3443', '/getLastResultID');
@@ -31,15 +33,17 @@ class _ParentNoteScreenState extends State<ParentNoteScreen> {
     var lastUrl = Uri.https('server-snail.kro.kr:3443', '/getScores');
     var lastRequest = await http.post(lastUrl, body: {'RESULT_ID': result_id});
     var lastRecord = jsonDecode(lastRequest.body)[0];
-    
+
     data[0] = lastRecord['EYETRACK_PERC'] / 100;
     data[1] = lastRecord['VOCA_RP_PERC'] / 100;
     data[2] = lastRecord['CHOSUNG_PERC'] / 100;
     data[3] = lastRecord['STORY_PERC'] / 100;
     data[4] = (lastRecord['STROOP_PERC'] + lastRecord['LINE_PERC']) / 200;
-
-    setState(() {});
+    setState(() {
+      feedback = lastRecord['FEEDBACK'];
+    });
   }
+
   // A: 주의력, B: 기억력, C: 처리 능력, D: 언어 능력, E: 유연성
   // 매칭만 되면 되니 인덱스 순서는 백, 모델링 단에서 원하시는 대로 처리하시면 됩니다!
   final List<String> labels = ['A', 'B', 'C', 'D', 'E'];
@@ -94,8 +98,9 @@ class _ParentNoteScreenState extends State<ParentNoteScreen> {
                                   avgColor: avgColor),
                               SizedBox(width: paddingValue),
                               SizedBox(height: 50),
-                              //피드백 박스
-                              GPTFeedbackBox(),
+                              GPTFeedbackBox(
+                                text: feedback,
+                              ),
                               SizedBox(width: paddingValue),
                             ],
                           )
@@ -116,7 +121,9 @@ class _ParentNoteScreenState extends State<ParentNoteScreen> {
                               ),
                               SizedBox(width: paddingValue),
                               //GPT 피드백 입력란
-                              GPTFeedbackBox(),
+                              GPTFeedbackBox(
+                                text: feedback,
+                              ),
                               SizedBox(width: paddingValue),
                             ],
                           ),
@@ -201,7 +208,9 @@ class _ParentNoteScreenState extends State<ParentNoteScreen> {
                           onPressed: () async {
                             await Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => ParentMonthlyDashboardScreen()),
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      ParentMonthlyDashboardScreen()),
                             );
                             Navigator.pop(context);
                           },
