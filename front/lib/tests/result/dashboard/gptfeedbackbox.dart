@@ -10,6 +10,9 @@ class GPTFeedbackBox extends StatelessWidget {
   final double grayBoxHeight = 400;
   final double paddingValue = 60;
 
+  String text;
+  GPTFeedbackBox({required this.text});
+
   @override
   Widget build(BuildContext context) {
     //날짜 가져오기
@@ -51,7 +54,7 @@ class GPTFeedbackBox extends StatelessWidget {
                   children: [
                     // GPT 피드백. 길어질 수 있으므로 스크롤 가능하도록 설정했음.
                     Text(
-                      'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text...',
+                      text,
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 20,

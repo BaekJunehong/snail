@@ -39,6 +39,7 @@ class _ParentNoteScreenState extends State<ParentNoteScreen> {
     data[2] = lastRecord['CHOSUNG_PERC'] / 100;
     data[3] = lastRecord['STORY_PERC'] / 100;
     data[4] = (lastRecord['STROOP_PERC'] + lastRecord['LINE_PERC']) / 200;
+
     setState(() {
       feedback = lastRecord['FEEDBACK'];
     });
@@ -98,9 +99,7 @@ class _ParentNoteScreenState extends State<ParentNoteScreen> {
                                   avgColor: avgColor),
                               SizedBox(width: paddingValue),
                               SizedBox(height: 50),
-                              GPTFeedbackBox(
-                                text: feedback,
-                              ),
+                              GPTFeedbackBox(text: feedback),
                               SizedBox(width: paddingValue),
                             ],
                           )
@@ -121,9 +120,7 @@ class _ParentNoteScreenState extends State<ParentNoteScreen> {
                               ),
                               SizedBox(width: paddingValue),
                               //GPT 피드백 입력란
-                              GPTFeedbackBox(
-                                text: feedback,
-                              ),
+                              GPTFeedbackBox(text: feedback),
                               SizedBox(width: paddingValue),
                             ],
                           ),
