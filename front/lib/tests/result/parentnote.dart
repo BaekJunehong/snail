@@ -60,6 +60,7 @@ class ParentNoteScreen extends StatelessWidget {
                                   avgColor: avgColor),
                               SizedBox(width: paddingValue),
                               SizedBox(height: 50),
+                              //피드백 박스
                               GPTFeedbackBox(),
                               SizedBox(width: paddingValue),
                             ],
