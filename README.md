@@ -6,6 +6,11 @@
 >
 SNaiL은 **음성인식**, **시선추적**, **AI 피드백**의 AI 기술을 활용하여 아동의 인지능력을 검사하는 서비스 입니다.
 
+## 검사
+![image](https://github.com/user-attachments/assets/06945e8c-f8cd-4a34-9cda-c74744d9a3bd)
+![image](https://github.com/user-attachments/assets/0263b379-e148-4af8-9f1b-e5752230e260)
+![image](https://github.com/user-attachments/assets/f1d86b80-efbe-4be0-995b-c68f2961bf02)
+
 
 ## AI 기술& 데이터
 
